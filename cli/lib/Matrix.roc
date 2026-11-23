@@ -56,7 +56,7 @@ Matrix :: [].{
 	real = |x| {
 		same = |a, b| a.hash == b.hash and a.target == b.target and PinOrder.same_id(a.nightly, b.nightly)
 		fresh = x.rows.keep_if(|r| !x.local.any(|f| same(f, r)))
-		keys = fresh.fold([], |found, r| if found.any(|k| same(k, r)) found else found.append(r))
+		keys = fresh.fold([], |acc, r| if (acc.any(|k| same(k, r))) acc else acc.append(r))
 		reg = keys.map(
 			|k| {
 				pick = winner(fresh.keep_if(|r| same(r, k))) ?? k
@@ -87,7 +87,7 @@ Matrix :: [].{
 			Err(_) => Own(p)
 		}
 		units = x.facts.keep_if(|f| f.target == "any")
-		hashes = units.fold([], |found, f| if found.contains(f.hash) found else found.append(f.hash))
+		hashes = units.fold([], |acc, f| if (acc.contains(f.hash)) acc else acc.append(f.hash))
 		code = |hash, id| match units.find_first(|f| f.hash == hash and f.nightly == id) {
 			Ok(f) if f.outcome == Pass or f.outcome == Fail => Ok(f.outcome)
 			_ => Err(NoCode)
@@ -179,10 +179,10 @@ Matrix :: [].{
 	smoke_checks : { rows : List(Matrix.Row), id : Str, hash : Str, target : Str } -> List(Solver.Check)
 	smoke_checks = |x| {
 		of_key = x.rows.keep_if(|r| r.hash == x.hash and r.target == x.target)
-		firsts = of_key.fold([], |seen, r| if seen.any(|k| PinOrder.same_id(k.nightly, r.nightly)) seen else seen.append(r))
+		firsts = of_key.fold([], |seen, r| if (seen.any(|k| PinOrder.same_id(k.nightly, r.nightly))) seen else seen.append(r))
 		firsts.keep_oks(
 			|k| match Matrix.smoke_fail({ rows: of_key, hash: x.hash, nightly: k.nightly, target: x.target }) {
-				Ok(r) => Ok({ id: x.id, nightly: r.nightly, outcome: if r.result == Crash Crash else Fail, modules: [], source: Real })
+				Ok(r) => Ok({ id: x.id, nightly: r.nightly, outcome: if (r.result == Crash) Crash else Fail, modules: [], source: Real })
 				Err(_) => Err(None)
 			},
 		)

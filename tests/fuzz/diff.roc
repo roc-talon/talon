@@ -1,5 +1,5 @@
 app [target] {
-	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.4.3/41NK5FShyGC9Z8HNpUdUeXMWwLmLNfFxsfmLvdPL4Fxb.tar.zst",
+	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.7.0/HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br.tar.zst",
 	lib: "../../cli/lib/main.roc",
 }
 
@@ -67,7 +67,7 @@ edited = |x| {
 text_of : List(Str), Bool -> Str
 text_of = |ls, ending| {
 	body = Str.join_with(ls, "\n")
-	if ls.is_empty() "" else if ending "${body}\n" else body
+	if (ls.is_empty()) "" else if (ending) "${body}\n" else body
 }
 
 # The lines of a text as `Diff` sees them: each has its own line end, except the last one of a text that has none.
@@ -94,7 +94,7 @@ lcs = |a, b| {
 			diag = $row.get($j + 1) ?? 0
 			down = $row.get($j) ?? 0
 			right = $new.first() ?? 0
-			cell = if x == y diag + 1 else if down >= right down else right
+			cell = if (x == y) diag + 1 else if (down >= right) down else right
 			$new = $new.prepend(cell)
 		}
 		$row = $new
@@ -154,8 +154,8 @@ hunk_fault = |h, old_total| {
 		Ok(0) => Bool.True
 		_ => Bool.False
 	}
-	lead_len = if starts_kept lead.len else 0
-	trail_len = if ends_kept trail.len else 0
+	lead_len = if (starts_kept) lead.len else 0
+	trail_len = if (ends_kept) trail.len else 0
 	inner = runs.keep_if(|r| !(r.first and starts_kept) and !(r.last and ends_kept))
 	ends_text = h.old_len == 0 or h.old_start + h.old_len == old_total + 1
 	if old_len != h.old_len or new_len != h.new_len {
@@ -217,6 +217,7 @@ test = |raw| {
 }
 
 target = Fuzz.target_with({
+	examples: [],
 	name: "diff",
 	generator,
 	test,

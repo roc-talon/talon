@@ -25,7 +25,7 @@ Age :: [].{
 
 	## R-C14: the union of the two lists. The `talon.toml` list first, then the `config.toml` list. A text that is in the list already is not added again.
 	join : { project : List(Str), user : List(Str) } -> List(Str)
-	join = |lists| lists.project.concat(lists.user).fold([], |acc, pattern| if acc.contains(pattern) acc else acc.append(pattern))
+	join = |lists| lists.project.concat(lists.user).fold([], |acc, pattern| if (acc.contains(pattern)) acc else acc.append(pattern))
 
 	## R-C7, R-C15: the one age test. `min_age` 0 hides nothing. A release at exactly `min_age` seconds is visible.
 	hides : { now : U64, min_age : U64, published_at : U64, exclude : List(Str), name : Try(Str, [NoName]) } -> Bool
@@ -38,7 +38,7 @@ Age :: [].{
 			Ok(snapshot) => input.published_at > snapshot
 			Err(None) => Bool.False
 		}
-		if !after_snapshot and Age.first_match({ patterns: input.exclude, name: input.name }).is_ok() 0 else input.published_at
+		if (!after_snapshot and Age.first_match({ patterns: input.exclude, name: input.name }).is_ok()) 0 else input.published_at
 	}
 
 	## R-C16: the note when a release is younger than `min_age` and only a pattern keeps it visible. The text has no `note: ` prefix. An empty `version` (a compiler) is left out with its space.
@@ -46,7 +46,7 @@ Age :: [].{
 	note = |input| match Age.first_match({ patterns: input.exclude, name: input.name }) {
 		Ok(pattern) if young(input) => {
 			days = input.now.minus_saturated(input.published_at) // day
-			who = if input.version.is_empty() input.id else "${input.id} ${input.version}"
+			who = if (input.version.is_empty()) input.id else "${input.id} ${input.version}"
 			Ok("${who} is ${days.to_str()}d old (min-release-age ${(input.min_age // day).to_str()}d), not hidden by min-release-age-exclude: ${pattern}")
 		}
 		_ => Err(None)
@@ -54,7 +54,7 @@ Age :: [].{
 
 	## R-C15: the name that a pattern compares for a compiler: `roc-lang/nightlies` for a nightly, `roc-lang/roc` for a release.
 	compiler_name : Str -> Str
-	compiler_name = |id| if Pin.is_nightly(id) "roc-lang/nightlies" else "roc-lang/roc"
+	compiler_name = |id| if (Pin.is_nightly(id)) "roc-lang/nightlies" else "roc-lang/roc"
 
 	## R-C15, R-CH9 (Design Q614 item 6): the name of a build, given the channel tables. A user-channel build has the `source` of its table. With no table, it has the `source` that its `.talon.json`
 	## recorded. With none, `Err(NoName)`: no pattern matches. A nightly and a release always have a name (`compiler_name`).

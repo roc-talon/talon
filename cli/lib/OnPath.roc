@@ -11,7 +11,7 @@ OnPath :: [].{
 	file! : Fx, Roots => Try({ id : Str, path : Str }, [NoCompiler])
 	file! = |fx, roots| {
 		facts = fx.path_roc!()
-		if facts.found.is_empty() return Err(NoCompiler)
+		if (facts.found.is_empty()) return Err(NoCompiler)
 		cache = Roots.item(roots, PathRocJson)
 		read = PathRoc.read(
 			match fx.read_files!([cache]) {

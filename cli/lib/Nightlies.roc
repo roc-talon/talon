@@ -70,7 +70,7 @@ Nightlies :: [].{
 	## R-CH5: the id of a tag. The id of a `nightly` tag is the tag text. For another channel it is `<name>-<date>-<sha>`: the tag-prefix is dropped and the name is put in its place.
 	id_of : { name : Str, tag_prefix : Str, tag : Str } -> Try(Str, [NotBuild])
 	id_of = |facts| match Nightlies.parts_of(facts.tag_prefix, facts.tag) {
-		Ok(_) => if facts.name == "nightly" Ok(facts.tag) else Ok("${facts.name}-${facts.tag.drop_prefix(facts.tag_prefix)}")
+		Ok(_) => if (facts.name == "nightly") Ok(facts.tag) else Ok("${facts.name}-${facts.tag.drop_prefix(facts.tag_prefix)}")
 		Err(NotNightly) => Err(NotBuild)
 	}
 
@@ -211,8 +211,8 @@ Nightlies :: [].{
 		UserTag({ text, name }) => Fail.new(Usage, "${text} is a user-channel tag, not a ref. Use ${name}@latest or ${name}@-1")
 		OutOfRange({ base, step }) => {
 			count = step.abs().to_str()
-			steps = if step.abs() == 1 "1 step" else "${count} steps"
-			way = if step < 0 "older" else "newer"
+			steps = if (step.abs() == 1) "1 step" else "${count} steps"
+			way = if (step < 0) "older" else "newer"
 			Fail.new(Usage, "no compiler is ${steps} ${way} than ${base}")
 		}
 	}
@@ -320,7 +320,7 @@ Nightlies :: [].{
 				{ firsts: [], changes: [] },
 				|acc, row| match acc.firsts.find_first(|o| o.tag == row.tag) {
 					Err(_) => { firsts: acc.firsts.append(row), changes: acc.changes }
-					Ok(first) => if first.sha256 == row.sha256 acc else { firsts: acc.firsts, changes: acc.changes.append({ first: row_pin(first), now: row_pin(row) }) }
+					Ok(first) => if (first.sha256 == row.sha256) acc else { firsts: acc.firsts, changes: acc.changes.append({ first: row_pin(first), now: row_pin(row) }) }
 				},
 			)
 			.changes
@@ -346,12 +346,12 @@ Nightlies :: [].{
 
 	## Slice 240 (R-CH16, R-CV3): the source of the list of the channel `name`. A user channel is always `Direct`. The `nightly` channel keeps the source of the run.
 	source_for : Nightlies.Source, Str -> Nightlies.Source
-	source_for = |source, name| if name == "nightly" source else Direct
+	source_for = |source, name| if (name == "nightly") source else Direct
 
 	## Slice 206e2: the list of `source`: `list!` for `Direct`, `list_registry!` for `Registry` (offline when `kept`). The result and the failures are those of the function.
 	## Slice 225 (R-RG9): `via` is the source that gave the list, for the `digest` of its rows (`digest_source`): `Direct` after a fall back.
 	via : { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Nightlies.Source, Try(Fallback.Fell, [None]) -> { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }
-	via = |got, via, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via, fell }
+	via = |got, source, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via: source, fell }
 
 	## Slice 240 (R-CH16): with `channel` the list is that of the user channel (`list_channel!` when `source_for` gives `Direct`, which it always does for a user channel).
 	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source, channel ?: { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
@@ -370,7 +370,7 @@ Nightlies :: [].{
 			Ok(listed) => Ok(Nightlies.via(listed, facts.source, Err(None)))
 			Err(fail) => {
 				# R-RG9 (Design Q601): the first request of a run gives no answer from the built-in default: the list is the GitHub list. `--snapshot log:N` needs the registry.
-				if r.log != Err(None) or !r.first return Err(fail)
+				if (r.log != Err(None) or !r.first) return Err(fail)
 				fell = Fallback.decide!(fx, fail, r.origin)?
 				Ok(Nightlies.via(Nightlies.list!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host })?, Direct, Ok(fell)))
 			}
@@ -400,9 +400,9 @@ pins_of = |host, list, source| list.keep_oks(
 # R-CV2, R-CV3, R-AP50: the release of one registry row. A row has `size` (0 is no asset, R-AP80) and no URL: the URL is the GitHub download of the tag (Q1 of slice 204).
 row_release : RegistryToolchains.Row -> Release
 row_release = |row| {
-	sha = if is_sha256(row.sha256) Ok(row.sha256) else Err(None)
+	sha = if (is_sha256(row.sha256)) Ok(row.sha256) else Err(None)
 	url = "https://github.com/roc-lang/nightlies/releases/download/${row.tag}/${row.asset_name}"
-	asset = if Ident.safe_part(row.asset_name) and row.size > 0 Ok({ name: row.asset_name, url, size: row.size, sha256: sha }) else Err(NoAsset)
+	asset = if (Ident.safe_part(row.asset_name) and row.size > 0) Ok({ name: row.asset_name, url, size: row.size, sha256: sha }) else Err(NoAsset)
 	{ id: row.tag, published_at: row.published_at // 1000, asset }
 }
 
@@ -440,7 +440,7 @@ sort_key = |r| match Channel.parse_id(r.id) {
 
 compare_numbers : List(U64), List(U64) -> [Before, Same, After]
 compare_numbers = |a, b| match (a, b) {
-	([x, .. as xs], [y, .. as ys]) => if x < y Before else if x > y After else compare_numbers(xs, ys)
+	([x, .. as xs], [y, .. as ys]) => if (x < y) Before else if (x > y) After else compare_numbers(xs, ys)
 	_ => Same
 }
 
@@ -509,7 +509,7 @@ read_asset = |prefix, extension, doc| match doc {
 		name = text_field(pairs, "name")
 		if name.starts_with(prefix) and name.ends_with(extension) and Ident.safe_part(name) {
 			size = match field(pairs, "size") {
-				Ok(Num(n)) => if n >= 0 n.to_u64_wrap() else 0
+				Ok(Num(n)) => if (n >= 0) n.to_u64_wrap() else 0
 				_ => 0
 			}
 			Ok({ name, url: text_field(pairs, "browser_download_url"), size, sha256: sha256_of(text_field(pairs, "digest")) })
@@ -525,7 +525,7 @@ sha256_of : Str -> Try(Str, [None])
 sha256_of = |digest| {
 	hex = digest.drop_prefix("sha256:")
 	is_hex = |b| (b >= '0' and b <= '9') or (b >= 'a' and b <= 'f')
-	if digest.starts_with("sha256:") and hex.count_utf8_bytes() == 64 and hex.to_utf8().all(is_hex) Ok(hex) else Err(None)
+	if (digest.starts_with("sha256:") and hex.count_utf8_bytes() == 64 and hex.to_utf8().all(is_hex)) Ok(hex) else Err(None)
 }
 
 # R-SL7: the id `n` places from `base` in `auto`.

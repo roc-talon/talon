@@ -77,7 +77,7 @@ XProject :: [].{
 			(Bool.False, Bool.True) => "--allow-unchecked has"
 			(Bool.True, Bool.True) => "--roc and --allow-unchecked have"
 		}
-		plural = if roc and facts.unchecked "flags" else "flag"
+		plural = if (roc and facts.unchecked) "flags" else "flag"
 		Err(Fail.new(Usage, "${flags} no effect on the project tool ${facts.key}: its pin and its url are the lock. Remove the ${plural}."))
 	}
 

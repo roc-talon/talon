@@ -8,6 +8,7 @@
 #        SLOW=1                        also run the L3 cases with the tag slow (TW27; tests/run.sh reads it)
 #        JOBS=<n>                      L0 files, L1 targets and L2/L3 cases at the same time (default: the CPU count)
 #        L1_RUNS=<n>                   inputs for each roc-fuzz target (default: the line `# l1-runs: <n>` of the target file, else 20000: a fixed count, TW6). L1_SEED=<n>: the seed (default 1).
+#        L1_TIME=<s>                   the time limit of one roc-fuzz run (default 120, `--time`): a run that reaches it ends and passes, with fewer inputs than its count (roc-fuzz 0.7.0).
 #        L1_DIR=<dir>                  the dir of the targets (default tests/fuzz)
 #        L1_HOST=<system>-<arch>       the system for the l1 support check (default: uname -s and uname -m). roc-fuzz has a platform for Linux-x86_64 and Darwin-arm64 only: another system skips l1.
 #        ROC_WORKER=<path>             the compiler of the registry Worker (default: ROC_TAG_WORKER of scripts/env.sh, TW31). w0 and wbuild use it.
@@ -134,10 +135,11 @@ step_l0() {
 # L1 (TESTING.md 4): the roc-fuzz targets `tests/fuzz/*.roc`, one process for each target, at most JOBS at the same time. A target is built with `roc build --fuzz`, which needs LLVM
 # (`--opt=dev` gives an error), so the build is always `--opt=speed` and does not follow OPT. It runs the count of the target (l1_runs_of) with the seed L1_SEED (TW6: a fixed count, no `--time`), in its own dir
 # `$WORK/l1/<name>/` that is new for each run (the corpus `.roc-fuzz/` is made there, never in the repo, and a run never starts from an old corpus). A failure saves the input under
-# `$WORK/l1/<name>/art/`: the report names the file and the command that replays it. TW5: the minimized input becomes an `expect` of L0 before the fix.
+# `$WORK/l1/<name>/rep/failures/`: the report names the file and the command that replays it. TW5: the minimized input becomes an `expect` of L0 before the fix.
 # The run count of one target: L1_RUNS when it is set (the nightly run sets a long one for all targets), else the line `# l1-runs: <n>` of the target file, else 20000.
 # A target with a costly property keeps its own small count in the fast set (TESTING.md 1: the long runs are for the nightly run).
 L1_SEED=${L1_SEED:-1}
+L1_TIME=${L1_TIME:-120}
 L1_DIR=${L1_DIR:-tests/fuzz}
 l1_runs_of() {
     local n
@@ -170,7 +172,7 @@ l1_run() { # l1_run <target.roc> <dir>: wait for the build, run the target with 
     done
     [ "$(cat "$d/build.rc")" = 0 ] || return 0
     runs=$(l1_runs_of "$1")
-    ( cd "$d" && run_limited "$L1_LIMIT" ./target run --runs="$runs" --seed="$L1_SEED" --artifact-dir="$d/art" > "$d/run.log" 2>&1; echo $? > "$d/run.rc" )
+    ( cd "$d" && run_limited "$L1_LIMIT" ./target run --runs="$runs" --seed="$L1_SEED" --time="$L1_TIME" --report-dir="$d/rep" > "$d/run.log" 2>&1; echo $? > "$d/run.rc" )
 }
 step_l1() {
     local rc=0 f name d dir=$WORK/l1 targets
@@ -184,7 +186,7 @@ step_l1() {
     fi
     export -f l1_run l1_runs_of run_limited
     L1_LIMIT=$(limit_of l1)
-    export ROC L1_RUNS L1_SEED BUILD_PID L1_LIMIT
+    export ROC L1_RUNS L1_SEED L1_TIME BUILD_PID L1_LIMIT
     printf '%s\0' "${targets[@]}" | xargs -0 -P "${#targets[@]}" -I{} bash -c 'l1_run "$1" "$2"' _ {} "$dir"
     for f in "${targets[@]}"; do
         name=$(basename "$f" .roc)
@@ -196,11 +198,11 @@ step_l1() {
         elif [ "$(cat "$d/run.rc" 2> /dev/null)" = 124 ]; then
             echo "l1: $f: timed out after $L1_LIMIT s (seed $L1_SEED, $(l1_runs_of "$f") runs)"; tail -n 20 "$d/run.log"; rc=1
         elif [ "$(cat "$d/run.rc" 2> /dev/null)" = 0 ]; then
-            echo "$f: $(grep -h '^Done' "$d/run.log" | head -n 1)"
+            echo "$f: $(grep -h 'exploration' "$d/run.log" | head -n 1)"
         else
             echo "$f: FAILED (exit $(cat "$d/run.rc" 2> /dev/null), seed $L1_SEED, $(l1_runs_of "$f") runs)"
             grep -v -e '^INFO' -e '^#' -e '^"' -e '^######' "$d/run.log" | head -n 40
-            for a in "$d"/art/*; do
+            for a in "$d"/rep/failures/*; do
                 [ -f "$a" ] && echo "replay: $d/target replay $a"
             done
             rc=1

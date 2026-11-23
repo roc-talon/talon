@@ -137,7 +137,7 @@ release_list! = |fx, args, facts, asset| {
 # Steps 5 to 12, the prebuilt file. The temp file and the scratch dir are deleted after a success and after a failure (R-CC2).
 prebuilt! : Fx, Args, Ctx, TalonUpdate.Release => Try(ToolUpdate.Outcome, Fail)
 prebuilt! = |fx, args, ctx, release| {
-	if args.offline return Err(TalonUpdate.offline_failure(release.version))
+	if (args.offline) return Err(TalonUpdate.offline_failure(release.version))
 	sums_url = match release.sums {
 		Ok(url) => url
 		Err(NoSums) => return Err(TalonUpdate.missing({ tag: release.tag, name: ctx.asset }))
@@ -315,7 +315,7 @@ moved! = |fx, move| match fx.rename!(move) {
 # Does the bin dir entry `name` (`tln` or `roc`, with `.exe` on Windows) exist as a file?
 exists : States, Str -> Bool
 exists = |now, name| {
-	have = if name.starts_with("tln") now.tln_have else now.roc_have
+	have = if (name.starts_with("tln")) now.tln_have else now.roc_have
 	match have {
 		Absent => Bool.False
 		_ => Bool.True
@@ -341,7 +341,7 @@ states! = |fx, facts, known| {
 	roc_have = SetupIo.have_of!(fx, facts.bin, listed, roc)
 	# Slice 078b (R-ST11 (2), R-ST9): `tools.json` is read (once, for both entries) only when an entry is a file that is not Talon's by the data file.
 	first = { tln: ToolInstall.verdict({ old, have: tln_have }), roc: ToolInstall.verdict({ old, have: roc_have }) }
-	pairs = if foreign_file(first.tln, tln_have) or foreign_file(first.roc, roc_have) ToolBuild.bin_pairs!(fx, facts.roots, known)? else []
+	pairs = if (foreign_file(first.tln, tln_have) or foreign_file(first.roc, roc_have)) ToolBuild.bin_pairs!(fx, facts.roots, known)? else []
 	Ok({
 		tln: ToolBuild.verdict_in(pairs, { name: tln, old, have: tln_have }),
 		roc: ToolBuild.verdict_in(pairs, { name: roc, old, have: roc_have }),
@@ -367,7 +367,7 @@ record_roc! = |fx, facts, run| {
 		|| {
 			text = SetupIo.read_text!(fx, tools_file)?
 			after = BinRecord.set({ path: tools_file, text, key: "talon", bin: [(run.roc.drop_suffix(".exe"), run.sha)] })?
-			if text == Ok(after) or text == Err(NotFound) Ok({}) else SetupIo.write_file!(fx, tools_file, after)
+			if (text == Ok(after) or text == Err(NotFound)) Ok({}) else SetupIo.write_file!(fx, tools_file, after)
 		},
 	)
 }
@@ -397,7 +397,7 @@ downloader! = |fx, facts| {
 built_from_source! : Fx, Args, Ctx, TalonUpdate.Release => Try(ToolUpdate.Outcome, Fail)
 built_from_source! = |fx, args, ctx, release| {
 	plan = TalonUpdate.source_of(release)
-	if args.offline return Err(GitRef.offline_failure(plan.source))
+	if (args.offline) return Err(GitRef.offline_failure(plan.source))
 	facts = ctx.facts
 	shown = Common.shown_fx(fx, args)
 	sha = ToolGitFlow.head!(fx, facts.net, plan.source, facts.now)?
@@ -427,7 +427,7 @@ built_from_source! = |fx, args, ctx, release| {
 same_commit : Try(ToolsJson.Talon, [None]), Str -> Try(Str, [None])
 same_commit = |talon, sha| match talon {
 	Ok(found) => match found.source {
-		Git(git) => if git.commit == sha Ok(TalonUpdate.source_text(found.source)) else Err(None)
+		Git(git) => if (git.commit == sha) Ok(TalonUpdate.source_text(found.source)) else Err(None)
 		Prebuilt(_) => Err(None)
 	}
 	Err(None) => Err(None)

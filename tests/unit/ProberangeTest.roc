@@ -23,7 +23,7 @@ view = |round| match round {
 	Done(Range({ from, to })) => "done ${end_text(from)} .. ${end_text(to)}"
 }
 
-end_text = |end| "${end.id}${if end.real "" else "?"}"
+end_text = |end| "${end.id}${if (end.real) "" else "?"}"
 
 view_found = |result| match result {
 	NoPass => "no pass"
@@ -140,7 +140,7 @@ simulate = |world, facts, fuel| {
 				match bad {
 					Err(what) => Err(what)
 					Ok(_) => {
-						made = asked.map(|id| fact(id, if passes(world.truth, index_of(ids, id)) Pass else Fail))
+						made = asked.map(|id| fact(id, if (passes(world.truth, index_of(ids, id))) Pass else Fail))
 						match simulate(world, facts.concat(made), fuel - 1) {
 							Ok(done) => Ok({ ..done, rounds: done.rounds + 1 })
 							Err(what) => Err(what)
@@ -158,10 +158,14 @@ by_definition : List(Str), List(Db.Fact) -> Try({ from : ProbeRange.End, to : Pr
 by_definition = |ids, facts| {
 	releases = ids.map(|id| { id, published_at: 0, asset: Err(NoAsset) })
 	inferred = Epochs.epochs(releases, facts).inferred
+	cell : Str -> Str
 	cell = |id| match facts.find_first(|f| f.nightly == id) {
-		Ok(f) => if f.outcome == Pass "pass" else if f.outcome == Fail "fail" else "fault"
+		Ok(f) => if (f.outcome == Pass) "pass" else if (f.outcome == Fail) "fail" else "fault"
 		Err(_) => match inferred.find_first(|i| i.nightly == id) {
-			Ok(i) => if i.outcome == Pass "pass" else "ifail"
+			Ok(i) => match i.outcome {
+				Pass => "pass"
+				Fail => "ifail"
+			}
 			Err(_) => "unknown"
 		}
 	}
@@ -175,8 +179,8 @@ by_definition = |ids, facts| {
 		Ok((_, p)) => {
 			places : List(U64)
 			places = ids.map_with_index(|_, i| i)
-			low = places.keep_if(|i| i <= p).rev().fold_until(p, |at, i| if is_pass(i) Continue(i) else Break(at))
-			high = places.keep_if(|i| i >= p).fold_until(p, |at, i| if is_pass(i) Continue(i) else Break(at))
+			low = places.keep_if(|i| i <= p).rev().fold_until(p, |at, i| if (is_pass(i)) Continue(i) else Break(at))
+			high = places.keep_if(|i| i >= p).fold_until(p, |at, i| if (is_pass(i)) Continue(i) else Break(at))
 			real_end = |next| match ids.get(next) {
 				Ok(id) => cell(id) == "fail"
 				Err(_) => Bool.True

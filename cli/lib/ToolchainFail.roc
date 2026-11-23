@@ -20,7 +20,7 @@ ToolchainFail :: [].{
 			(Http(Err(Unknown)), _) => Fail.new(Network, "download of ${facts.id} failed: HTTP error (${facts.url})")
 			(Failed, NotStarted(text)) => Fail.new(Environment, "cannot run ${name}: ${text}")
 			(Failed, ended) => {
-				why = if facts.last_line.is_empty() ended_text(name, ended) else facts.last_line
+				why = if (facts.last_line.is_empty()) ended_text(name, ended) else facts.last_line
 				Fail.new(Network, "download of ${facts.id} failed: ${why} (${facts.url})")
 			}
 		}
@@ -32,7 +32,7 @@ ToolchainFail :: [].{
 	tar_failed = |facts| match facts.ended {
 		NotStarted(text) => Fail.new(Environment, "cannot run tar: ${text}")
 		ended => {
-			why = if facts.last_line.is_empty() ended_text("tar", ended) else facts.last_line
+			why = if (facts.last_line.is_empty()) ended_text("tar", ended) else facts.last_line
 			Fail.new(Integrity, "tar rejected ${facts.id} (${facts.url}): ${why}")
 		}
 	}

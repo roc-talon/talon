@@ -35,30 +35,30 @@ ProbeSmoke :: [].{
 		opts = Opts.read(args)?
 		given = |name| args.options.any(|(n, _)| n == name)
 		wanted = args.options.keep_oks(
-			|(n, v)| if n == "--target" v.map_err(|_| NoValue) else Err(NoValue),
+			|(n, v)| if (n == "--target") v.map_err(|_| NoValue) else Err(NoValue),
 		)
-		if !given("--smoke") return Err(Fail.new(Usage, "flag '--target' works only with --smoke"))
-		if given("--range") return Err(Fail.new(Usage, "tln probe --smoke cannot run with --range"))
-		if given("--share") return Err(Fail.new(Usage, "tln probe --smoke cannot run with --share"))
-		text = match args.operands {
+		if (!given("--smoke")) return Err(Fail.new(Usage, "flag '--target' works only with --smoke"))
+		if (given("--range")) return Err(Fail.new(Usage, "tln probe --smoke cannot run with --range"))
+		if (given("--share")) return Err(Fail.new(Usage, "tln probe --smoke cannot run with --share"))
+		operand = match args.operands {
 			[one] => one
 			[] => return Err(Fail.new(Usage, "tln probe --smoke needs a header alias or a release URL"))
 			_ => return Err(Fail.new(Usage, "tln probe --smoke takes one platform: a header alias or a release URL"))
 		}
-		is_url = text.starts_with("https://") or text.starts_with("http://")
-		if !is_url and text.ends_with(".tar.zst") {
+		is_url = operand.starts_with("https://") or operand.starts_with("http://")
+		if !is_url and operand.ends_with(".tar.zst") {
 			return Err(Fail.new(Usage, "tln probe --smoke needs a header alias or a release URL, not a bundle file: the smoke app names the URL of the platform"))
 		}
 		if is_url {
-			if Ident.of_url(text).is_err() {
-				return Err(Fail.new(Usage, "'${text}' is not a release URL: it needs one version X.Y.Z (R-DI5)"))
+			if Ident.of_url(operand).is_err() {
+				return Err(Fail.new(Usage, "'${operand}' is not a release URL: it needs one version X.Y.Z (R-DI5)"))
 			}
 			if args.file.is_ok() {
 				return Err(Fail.new(Usage, "flag '--file' does not work with a release URL: it uses no project"))
 			}
-			Ok({ operand: Url(text), wanted, opts })
+			Ok({ operand: Url(operand), wanted, opts })
 		} else {
-			Ok({ operand: Alias(text), wanted, opts })
+			Ok({ operand: Alias(operand), wanted, opts })
 		}
 	}
 
@@ -82,7 +82,7 @@ ProbeSmoke :: [].{
 			}
 			Err(_) => Bool.False
 		}
-		if !is_platform return Err(not_platform)
+		if (!is_platform) return Err(not_platform)
 		names = match BuildTarget.targets_of(x.text) {
 			Ok(found) => found
 			Err(NoSection) => []
@@ -95,7 +95,7 @@ ProbeSmoke :: [].{
 			Err(_) => if x.given.is_empty() {
 				Ok(names)
 			} else {
-				Ok(x.given.fold([], |found, name| if found.contains(name) found else found.append(name)))
+				Ok(x.given.fold([], |found, name| if (found.contains(name)) found else found.append(name)))
 			}
 		}
 	}

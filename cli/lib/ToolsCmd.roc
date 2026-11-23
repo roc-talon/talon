@@ -60,7 +60,7 @@ ToolsCmd :: [].{
 			as_key: value_of(args, "--as"),
 			snapshot: value_of(args, "--snapshot"),
 			dry_run: given("--dry-run"),
-			allow_downloads: if given("--allow-downloads") Ok(Yes) else Err(NoFlag),
+			allow_downloads: if (given("--allow-downloads")) Ok(Yes) else Err(NoFlag),
 		}
 		match op {
 			Add => {
@@ -107,7 +107,7 @@ ToolsCmd :: [].{
 	## R-PT3, R-PT5: the failure for a key that `[tools]` of `path` does not have (`remove`, `update --tool`, `upgrade --tool`): kind `Usage`, `no key '<key>' in [tools] of <path>. Keys: <key>, <key>.` (`none` for no key).
 	no_key : { path : Str, key : Str, keys : List(Str) } -> Fail
 	no_key = |facts| {
-		shown = if facts.keys.is_empty() "none" else Str.join_with(facts.keys, ", ")
+		shown = if (facts.keys.is_empty()) "none" else Str.join_with(facts.keys, ", ")
 		Fail.new(Usage, "no key '${facts.key}' in [tools] of ${facts.path}. Keys: ${shown}.")
 	}
 }
@@ -122,11 +122,11 @@ value_of = |args, flag| match args.options.find_first(|(name, _)| name == flag) 
 # Check 1: a flag that `--tool` does not take. `Args.parse` has put the global flags apart, so each name in `options` is a flag of the command.
 check_flags : Args, ToolsCmd.Op -> Try({}, Fail)
 check_flags = |args, op| {
-	allowed = if op == Add ["--tool", "--as", "--snapshot", "--dry-run", "--allow-downloads"] else ["--tool", "--snapshot", "--dry-run", "--allow-downloads"]
+	allowed = if (op == Add) ["--tool", "--as", "--snapshot", "--dry-run", "--allow-downloads"] else ["--tool", "--snapshot", "--dry-run", "--allow-downloads"]
 	match args.options.find_first(|(name, _)| !allowed.contains(name)) {
 		Err(_) => Ok({})
 		Ok((flag, _)) => {
-			takes = if op == Add "--as, --snapshot, --dry-run and --allow-downloads" else "--snapshot, --dry-run and --allow-downloads"
+			takes = if (op == Add) "--as, --snapshot, --dry-run and --allow-downloads" else "--snapshot, --dry-run and --allow-downloads"
 			Err(Fail.new(Usage, "flag '${flag}' is not for tln ${args.typed} --tool. It takes only ${takes}"))
 		}
 	}

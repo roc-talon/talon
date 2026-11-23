@@ -65,7 +65,7 @@ SolverBase :: [].{
 
 	## The texts of the list, without a repeat, in the order of the first one.
 	dedupe : List(Str) -> List(Str)
-	dedupe = |list| list.fold([], |acc, x| if acc.contains(x) acc else acc.append(x))
+	dedupe = |list| list.fold([], |acc, x| if (acc.contains(x)) acc else acc.append(x))
 
 	## Joins the lits of one variable, leaves out the lits with all places, sorts by variable. `Never`: a lit has no place, so the incompatibility never holds.
 	norm : List(U64), List(Search.Lit) -> Try(List(Search.Lit), [Never])
@@ -91,7 +91,7 @@ join_lits : List(Search.Lit) -> List(Search.Lit)
 join_lits = |lits| lits.fold(
 	[],
 	|acc, l| match acc.find_first_index(|a| a.v == l.v) {
-		Ok(j) => acc.map_with_index(|a, k| if k == j { v: a.v, set: a.set.keep_if(|x| l.set.contains(x)) } else a)
+		Ok(j) => acc.map_with_index(|a, k| if (k == j) { v: a.v, set: a.set.keep_if(|x| l.set.contains(x)) } else a)
 		Err(_) => acc.append(l)
 	},
 )

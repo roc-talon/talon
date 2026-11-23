@@ -242,7 +242,7 @@ signer_of = |item| match item {
 }
 
 with_line : Str -> Str
-with_line = |line| if line.is_empty() "" else ": ${line}"
+with_line = |line| if (line.is_empty()) "" else ": ${line}"
 
 # The first 8 characters of a commit.
 short : Str -> Str

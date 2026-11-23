@@ -29,8 +29,8 @@ too_short = "9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8Q"
 release : { repo : Str, tag : Str, draft : Bool, pre : Bool, published : Str, assets : List((Str, U64)) } -> Str
 release = |r| {
 	asset = |(name, size)| "{\"id\":7,\"name\":\"${name}\",\"size\":${size.to_str()},\"download_count\":3,\"browser_download_url\":\"https://github.com/acme/${r.repo}/releases/download/${r.tag}/${name}\"}"
-	published = if r.published == "null" "null" else "\"${r.published}\""
-	"{\"id\":1,\"tag_name\":\"${r.tag}\",\"name\":\"x\",\"draft\":${if r.draft "true" else "false"},\"prerelease\":${if r.pre "true" else "false"},\"published_at\":${published},\"body\":\"notes with \\\"quotes\\\"\",\"author\":{\"login\":\"a\",\"id\":2},\"assets\":[${Str.join_with(r.assets.map(asset), ",")}]}"
+	published = if (r.published == "null") "null" else "\"${r.published}\""
+	"{\"id\":1,\"tag_name\":\"${r.tag}\",\"name\":\"x\",\"draft\":${if (r.draft) "true" else "false"},\"prerelease\":${if (r.pre) "true" else "false"},\"published_at\":${published},\"body\":\"notes with \\\"quotes\\\"\",\"author\":{\"login\":\"a\",\"id\":2},\"assets\":[${Str.join_with(r.assets.map(asset), ",")}]}"
 }
 
 page : List(Str) -> Str

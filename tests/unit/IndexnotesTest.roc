@@ -74,7 +74,7 @@ expect {
 	dbg (timed, never, fresh)
 	timed == Ok("{\"kind\":\"index-stale\",\"name\":\"someone/roc-json\",\"checked_at\":1799740700000,\"text\":\"index: someone/roc-json checked 3d ago\"}")
 		and never == Ok("{\"kind\":\"index-stale\",\"name\":\"someone/roc-json\",\"checked_at\":null,\"text\":\"index: someone/roc-json not checked since its first ingest\"}")
-			and fresh == Err(Fresh)
+		and fresh == Err(Fresh)
 }
 
 # R-AP30: `json_notes` are the `json_note` of the same items, in the same order, so the text of each equals the line of `notes`.

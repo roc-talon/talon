@@ -86,8 +86,8 @@ L2Prompt :: [].{
 		prompt : Prompt
 		prompt = {
 			id,
-			kind: if kind_text == "consent" Consent else if kind_text.starts_with("required:") Required(kind_text.drop_prefix("required:").split_on(",")) else Default,
-			shape: if field("shape").starts_with("options:") Options(U64.from_str(field("shape").drop_prefix("options:")) ?? 1) else YesNo,
+			kind: if (kind_text == "consent") Consent else if (kind_text.starts_with("required:")) Required(kind_text.drop_prefix("required:").split_on(",")) else Default,
+			shape: if (field("shape").starts_with("options:")) Options(U64.from_str(field("shape").drop_prefix("options:")) ?? 1) else YesNo,
 			default: parse_answer(field("default")),
 			question: field("question").replace_each("_", " "),
 			subject: field("subject").replace_each("_", " "),

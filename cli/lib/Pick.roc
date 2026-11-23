@@ -140,7 +140,7 @@ Pick :: [].{
 			known: Dict.from_list(facts.facts.map(|f| (f.url, f.release))),
 			single_platform: facts.slots.keep_if(|slot| slot.is_platform).len() == 1,
 			nodes: facts.facts.map(|f| Pick.node_of(f)).concat(facts.paths),
-			members: if facts.unmanaged.is_empty() [{ file: "", entries: [] }] else facts.unmanaged,
+			members: if (facts.unmanaged.is_empty()) [{ file: "", entries: [] }] else facts.unmanaged,
 		}
 		domains = facts.slots.map(|slot| domain_of(slot, facts, ctx.known))
 		match first_failure(facts.slots, domains) {
@@ -210,7 +210,7 @@ Pick :: [].{
 					_ => []
 				},
 			)
-			Fine(ids.fold([], |found, id| if found.contains(id) found else found.append(id)))
+			Fine(ids.fold([], |found, id| if (found.contains(id)) found else found.append(id)))
 		}
 	}
 
@@ -223,11 +223,11 @@ Pick :: [].{
 			Err(None) => ""
 		}
 		days = |seconds| (seconds // 86400).to_str()
-		change = if input.slot.current == Ok(input.url) Keep else Move(old)
+		change = if (input.slot.current == Ok(input.url)) Keep else Move(old)
 		named = input.slot.named == Ok(input.version) and change != Keep
 		note =
 			if named {
-				if too_young(input.now, input.min_age, input.published_at) Ok("${input.slot.id} ${input.version} is ${days(input.now.minus_saturated(input.published_at))}d old (min-release-age ${days(input.min_age)}d)") else Err(None)
+				if (too_young(input.now, input.min_age, input.published_at)) Ok("${input.slot.id} ${input.version} is ${days(input.now.minus_saturated(input.published_at))}d old (min-release-age ${days(input.min_age)}d)") else Err(None)
 			} else if change == Keep {
 				Err(None)
 			} else {
@@ -304,14 +304,14 @@ domain_of = |slot, facts, known| {
 			Err(None) => []
 		}
 	}
-	in_range = if open all.keep_if(|c| Ranges.admits({ ranges: slot.ranges, version: c.ident.version })) else all
-	visible = if open in_range.keep_if(|c| !is_hidden(slot, facts, c)) else in_range
+	in_range = if (open) all.keep_if(|c| Ranges.admits({ ranges: slot.ranges, version: c.ident.version })) else all
+	visible = if (open) in_range.keep_if(|c| !is_hidden(slot, facts, c)) else in_range
 	right_kind = |c| match known.get(c.url) {
-		Ok(release) => if slot.is_platform release.kind == Platform else release.kind == Package
+		Ok(release) => if (slot.is_platform) release.kind == Platform else release.kind == Package
 		Err(_) => Bool.True
 	}
 	fits = visible.keep_if(right_kind)
-	ordered = if slot.hold == Movable and facts.second nearest(fits, slot, facts.strategy) else Index.order(fits, facts.strategy)
+	ordered = if (slot.hold == Movable and facts.second) nearest(fits, slot, facts.strategy) else Index.order(fits, facts.strategy)
 	{ is_platform: slot.is_platform, all, in_range, visible, ordered }
 }
 
@@ -337,8 +337,8 @@ SearchRow : { slot : U64, files : List(Str), is_platform : Bool, cands : List(Ca
 search_order : Step, List(Domain) -> List(SearchRow)
 search_order = |facts, domains| {
 	rows = facts.slots.map2(domains, |slot, d| (slot, d)).map_with_index(|(slot, d), i| { slot: i, files: slot.files, is_platform: d.is_platform, cands: d.ordered, first: slot.hold == Movable })
-	front = if facts.second rows.keep_if(|r| r.first) else []
-	back = if facts.second rows.keep_if(|r| !r.first) else rows
+	front = if (facts.second) rows.keep_if(|r| r.first) else []
+	back = if (facts.second) rows.keep_if(|r| !r.first) else rows
 	front.concat(back).map(|r| { slot: r.slot, files: r.files, is_platform: r.is_platform, cands: r.cands })
 }
 
@@ -362,7 +362,7 @@ after_snapshot = |facts, c| match facts.snapshot {
 first_failure : List(Pick.Slot), List(Domain) -> Try(Fail, [NoFailure])
 first_failure = |slots, domains| {
 	rows = slots.map2(domains, |slot, d| (slot, d))
-	ranges_text = |slot| if slot.ranges.is_empty() "any range" else Str.join_with(slot.ranges, " and ")
+	ranges_text = |slot| if (slot.ranges.is_empty()) "any range" else Str.join_with(slot.ranges, " and ")
 	match rows.find_first(|(_, d)| d.visible.is_empty()) {
 		Ok((slot, d)) => {
 			total = d.all.len()
@@ -371,7 +371,7 @@ first_failure = |slots, domains| {
 			Ok(Fail.new(NoTuple, "no tuple works: ${slot.id} has no release that satisfies ${ranges_text(slot)} (${total.to_str()} releases, ${outside.to_str()} outside the ranges, ${young.to_str()} too new)"))
 		}
 		Err(_) => match rows.find_first(|(_, d)| d.ordered.is_empty()) {
-			Ok((slot, _)) => Ok(Fail.new(NoTuple, "no tuple works: ${slot.id} has no release of the kind ${if slot.is_platform "platform" else "package"} in ${Str.join_with(slot.ranges, " and ")} (R-C4)"))
+			Ok((slot, _)) => Ok(Fail.new(NoTuple, "no tuple works: ${slot.id} has no release of the kind ${if (slot.is_platform) "platform" else "package"} in ${Str.join_with(slot.ranges, " and ")} (R-C4)"))
 			Err(_) => Err(NoFailure)
 		}
 	}
@@ -388,7 +388,7 @@ Found : { picked : List(Choice), need : List(Str) }
 search : List(SearchRow), List(Choice), Ctx -> Try(Found, [NoFit])
 search = |domains, picked, ctx| match domains {
 	[] => {
-		in_order = picked.sort_with(|a, b| if a.slot < b.slot Before else if a.slot > b.slot After else Same)
+		in_order = picked.sort_with(|a, b| if (a.slot < b.slot) Before else if (a.slot > b.slot) After else Same)
 		match closure_of(ctx, in_order) {
 			Problem => Err(NoFit)
 			Fine(need) => Ok({ picked: in_order, need })

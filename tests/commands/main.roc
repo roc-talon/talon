@@ -1,7 +1,7 @@
 app [main!] {
 	bot: "../../bot/lib/main.roc",
 	lib: "../../cli/lib/main.roc",
-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
+	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
 }
 
 import pf.Path
@@ -96,7 +96,7 @@ project_entry! = |fx, w| {
 			},
 		)
 		value = |name| given.find_first(|(k, _)| k == name).map_ok(|(_, v)| v)
-		under = |rel| if rel == "." root else "${root}/${rel}"
+		under = |rel| if (rel == ".") root else "${root}/${rel}"
 		start = under(value("start") ?? ".")
 		home = match value("home") {
 			Ok(rel) => under(rel)
@@ -253,7 +253,7 @@ fetch_entry! = |fx, w| {
 		match on_path {
 			Ok(word) => {
 				file = word.drop_prefix("path:")
-				_ = Path.write_utf8!(Path.utf8("${w}/fx/path-roc"), if file == "none" "" else "exe /fake/bin/tln 5000 1700000000\nfile ${file} 1000 1700000000\n")
+				_ = Path.write_utf8!(Path.utf8("${w}/fx/path-roc"), if (file == "none") "" else "exe /fake/bin/tln 5000 1700000000\nfile ${file} 1000 1700000000\n")
 			}
 			Err(_) => {}
 		}
@@ -265,7 +265,7 @@ fetch_entry! = |fx, w| {
 		# Slice 072b (R-SO14): `none:stop`, `none:outside` (no word is this) and `none:project:<hash>,<hash>` are the `none` of `Choose`. The consent facts come from the words `yes`, `allow-downloads`, `offline` and from `env` (`TALON_AUTO_INSTALL`, the mode).
 		downloads = {
 			auto: Consent.auto_install(env),
-			allow: if given.contains("allow-downloads") Ok(Yes) else Err(NoFlag),
+			allow: if (given.contains("allow-downloads")) Ok(Yes) else Err(NoFlag),
 			yes: given.contains("yes"),
 			mode: Mode.from_env({ env: Dict.from_list(env), json: Bool.False }),
 			quiet: Bool.False,
@@ -313,8 +313,8 @@ commands_entry! = |fx, w| {
 		cwd = (all.find_first(|word| word.starts_with("cwd:")) ?? "cwd:").drop_prefix("cwd:")
 		_ = Path.write_utf8!(Path.utf8("${w}/fx/cwd"), cwd)
 		proxy = rest.first() == Ok("@roc")
-		_ = Path.write_utf8!(Path.utf8("${w}/fx/args"), Str.join_with(if proxy rest.drop_first(1) else rest, "\n"))
-		_ = Path.write_utf8!(Path.utf8("${w}/fx/program"), if proxy "roc" else "tln")
+		_ = Path.write_utf8!(Path.utf8("${w}/fx/args"), Str.join_with(if (proxy) rest.drop_first(1) else rest, "\n"))
+		_ = Path.write_utf8!(Path.utf8("${w}/fx/program"), if (proxy) "roc" else "tln")
 		names = extra.map(|pair| pair.split_on("=").first() ?? "")
 		kept = base_env.split_on("\n").keep_if(|row| !row.is_empty() and !names.contains(row.split_on("=").first() ?? ""))
 		_ = Path.write_utf8!(Path.utf8("${w}/fx/env"), Str.join_with(kept.concat(extra), "\n"))

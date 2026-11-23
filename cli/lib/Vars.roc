@@ -163,7 +163,7 @@ uses_of = |members| members.join_map(
 # R-VA6: the groups in the order of the first use, the packages first, then the platforms.
 ordered_groups : List(Use) -> List({ form : Str, series : Str })
 ordered_groups = |uses| {
-	firsts = uses.fold([], |found, u| if found.any(|f| f.group == u.group) found else found.append(u))
+	firsts = uses.fold([], |found, u| if (found.any(|f| f.group == u.group)) found else found.append(u))
 	firsts.keep_if(|u| !u.is_platform).concat(firsts.keep_if(|u| u.is_platform)).map(|u| u.group)
 }
 
@@ -185,7 +185,7 @@ variable_of = |members, uses, group| {
 }
 
 add_range : List({ range : Str, from : Str }), { range : Str, from : Str } -> List({ range : Str, from : Str })
-add_range = |found, r| if found.any(|f| f.range == r.range) found else found.append(r)
+add_range = |found, r| if (found.any(|f| f.range == r.range)) found else found.append(r)
 
 # R-PA4, R-PA12: a release entry (not the platform) whose alias is a key of the `[patch]` table of the `talon.toml` of its member.
 is_patched : List(Vars.Member), Use -> Bool
@@ -232,7 +232,7 @@ with_priority = |vars, priority| match priority {
 # R-I5, R-I8: the keys of each `talon.toml` that no member under it has as an alias. R-WS6 is `Vars.check_keys`.
 wants_of : List(Vars.Member) -> List(Vars.Want)
 wants_of = |members| {
-	paths = members.keep_oks(|m| m.toml.map_ok(|t| t.path)).fold([], |found, path| if found.contains(path) found else found.append(path))
+	paths = members.keep_oks(|m| m.toml.map_ok(|t| t.path)).fold([], |found, path| if (found.contains(path)) found else found.append(path))
 	paths.join_map(|path| wants_in(members, path))
 }
 
@@ -258,7 +258,7 @@ wants_in = |members, path| {
 want_of : [Dependencies, Overrides], Intent.Dep, Str, List(Str), List(Locked.Row) -> Vars.Want
 want_of = |table, d, path, files, rows| {
 	name = match d.name {
-		Ok(n) => if n.contains("/") Ok(n) else Err(Short(n))
+		Ok(n) => if (n.contains("/")) Ok(n) else Err(Short(n))
 		Err(None) => Err(Short(d.key))
 	}
 	stale = match name {
@@ -312,16 +312,16 @@ scoped_one = |run, selector, variable| {
 		}
 		Upgrade => {
 			anchor = variable.patched or variable.ranges.any(|r| r.range.starts_with("="))
-			free = indexed and (if all !anchor else is_named)
+			free = indexed and (if (all) !anchor else is_named)
 			movable = movable_of(variable, free)
 			held_anchor = all and anchor and indexed
 			first_alias = variable.uses.first().map_ok(|u| u.alias) ?? ""
-			note = if held_anchor and !variable.patched and (run.overridden or outside_range(variable)) fixed_note else if held_anchor Ok(if variable.patched "${first_alias}: patched, held" else held_line(first_alias, variable)) else if all or is_named fixed_note else Err(None)
-			{ variable: if free or movable { ..variable, ranges: [] } else variable, free, movable, any_series: free, note }
+			note = if (held_anchor and !variable.patched and (run.overridden or outside_range(variable))) fixed_note else if (held_anchor) Ok(if (variable.patched) "${first_alias}: patched, held" else held_line(first_alias, variable)) else if (all or is_named) fixed_note else Err(None)
+			{ variable: if (free or movable) { ..variable, ranges: [] } else variable, free, movable, any_series: free, note }
 		}
 		NightlyOnly => {
 			movable = movable_of(variable, Bool.False)
-			{ variable: if movable { ..variable, ranges: [] } else variable, free: Bool.False, movable, any_series: Bool.False, note: Err(None) }
+			{ variable: if (movable) { ..variable, ranges: [] } else variable, free: Bool.False, movable, any_series: Bool.False, note: Err(None) }
 		}
 		Update => {
 			free = indexed and (is_named or (all and !variable.patched))
@@ -329,7 +329,7 @@ scoped_one = |run, selector, variable| {
 			# Slice 262b (Q262-3, Q262-4): the held line of an anchor that holds the entry at its header value, named or not, with no selector.
 			held_pin = (all or is_named) and indexed and !variable.patched and selector.is_err() and variable.ranges.any(|r| r.range.starts_with("=")) and !run.overridden and !outside_range(variable)
 			first_alias = variable.uses.first().map_ok(|u| u.alias) ?? ""
-			note = if held_patch Ok("${first_alias}: patched, held") else if held_pin Ok(held_line(first_alias, variable)) else if all or is_named fixed_note else Err(None)
+			note = if (held_patch) Ok("${first_alias}: patched, held") else if (held_pin) Ok(held_line(first_alias, variable)) else if (all or is_named) fixed_note else Err(None)
 			match selector {
 				Ok((_, range)) if free => { variable: { ..variable, ranges: [{ range, from: "selector" }] }, free, movable: Bool.False, any_series: Bool.True, note }
 				_ => { variable, free, movable: movable_of(variable, free), any_series: Bool.False, note }

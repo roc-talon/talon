@@ -42,7 +42,7 @@ RealDb :: [].{
 						Ok(db) => match start!(db, open) {
 							Err(err) => Err(err)
 							Ok(version) => {
-								made = if version == 0 create!(db, open) else Ok({})
+								made = if (version == 0) create!(db, open) else Ok({})
 								match made {
 									Err(err) => Err(err)
 									Ok(_) => insert!(db, write)
@@ -164,7 +164,7 @@ start! = |db, open| match db.query_one!(sql("PRAGMA user_version", []), Decoder.
 read_rows! : Sqlite.Db, Db.Open, Db.Query => Try(Db.Answer, Db.Err)
 read_rows! = |db, open, query| match start!(db, open) {
 	Err(err) => Err(err)
-	Ok(version) => if version == 0 Ok(empty_answer(query)) else select!(db, query)
+	Ok(version) => if (version == 0) Ok(empty_answer(query)) else select!(db, query)
 }
 
 # R-TF2: the columns are named, never `SELECT *`.

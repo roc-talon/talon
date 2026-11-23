@@ -36,7 +36,7 @@ SuccessorFlow :: [].{
 			Update | Upgrade => Bool.True
 			Install => Bool.False
 		}
-		if !when or facts.asked.names.is_empty() return Ok(unchanged)
+		if (!when or facts.asked.names.is_empty()) return Ok(unchanged)
 		source = match (request.registry, request.index) {
 			(Read(query), Answer(a)) => Ok({ origin: query.origin, source: query.source, snapshot: snapshot_of(query.snapshot), online: Ok({ query, answer: a.answer }) })
 			(_, Offline(origin)) => Ok({ origin, source: "", snapshot: Err(None), online: Err(None) })
@@ -98,7 +98,7 @@ SuccessorFlow :: [].{
 						$rows = $rows.concat(got.releases)
 						$read = $read.append(end)
 					}
-					end_rows = if in_answer.is_empty() rows_of($rows, end) else in_answer
+					end_rows = if (in_answer.is_empty()) rows_of($rows, end) else in_answer
 					# Step 3: the URL form of the end.
 					selector = facts.asked.picks.find_first(|p| s.variable.uses.any(|u| u.alias == p.alias)).map_ok(|p| p.selector).map_err(|_| None)
 					form = match FullName.closure_item({ releases: { releases: end_rows, checked: Err(None), repos: [] }, selector, text: "", range: "" }) {
@@ -184,7 +184,7 @@ item_of = |repos, name| repos.find_first(|p| p.name.with_ascii_lowercased() == n
 
 # Q252-4, B7: the first link is taken whatever the state of the start (a `missing` item with a successor follows too), so the walk sees the start as `moved`. The other names keep their state (R-SN8).
 as_moved : List(Wire.Repo), Str -> List(Wire.Repo)
-as_moved = |repos, start| repos.map(|p| if p.name.with_ascii_lowercased() == start.with_ascii_lowercased() { ..p, state: Moved } else p)
+as_moved = |repos, start| repos.map(|p| if (p.name.with_ascii_lowercased() == start.with_ascii_lowercased()) { ..p, state: Moved } else p)
 
 # The release rows of a repository (any case).
 rows_of : List(WireRelease.Row), Str -> List(WireRelease.Row)
@@ -197,7 +197,7 @@ rows_of = |rows, name| rows.keep_if(
 
 # The `repos` items of both lists, each name once (the first list wins).
 with_repos : List(Wire.Repo), List(Wire.Repo) -> List(Wire.Repo)
-with_repos = |first, more| more.fold(first, |list, p| if list.any(|q| q.name.with_ascii_lowercased() == p.name.with_ascii_lowercased()) list else list.append(p))
+with_repos = |first, more| more.fold(first, |list, p| if (list.any(|q| q.name.with_ascii_lowercased() == p.name.with_ascii_lowercased())) list else list.append(p))
 
 no_rows : List(WireRelease.Row)
 no_rows = []

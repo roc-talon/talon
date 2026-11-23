@@ -115,7 +115,7 @@ work! = |fx, roots, clocks, plan, registry| {
 	projects = known.live.map(|project| project.path)
 	pinned = toml_pins!(fx, registry.home, known.live)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
-	reads = if ids.is_empty() [] else fx.read_files!(paths)
+	reads = if (ids.is_empty()) [] else fx.read_files!(paths)
 	found = Manage.found_of(ids, reads)
 	rows = Manage.rows({ found, default: config.default_roc })
 	choices = Gc.toolchains({ rows, projects: known.live, now: clocks.now, age, pinned })
@@ -123,7 +123,7 @@ work! = |fx, roots, clocks, plan, registry| {
 		[Ok(found_dirs), ..] => Gc.zig_dirs(found_dirs)
 		_ => []
 	}
-	zig_reads = if zig_ids.is_empty() [] else fx.read_files!(zig_ids.map(|id| Roots.item(roots, ToolchainLastUse(id))))
+	zig_reads = if (zig_ids.is_empty()) [] else fx.read_files!(zig_ids.map(|id| Roots.item(roots, ToolchainLastUse(id))))
 	zigs = Gc.zigs({ ids: zig_ids, reads: zig_reads, now: clocks.now })
 	going = choices.keep_if(|choice| choice.verdict == Remove).map(|choice| choice.id).concat(zigs)
 	compat_of = |id| match found.find_first(|each| each.id == id) {
@@ -149,7 +149,7 @@ work! = |fx, roots, clocks, plan, registry| {
 protect! : Fx, Roots, { live : List(Gc.Project), entries : List({ path : Str, is_dir : Bool, mtime : U64 }) } => List(Str)
 protect! = |fx, roots, facts| {
 	open = Gc.candidates({ roots, entries: facts.entries, builds: [], protected: [], owned: [] })
-	if open.pkgs.is_empty() [] else walk!(fx, roots, facts.live, [])
+	if (open.pkgs.is_empty()) [] else walk!(fx, roots, facts.live, [])
 }
 
 walk! : Fx, Roots, List(Gc.Project), List(Gc.Node) => List(Str)
@@ -168,12 +168,12 @@ aged! = |fx, roots, facts| {
 	open = Gc.candidates({ roots, entries: facts.entries, builds: [], protected: facts.protected, owned: [] })
 	expired = |kept| XCache.expired({ dirs: x_reads.dirs, reads: x_reads.reads, now: facts.clocks.now, age: facts.age, kept })
 	# Slice 056 (R-PT14, R-GC4, R-GC7): the `[tools]` of the live projects keep an `x` entry and a package dir. They are read when something would go without them.
-	held = if !facts.projects.is_empty() and (!expired([]).is_empty() or !open.pkgs.is_empty()) ToolsHeld.of!(fx, facts.projects) else []
+	held = if (!facts.projects.is_empty() and (!expired([]).is_empty() or !open.pkgs.is_empty())) ToolsHeld.of!(fx, facts.projects) else []
 	candidates = Gc.candidates({ roots, entries: facts.entries, builds: facts.builds, protected: facts.protected.concat(held), owned: facts.compat })
 	x_dirs = expired(held)
 	pages = Gc.index_pages({ dir: facts.index.dir, entries: facts.index.pages, now: facts.clocks.real, age: facts.age })
 	asks = Gc.asks({ roots, toolchains: facts.going, compat: facts.compat, stale: facts.stale, builds: candidates.builds.concat(x_dirs).concat(facts.index.dirs).concat(pages), pkgs: candidates.pkgs })
-	infos = if asks.is_empty() [] else fx.tree_info!(asks.map(|ask| ask.path))
+	infos = if (asks.is_empty()) [] else fx.tree_info!(asks.map(|ask| ask.path))
 	measured = asks.map2(infos, |ask, info| { item: ask.item, path: ask.path, info })
 	{
 		builds: Gc.expired({ dirs: candidates.builds.concat(facts.index.dirs), measured, now: facts.clocks.real, span: facts.age }).concat(x_dirs).concat(pages),
@@ -212,14 +212,14 @@ index_listings! = |fx, roots, facts| {
 x_reads! : Fx, Roots, List({ path : Str, is_dir : Bool, mtime : U64 }) => { dirs : List(Str), reads : List(Try(Str, [NotFound, Denied, Other(Str)])) }
 x_reads! = |fx, roots, entries| {
 	dirs = XCache.dirs_of({ roots, entries })
-	{ dirs, reads: if dirs.is_empty() [] else fx.read_files!(dirs.map(XCache.manifest_of)) }
+	{ dirs, reads: if (dirs.is_empty()) [] else fx.read_files!(dirs.map(XCache.manifest_of)) }
 }
 
 # Step 6, R-PD12: the entries of `projects.json` and the project files. A text that does not parse ends the run (exit 19, R-TF6).
 known_projects! : Fx, Roots, { now : U64, age : U64 } => Try({ live : List(Gc.Project), gone : List(Str) }, Fail)
 known_projects! = |fx, roots, facts| {
 	entries = Known.entries!(fx, roots)?
-	reads = if entries.is_empty() [] else fx.read_files!(entries.map(|entry| entry.path))
+	reads = if (entries.is_empty()) [] else fx.read_files!(entries.map(|entry| entry.path))
 	Ok(Gc.projects({ entries, reads, now: facts.now, age: facts.age }))
 }
 

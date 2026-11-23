@@ -28,13 +28,13 @@ d6 = ["n1", "n2", "n3", "n4", "n5", "n6"]
 
 # The header facts of all releases of the slots (no compiler): the kind of the slot, no platform, no dep.
 known : List(Solver.Slot) -> List(Solver.Fact)
-known = |slots| slots.keep_if(|s| s.kind != Compiler).join_map(|s| s.candidates.map(|c| { id: c.id, kind: if s.kind == Platform Platform else Package, pf: Err(None), deps: [] }))
+known = |slots| slots.keep_if(|s| s.kind != Compiler).join_map(|s| s.candidates.map(|c| { id: c.id, kind: if (s.kind == Platform) Platform else Package, pf: Err(None), deps: [] }))
 
 needs : List(Solver.Fact), Str, List((Str, Str)) -> List(Solver.Fact)
-needs = |facts, id, deps| facts.map(|f| if f.id == id { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
+needs = |facts, id, deps| facts.map(|f| if (f.id == id) { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
 
 on_pf : List(Solver.Fact), Str, Str -> List(Solver.Fact)
-on_pf = |facts, id, url| facts.map(|f| if f.id == id { ..f, pf: Ok(url) } else f)
+on_pf = |facts, id, url| facts.map(|f| if (f.id == id) { ..f, pf: Ok(url) } else f)
 
 chk : Str, Str, [Pass, Fail, Hang, Crash], List(Str), [Real, Inferred] -> Solver.Check
 chk = |id, nightly, outcome, modules, source| { id, nightly, outcome, modules, source }
@@ -84,12 +84,12 @@ ask_text = |a| match a {
 }
 
 term_text : Solver.Term -> Str
-term_text = |t| "${t.name}:${if t.sign == In "" else "!"}{${Str.join_with(t.ids, ",")}}"
+term_text = |t| "${t.name}:${if (t.sign == In) "" else "!"}{${Str.join_with(t.ids, ",")}}"
 
 cause_text : Solver.Cause -> Str
 cause_text = |c| match c {
 	Probe(p) => {
-		kind = if p.kind == Fail "fail" else "fault"
+		kind = if (p.kind == Fail) "fail" else "fault"
 		"probe ${p.id} ${kind} ${p.from}..${p.to} [${Str.join_with(p.modules, ",")}] inferred [${Str.join_with(p.inferred, ",")}]"
 	}
 	Dep(d) => "dep ${d.id} ${d.group}>=${d.version}"
@@ -101,7 +101,7 @@ cause_text = |c| match c {
 
 step_text : Solver.Step -> Str
 step_text = |s| {
-	terms = if s.terms.is_empty() "true" else Str.join_with(s.terms.map(term_text), " & ")
+	terms = if (s.terms.is_empty()) "true" else Str.join_with(s.terms.map(term_text), " & ")
 	"${terms} <- ${cause_text(s.cause)}"
 }
 
@@ -232,7 +232,7 @@ all_true = |names, tuple, terms| terms.all(|t| holds(names, tuple, t))
 leaves_of : List(Solver.Step), U64 -> List(U64)
 leaves_of = |steps, i| match steps.get(i) {
 	Ok(s) => match s.cause {
-		Derived(a, b) => if a < i and b < i leaves_of(steps, a).concat(leaves_of(steps, b)) else []
+		Derived(a, b) => if (a < i and b < i) leaves_of(steps, a).concat(leaves_of(steps, b)) else []
 		_ => [i]
 	}
 	Err(_) => []

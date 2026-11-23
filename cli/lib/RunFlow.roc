@@ -112,7 +112,7 @@ list! = |fx, args, ready| {
 	keys = ready.table.tools.map(|e| e.key)
 	if !keys.is_empty() {
 		for (key, on_path) in keys.map2(fx.programs!(keys), |key, on_path| (key, on_path)) {
-			if on_path fx.err!("note: ${RunPlan.path_note(key)}\n")
+			if (on_path) fx.err!("note: ${RunPlan.path_note(key)}\n")
 		}
 	}
 	if args.json {

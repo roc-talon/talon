@@ -53,7 +53,7 @@ content_of! = |fx, path, result| match result {
 # One level: the files of each tree, and the dirs of the next level. The copy dir that is missing is the failure of R-PA3 (answer Q1 of slice 042).
 list_level! : Fx, { dirs : List(Str), copy : Str }, List(Level) => Try({ files : List(List(Str)), next : List(Level) }, Fail)
 list_level! = |fx, x, level| {
-	at = |root, rel| if rel == "" root else Text.join(root, rel)
+	at = |root, rel| if (rel == "") root else Text.join(root, rel)
 	asked = level.join_map(|l| l.sides.map(|side| { rel: l.rel, side, path: at(x.dirs.get(side) ?? "", l.rel) }))
 	answers = asked.map2(fx.list_dirs!(asked.map(|a| a.path)), |a, answer| (a, answer))
 	var $entries = []
@@ -66,7 +66,7 @@ list_level! = |fx, x, level| {
 			Err(_) => return Err(Fail.new(Environment, "cannot read ${a.path}"))
 		}
 	}
-	join = |e| if e.rel == "" e.name else "${e.rel}/${e.name}"
+	join = |e| if (e.rel == "") e.name else "${e.rel}/${e.name}"
 	dirs = $entries.keep_if(|e| e.is_dir)
 	names = Text.sorted_unique(dirs.map(join))
 	Ok({

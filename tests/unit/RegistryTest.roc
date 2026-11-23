@@ -288,5 +288,5 @@ expect {
 	}
 	text_of("/errors/forbidden") == Err(None)
 		and text_of("/errors/label-conflict") == Err(None)
-			and text_of("/errors/repository-changed") == Ok("D. Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues")
+		and text_of("/errors/repository-changed") == Ok("D. Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues")
 }

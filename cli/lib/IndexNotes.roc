@@ -9,7 +9,7 @@ IndexNotes :: [].{
 
 	## R-AP30 (proposal, TW24): the age in the note. Input: seconds. Output: whole days when the age is 86400 s or more (`3d`), else whole hours when it is 3600 s or more (`5h`), else whole minutes (`12m`, `0m` below one minute). Every unit rounds down.
 	age_text : U64 -> Str
-	age_text = |seconds| if seconds >= 86400 "${(seconds // 86400).to_str()}d" else if seconds >= 3600 "${(seconds // 3600).to_str()}h" else "${(seconds // 60).to_str()}m"
+	age_text = |seconds| if (seconds >= 86400) "${(seconds // 86400).to_str()}d" else if (seconds >= 3600) "${(seconds // 3600).to_str()}h" else "${(seconds // 60).to_str()}m"
 
 	## R-AP29, R-AP30: the note of one `checked` item, with no `note: ` prefix.
 	##
@@ -23,7 +23,7 @@ IndexNotes :: [].{
 		match item.checked_at {
 			Ok(ms) => {
 				at_s = ms // 1000
-				age = if now > at_s now - at_s else 0
+				age = if (now > at_s) now - at_s else 0
 				Ok("index: ${item.name} checked ${age_text(age)} ago")
 			}
 			Err(None) => Ok("index: ${item.name} not checked since its first ingest")
@@ -55,7 +55,7 @@ IndexNotes :: [].{
 	index_notes : { now : U64, answers : List(Wire.Answer) } -> Try(JsonDoc, [None])
 	index_notes = |{ now, answers }| {
 		docs = IndexNotes.json_notes({ now, answers })
-		if docs.is_empty() Err(None) else Ok(JsonDoc.Arr(docs))
+		if (docs.is_empty()) Err(None) else Ok(JsonDoc.Arr(docs))
 	}
 }
 
@@ -68,7 +68,7 @@ picked = |answers| answers
 		[],
 		|kept, item| match kept.last() {
 			Ok(prev) => if prev.name == item.name {
-				kept.drop_last(1).append(if older(item, prev) item else prev)
+				kept.drop_last(1).append(if (older(item, prev)) item else prev)
 			} else {
 				kept.append(item)
 			}

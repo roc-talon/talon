@@ -108,8 +108,8 @@ Gc :: [].{
 	## A file, a dev version (`zig-0.18.0-dev.31+abc1234`), a version with 2 numbers, a temp (`zig-0.17.0.<16hex>.tmp`), a lock dir, a trash dir, and a compiler are not in it. The time of an entry is not read.
 	## The name decides (Q4 of the slice file): a dir `zig-<X.Y.Z>` that a person made by hand is a Zig install too.
 	zig_dirs : List({ name : Str, is_dir : Bool, mtime : U64 }) -> List(Str)
-	zig_dirs = |entries| Text.sorted_unique(
-		entries
+	zig_dirs = |listing| Text.sorted_unique(
+		listing
 			.keep_if(|e| e.is_dir and e.name.starts_with("zig-") and Zig.is_release_version(e.name.drop_prefix("zig-")))
 			.map(|e| e.name),
 	)
@@ -154,16 +154,16 @@ Gc :: [].{
 	## | Else, a dry run | The last line is `dry run: nothing was removed` |
 	report : Gc.Done -> List(Str)
 	report = |done| {
-		verb = if done.dry_run "would remove" else "removed"
+		verb = if (done.dry_run) "would remove" else "removed"
 		lines = done.toolchains.map(|id| "${verb} toolchain ${id}${size_suffix(done.sizes, id)}\n")
 			.concat(done.skipped.map(|id| "skipped toolchain ${id}: an install holds it\n"))
 			.concat(paths_of(done).map(|path| "${verb} ${path}${size_suffix(done.sizes, path)}\n"))
 			.concat(done.projects.map(|path| "${verb} project ${path}\n"))
-		nothing = if lines.is_empty() ["nothing to remove\n"] else lines
+		nothing = if (lines.is_empty()) ["nothing to remove\n"] else lines
 		total = if counted(done).is_empty() {
 			[]
 		} else {
-			[if done.dry_run "would free ${Toolchain.size_text(Gc.freed(done))}\n" else "freed ${Toolchain.size_text(Gc.freed(done))}\n"]
+			[if (done.dry_run) "would free ${Toolchain.size_text(Gc.freed(done))}\n" else "freed ${Toolchain.size_text(Gc.freed(done))}\n"]
 		}
 		if !done.ran {
 			["another tln cache gc runs\n"]
@@ -380,7 +380,7 @@ size_suffix = |all, item| match all.find_first(|one| one.item == item) {
 
 # The texts of a list with no repeat, in the order of the first one.
 once : List(Str) -> List(Str)
-once = |items| items.fold([], |kept, item| if kept.contains(item) kept else kept.append(item))
+once = |items| items.fold([], |kept, item| if (kept.contains(item)) kept else kept.append(item))
 
 # R-GC4, D7: the ids that one header names, in source order. An id is a release URL, or the absolute file of a path entry. A `Foreign` URL names nothing. The header of a release (`release`) names no path.
 # A text that is not a header, and a file that cannot be read, name nothing.

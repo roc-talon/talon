@@ -309,7 +309,7 @@ expect {
 	ok_text = |key, text| {
 		lines = text.split_on("\n")
 		last = lines.drop_last(1).last() ?? ""
-		text.starts_with("Usage: tln ${key}") and text.ends_with("\n") and last == (if key == "x" global_x else global)
+		text.starts_with("Usage: tln ${key}") and text.ends_with("\n") and last == (if (key == "x") global_x else global)
 	}
 	bad = keys.keep_if(
 		|key| match Help.command(key) {

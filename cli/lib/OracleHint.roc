@@ -44,7 +44,7 @@ OracleHint :: [].{
 	with_empty : OracleBase.Input, List(Str) -> OracleBase.Input
 	with_empty = |input, ids| {
 		urls = ids.keep_if(|id| Ident.of_url(id).is_ok())
-		facts = urls.map(|url| { url, release: { kind: if OracleBase.platform_of(input, url) Platform else Package, pf: Err(None), deps: [] } })
+		facts = urls.map(|url| { url, release: { kind: if (OracleBase.platform_of(input, url)) Platform else Package, pf: Err(None), deps: [] } })
 		paths = ids.keep_if(|id| Ident.of_url(id).is_err()).map(|id| { id, entries: [] })
 		{ ..input, facts: input.facts.concat(facts), paths: input.paths.concat(paths) }
 	}

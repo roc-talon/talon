@@ -36,7 +36,7 @@ Mode := [Interactive, NonInteractive, NeedsTty].{
 	## and stderr are both a terminal (R-NR1). Any other mode stays as it is.
 	with_tty : Mode, { stdin : Bool, stderr : Bool } -> Mode
 	with_tty = |mode, tty| match mode {
-		NeedsTty => if tty.stdin and tty.stderr Interactive else NonInteractive
+		NeedsTty => if (tty.stdin and tty.stderr) Interactive else NonInteractive
 		other => other
 	}
 

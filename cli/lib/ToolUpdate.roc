@@ -34,7 +34,7 @@ ToolUpdate :: [].{
 	way : ToolsJson.Tool -> [Release, Branch, Commit]
 	way = |tool| match tool.source {
 		Release(_) => Release
-		Git(git) => if is_commit(git.ref) Commit else Branch
+		Git(git) => if (is_commit(git.ref)) Commit else Branch
 	}
 
 	## R-T24: the commit of a branch now (`sha`, 40 hex digits, from `GitRef.commit_of`) against the commit of the tool. `Same` when they are equal (nothing to build), else `Moved`. A release tool is `Moved` (the flow does not ask).
@@ -85,7 +85,7 @@ ToolUpdate :: [].{
 	downloads : { pins : List(Str), installed : List(Str) } -> List(Str)
 	downloads = |facts| facts.pins.fold(
 		[],
-		|found, id| if facts.installed.contains(id) or found.contains(id) found else found.append(id),
+		|found, id| if (facts.installed.contains(id) or found.contains(id)) found else found.append(id),
 	)
 
 	## R-T25, R-DL1 to R-DL5, R-NM5, R-NM9, R-HF1: what the command does for `ids` (not empty: `downloads`). One decision for the whole command: the first row that holds wins. `auto` is `TALON_AUTO_INSTALL`, `yes` is `--yes`, `mode` is the mode of the run (`Mode.from_env`, then `Mode.with_tty` for `NeedTty`).
@@ -127,7 +127,7 @@ ToolUpdate :: [].{
 	consent_stop : List(Str) -> Fail
 	consent_stop = |ids| {
 		count = ids.len()
-		what = if count == 1 "1 compiler download is needed" else "${count.to_str()} compiler downloads are needed"
+		what = if (count == 1) "1 compiler download is needed" else "${count.to_str()} compiler downloads are needed"
 		Fail.new(Consent, "${what} (${Str.join_with(ids, ", ")}). Pass --yes or set TALON_AUTO_INSTALL=yes.")
 	}
 
@@ -143,7 +143,7 @@ ToolUpdate :: [].{
 	prompt = |facts| {
 		size = Toolchain.size_text(facts.size)
 		count = facts.ids.len()
-		what = "${count.to_str()} ${if count == 1 "compiler" else "compilers"}"
+		what = "${count.to_str()} ${if (count == 1) "compiler" else "compilers"}"
 		Prompt.{
 			id: "tool-download",
 			kind: Required(["TALON_AUTO_INSTALL=yes"]),
@@ -151,7 +151,7 @@ ToolUpdate :: [].{
 			default: Yes,
 			question: "Download ${what}, ${size}: ${Str.join_with(facts.ids, ", ")}?",
 			subject: "the download of ${what}",
-			answer_line: |answer| if answer == Yes "downloading ${what} (${size})" else "no download of ${what}",
+			answer_line: |answer| if (answer == Yes) "downloading ${what} (${size})" else "no download of ${what}",
 		}
 	}
 

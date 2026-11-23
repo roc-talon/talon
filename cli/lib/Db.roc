@@ -178,7 +178,7 @@ Db :: [].{
 	modules_text = |modules| Str.join_with(Text.sorted_unique(modules), ",")
 
 	modules_of : Str -> List(Str)
-	modules_of = |text| if text.is_empty() [] else text.split_on(",")
+	modules_of = |text| if (text.is_empty()) [] else text.split_on(",")
 
 	## R-PK7: the line of a row, as the table above says (no line end).
 	fact_line : Fact -> Str
@@ -231,7 +231,7 @@ Db :: [].{
 		} else {
 			lines = text.split_on("\n")
 			# The text ends with a line end, so the last piece is empty.
-			body = if lines.last() == Ok("") lines.drop_last(1) else lines
+			body = if (lines.last() == Ok("")) lines.drop_last(1) else lines
 			match body {
 				[head, .. as rest] => match head.split_on("\t") {
 					["format", number] => match U64.from_str(number) {
@@ -294,7 +294,7 @@ parse_rows = |lines, version| {
 			}
 		}
 	}
-	if $bad Err(BadLine) else Ok({ format: version, facts: $facts, pinned: $pinned })
+	if ($bad) Err(BadLine) else Ok({ format: version, facts: $facts, pinned: $pinned })
 }
 
 # Compare the first key, and the second one only when the first are the same.

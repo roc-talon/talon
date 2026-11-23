@@ -128,7 +128,7 @@ with_setting = |request, loaded| match request.registry {
 # Slice 206g (Design Q560): `init` (`fresh`) reads the compiler list from the registry and nothing else: the platform and package lists stay GitHub lists. A `Read` becomes `Compilers`. `--offline` (`Offline`): the index stays, the compiler list is the kept file.
 # Slice 206i (Q560, Q564, Q565): an `init` of an app (`has_platform`) keeps `Read`: the platform is a group of the closure query. `init package` (no platform) reads only the compiler list.
 compilers_only : Request, Bool, Bool -> Request
-compilers_only = |request, fresh, has_platform| if !fresh request else match (request.registry, request.index) {
+compilers_only = |request, fresh, has_platform| if (!fresh) request else match (request.registry, request.index) {
 	(Read(_), _) if has_platform => request
 	(Read(query), _) => { ..request, registry: Compilers(query) }
 	(_, Offline(origin)) => { ..request, registry: Compilers({ origin, snapshot: None, window: None, listed: Bool.False, share: Err(Unset), source: "the registry setting" }) }
@@ -141,7 +141,7 @@ run! = |fx, asked, tools, fresh| {
 	first = ResolveLoad.prepared!(fx, asked, Lock)?
 	set = { ..compilers_only(with_setting(asked, first.loaded)?, fresh, first.loaded.members.any(|m| m.locked.kind == App)), selected: Fetch.selected({ held: first.decision.held ?? "", default: first.loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, first.loaded) }
 	# Slice 206e2 (R-IX4): a range pick of `prepared!` that read the registry list.
-	pick = picked!(fx, if first.listed ResolveBase.listed(set) else set, first)?
+	pick = picked!(fx, if (first.listed) ResolveBase.listed(set) else set, first)?
 	request = pick.request
 	start = pick.start
 	loaded = start.loaded
@@ -160,10 +160,10 @@ run! = |fx, asked, tools, fresh| {
 		Ok({ outcome: InstallPlan.idle(request, request.now), tools: step.rows, ran: Err(None), fell: Err(None) })
 	} else {
 		header = match plan.phase {
-			Ok(_) => { ..fx, out!: |text| if text == "nothing to change\n" {} else fx.out!(text) }
+			Ok(_) => { ..fx, out!: |text| if (text == "nothing to change\n") {} else fx.out!(text) }
 			Err(None) => fx
 		}
-		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh, range_note: start.range_note }).map_err(|fail| AuditResolve.explain(fail, { project: plan.request.project, loaded }))? else { outcome: InstallPlan.idle(plan.request, request.now), ran: Err(None), fell: Err(None) }
+		outcome = if (plan.header) resolve!(header, plan.request, loaded, built, { decision, fresh, range_note: start.range_note }).map_err(|fail| AuditResolve.explain(fail, { project: plan.request.project, loaded }))? else { outcome: InstallPlan.idle(plan.request, request.now), ran: Err(None), fell: Err(None) }
 		step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
 		if plan.phase.is_ok() and !step.changed and !header_changed(outcome.outcome) {
 			fx.out!("nothing to change\n")
@@ -180,10 +180,10 @@ Plan : { request : Request, phase : Try(ToolsPlan.Phase, [None]), keys : List(St
 tools_split : Request, Loaded, Try(Args, [None]) -> Try(Plan, Fail)
 tools_split = |request, loaded, tools| {
 	none = { request, phase: Err(None), keys: [], header: Bool.True }
-	step = |phase| if request.names.is_empty() Ok({ ..none, phase: Ok(phase) }) else tools_named(request, loaded, phase)
+	step = |phase| if (request.names.is_empty()) Ok({ ..none, phase: Ok(phase) }) else tools_named(request, loaded, phase)
 	match (tools, request.command) {
 		(Err(None), _) => Ok(none)
-		(Ok(_), Install) => Ok(if request.names.is_empty() { ..none, phase: Ok(if request.frozen Frozen else Install) } else none)
+		(Ok(_), Install) => Ok(if (request.names.is_empty()) { ..none, phase: Ok(if (request.frozen) Frozen else Install) } else none)
 		(Ok(_), Update) => step(Update)
 		(Ok(_), Upgrade) => step(Upgrade)
 	}
@@ -192,15 +192,15 @@ tools_split = |request, loaded, tools| {
 # The names of `update` or `upgrade`: the keys of `[tools]` go to the tools step, the other names to the header flow.
 tools_named : Request, Loaded, ToolsPlan.Phase -> Try(Plan, Fail)
 tools_named = |request, loaded, phase| {
-	word = if request.command == Upgrade "upgrade" else "update"
+	word = if (request.command == Upgrade) "upgrade" else "update"
 	aliases = loaded.members.join_map(|m| m.locked.rows.map(|r| r.alias))
 	split = ToolsPlan.split({ command: word, names: request.names, keys: loaded.intent.tools.map(|e| e.key), aliases })?
-	Ok({ request: { ..request, names: split.header }, phase: if split.tools.is_empty() Err(None) else Ok(phase), keys: split.tools, header: !split.header.is_empty() })
+	Ok({ request: { ..request, names: split.header }, phase: if (split.tools.is_empty()) Err(None) else Ok(phase), keys: split.tools, header: !split.header.is_empty() })
 }
 
 # R-IN2, R-IN4: `init` writes the pin of the held compiler for its new header, also when no release moves. It is a move of the pin, so the ladder checks it.
 fresh_pin : Bool, Try(Str, [NoCompiler]) -> Try(Str, [Same])
-fresh_pin = |fresh, held| if fresh held.map_err(|_| Same) else Err(Same)
+fresh_pin = |fresh, held| if (fresh) held.map_err(|_| Same) else Err(Same)
 
 # Slice 056 (D16): did the header flow change something? A run that wrote a file did. A `--dry-run` writes nothing, so it is the planned changes (the test of `Install.print!` for the line of R-DT5). A kept entry is a line of its own.
 header_changed : Report.Outcome -> Bool
@@ -248,7 +248,7 @@ resolve! = |fx, request, loaded, built, start| {
 		}
 	} else {
 		# R-SO22, R-SO19: a run with no compiler here picked none, because no probe will run (`will_probe`).
-		ResolveBase.check_pin(loaded, settings, decision, if request.no_check or decision.held.is_err() LockNoCheck else Lock)?
+		ResolveBase.check_pin(loaded, settings, decision, if (request.no_check or decision.held.is_err()) LockNoCheck else Lock)?
 	}
 	# R-C16 (slice 084): the note of a new rank 4 pick that only a pattern kept comes after the note of the pin (R-SO20).
 	pin_notes = ResolveBase.pin_notes(decision).concat(start.range_note.map_ok(|text| [text]) ?? [])
@@ -264,7 +264,7 @@ resolve! = |fx, request, loaded, built, start| {
 		_ => ResolveSelect.snapshot_of(request, loaded.intent)?
 	}
 	# R-SO22, U3: `--no-check` runs no probe and no lookup. Else the probe rounds use the held compiler.
-	held = if request.no_check Err(None) else decision.held.map_err(|_| None)
+	held = if (request.no_check) Err(None) else decision.held.map_err(|_| None)
 	plan = match decision.held {
 		Ok(id) if free_nightly and !request.no_check => NightlyFlow.plan!(fx, request, loaded, settings, { held: id, snapshot })?
 		_ => { free: Err(Held), releases: Err(NotRead), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Err(None), fell: Err(None) }
@@ -327,7 +327,7 @@ attempts! = |fx, request, loaded, ready, run| {
 					Ok(next) => attempts!(fx, request, loaded, ready, { picked: next, first: Ok(first), seen: run.seen.concat(InstallPlan.pre_lines(request, loaded, picked.facts, picked.chosen)).concat(index_lines(request, picked.probed)), downloads: run.downloads, fresh: run.fresh })
 					Err(other) => {
 						ran = ShareHook.ran_of(request, { notes: request.command != Install, second: picked.probed.second })
-						if other.kind == NoTuple Err(ShareHook.attach(first, ran, Bool.True)) else Err(ShareHook.attach(other, ran, Bool.True))
+						if (other.kind == NoTuple) Err(ShareHook.attach(first, ran, Bool.True)) else Err(ShareHook.attach(other, ran, Bool.True))
 					}
 				}
 			}
@@ -437,11 +437,11 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	found_audit = AuditResolve.warn(request, loaded, closures, { second: probed.second, found: after.found })
 	audit = AuditResolve.warn_docs(found_audit)
 	# Slice 254 (R-PU30, Q254-5, Q254-7): the owner docs of `update` and `upgrade` (printed after `settle!`, Q254-9), for the header values before the command.
-	owners = if request.command == Install [] else AuditResolve.owner_docs(request, loaded.members, probed.second)
+	owners = if (request.command == Install) [] else AuditResolve.owner_docs(request, loaded.members, probed.second)
 	news = wants.map(|w| { name: w.name ?? w.key, is_platform: Bool.False }).concat(facts.prepared.rows.map(|r| { name: r.fresh.name, is_platform: r.fresh.is_platform }))
 	# The pins of a move are edits of the candidate, so the ladder checks them (R-BL1). `decision.writes` is the other kind of pin (R-RP3).
-	checked = if moved.is_ok() edits else changes
-	ladder_decision = if moved.is_ok() { ..decision, writes: [] } else decision
+	checked = if (moved.is_ok()) edits else changes
+	ladder_decision = if (moved.is_ok()) { ..decision, writes: [] } else decision
 	# R-PA5, R-PA10 (slice 043): the patches that move are applied to the new release in temp dirs before the ladder. A release on which a diff does not apply is dropped like a release that fails the ladder (`Fail.again`).
 	patch = PatchApply.run!(fx, request, loaded, { scoped, chosen: var_chosen })?
 	settled = settle!(
@@ -501,7 +501,7 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	sent = ran.map_ok(|found| { ..found, built: done.built, audit, owners })
 	# The failure of a later step still has the run (`attempts!`): the notes are printed already.
 	match log_of(request) {
-		Ok(n) => Ok({ outcome: { ..outcome, at: if facts.snapshot.is_ok() outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent })
+		Ok(n) => Ok({ outcome: { ..outcome, at: if (facts.snapshot.is_ok()) outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent })
 		Err(None) => Ok({ outcome, ran: sent })
 	}
 }
@@ -530,13 +530,13 @@ log_of = |request| match (request.index, request.registry) {
 # The ladder, the report of the moves, the write of the files and the rebase of the patches (slice 043: split from `finish!` so that the temp dirs of `PatchApply` are deleted also after a failure, R-CC2).
 settle! : Fx, ResolveBase.Request, Loaded, { scoped : List(Vars.Scoped), news : List({ name : Str, is_platform : Bool }), chosen : List(Pick.Chosen), moves : List(Consent.Move), probed : ResolveBase.Probed, checked : List(ResolveBase.Edit), edits : List(ResolveBase.Edit), pairs : List(ResolveBase.Pair), renames : List(ResolveBase.Rename), closures : List({ file : Str, walked : Closure.Walked }), found_audit : List(AuditTypes.Finding), decision : Pin.Decision, candidate : Try(Str, [None]), patch : PatchApply.Done, no_ladder : Bool, headers : List({ hash : Str, kind : [Package, Platform, App], names : List(Str) }) } => Try({ ran : ResolveBase.Ran, built : List(Fail.Built), touched : List(Str) }, Fail)
 settle! = |fx, request, loaded, x| {
-	ran = if x.no_ladder { ran: InstallPlan.no_ran, built: [] } else InstallWrite.ladder!(fx, request, loaded, { scoped: x.scoped, news: x.news, chosen: x.chosen, changes: x.checked, decision: x.decision, closures: x.closures, probed: x.probed, candidate: x.candidate, patch: x.patch, headers: x.headers })?
+	ran = if (x.no_ladder) { ran: InstallPlan.no_ran, built: [] } else InstallWrite.ladder!(fx, request, loaded, { scoped: x.scoped, news: x.news, chosen: x.chosen, changes: x.checked, decision: x.decision, closures: x.closures, probed: x.probed, candidate: x.candidate, patch: x.patch, headers: x.headers })?
 	InstallWrite.confirm_moves!(fx, request, x.moves)?
 	written = InstallWrite.write!(fx, request, loaded, x.edits, x.pairs, x.renames, x.patch)?
 	rebased = PatchApply.finish!(fx, request, x.patch)?
 	# Slice 255 (Design Q635, D1 strict): the audit lines after every step that can fail, before the lines of the files.
 	AuditResolve.show!(fx, x.found_audit)
-	InstallWrite.report!(fx, loaded, x.edits, x.pairs, x.renames, written, if request.command == Upgrade [] else Report.anchor_notes(x.pairs.keep_if(|p| written.contains(p.path))))
+	InstallWrite.report!(fx, loaded, x.edits, x.pairs, x.renames, written, if (request.command == Upgrade) [] else Report.anchor_notes(x.pairs.keep_if(|p| written.contains(p.path))))
 	PatchApply.report!(fx, x.patch)
 	Ok({ ran: ran.ran, built: ran.built, touched: written.concat(rebased.keep_if(|path| !written.contains(path))) })
 }

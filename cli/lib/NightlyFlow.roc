@@ -57,7 +57,7 @@ NightlyFlow :: [].{
 	## `[held]` when `releases` is empty, before the read of the installed compilers.
 	movable! : Fx, ResolveBase.Request, { loaded : ResolveBase.Loaded, settings : ResolveBase.Settings }, { held : Str, snapshot : Try(U64, [None]), releases : List(Nightlies.Release) } => List(Str)
 	movable! = |fx, request, ctx, run| {
-		if run.releases.is_empty() return [run.held]
+		if (run.releases.is_empty()) return [run.held]
 		on_path = match request.compiler {
 			Ok(found) => [found.id]
 			Err(NoCompiler) => []
@@ -71,7 +71,7 @@ NightlyFlow :: [].{
 	plan! = |fx, request, loaded, settings, facts| match listed!(fx, request) {
 		# R-RG9: a list read that fell back makes the rest of the plan `direct` (the offers read the GitHub list), and `fell` goes to the caller.
 		Ok(read) => known!(fx, ResolveBase.routed(request, read.fell), { loaded, settings }, { held: facts.held, snapshot: facts.snapshot, releases: read.releases, fell: read.fell })
-		Err(fail) => if request.names.contains("roc") Err(fail) else Ok({ free: Err(Held), releases: Ok([]), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Ok("the compiler list could not be read; roc stays ${facts.held}"), fell: Err(None) })
+		Err(fail) => if (request.names.contains("roc")) Err(fail) else Ok({ free: Err(Held), releases: Ok([]), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Ok("the compiler list could not be read; roc stays ${facts.held}"), fell: Err(None) })
 	}
 }
 
@@ -85,7 +85,7 @@ listed! : Fx, ResolveBase.Request => Try({ releases : List(Nightlies.Release), f
 listed! = |fx, request| {
 	host = Toolchain.host(fx.platform!())?
 	found = Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.?real ?? request.now, offline: request.offline, host, source: ResolveBase.list_first(request) })?
-	if found.source == Missing return Err(Toolchain.offline_no_list({}))
+	if (found.source == Missing) return Err(Toolchain.offline_no_list({}))
 	Ok({ releases: found.releases, fell: found.fell })
 }
 
@@ -104,15 +104,15 @@ known! = |fx, request, ctx, run| {
 		Err(NoneKnown) => return Err(Toolchain.range_failed({ req_text: intent.roc_text ?? "*", switch: { nightly: ctx.settings.nightly, source: ctx.settings.nightly_from } }))
 	}
 	missing = |id| Compiler.find({ id, installed: toolchains, path: request.compiler }).is_err()
-	baselines = if missing(run.held) and !Pin.same_id(run.held, newest) [run.held] else []
+	baselines = if (missing(run.held) and !Pin.same_id(run.held, newest)) [run.held] else []
 	if !baselines.is_empty() and !Pin.is_nightly(run.held) {
 		_ = Compiler.require({ id: run.held, installed: toolchains, path: request.compiler })?
 	}
-	new_offers = offers!(fx, request, if missing(newest) [newest] else [])?
+	new_offers = offers!(fx, request, if (missing(newest)) [newest] else [])?
 	base_offers = offers!(fx, request, baselines)?
 	# R-UP6, R-SO14, R-SO15 (slice 072e, Q-E2): `request.selected` is empty when no compiler was selected before the pick. H is then the pick: it is first in the prompt, and it becomes `default-roc` after its download.
 	no_rank = request.selected == ""
-	all = if no_rank base_offers.concat(new_offers) else new_offers.concat(base_offers)
+	all = if (no_rank) base_offers.concat(new_offers) else new_offers.concat(base_offers)
 	asked!(fx, request, { new: new_offers, base: base_offers, held: run.held, picked: no_rank })?
 	var $installed = 0
 	for offer in all {
@@ -129,8 +129,8 @@ known! = |fx, request, ctx, run| {
 	optional = NightlyPlan.optional({ releases: run.releases, req: intent.roc ?? Any, now: request.now, min_age: ctx.settings.min_age, snapshot: run.snapshot, nightly: ctx.settings.nightly, exclude: ctx.settings.exclude, held: run.held, installed: toolchains.concat(on_path) })
 	only_held = picked.askable.all(|id| Pin.same_id(id, run.held))
 	# R-C16 (slice 084): N is a new choice when it is not H. A young N that only a pattern kept gets the note.
-	note = if Pin.same_id(newest, run.held) Err(None) else Toolchain.kept_note({ id: newest, releases: run.releases, now: request.now, min_age: ctx.settings.min_age, exclude: ctx.settings.exclude })
-	Ok({ releases: Ok(run.releases), free: if only_held Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if only_held { ids: [], sizes: [] } else optional, downloads: $installed, note, fell: run.fell })
+	note = if (Pin.same_id(newest, run.held)) Err(None) else Toolchain.kept_note({ id: newest, releases: run.releases, now: request.now, min_age: ctx.settings.min_age, exclude: ctx.settings.exclude })
+	Ok({ releases: Ok(run.releases), free: if (only_held) Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if (only_held) { ids: [], sizes: [] } else optional, downloads: $installed, note, fell: run.fell })
 }
 
 # Step 3: `RocInstall.offer!` for each id, in order. An id that is installed after all (`Present`) is no download.
@@ -158,15 +158,15 @@ asked! : Fx, ResolveBase.Request, { new : List(RocInstall.Offer), base : List(Ro
 asked! = |fx, request, run| {
 	ctx = { auto: request.downloads.auto, mode: request.prompt.mode, yes: request.prompt.yes, quiet: request.prompt.quiet, flag: request.downloads.allow }
 	if !run.base.is_empty() {
-		DownloadAsk.required!(fx, ctx, { all: if run.picked run.base.concat(run.new) else run.new.concat(run.base), first: run.held })
+		DownloadAsk.required!(fx, ctx, { all: if (run.picked) run.base.concat(run.new) else run.new.concat(run.base), first: run.held })
 	} else {
 		match DownloadAsk.totals(run.new).ids {
 			[id] => {
 				size = DownloadAsk.totals(run.new).size
 				# Q-E2: the compiler that the command names is also the pick. The question says that it becomes the default.
-				question = if run.picked and Pin.same_id(id, run.held) Consent.roc_install_default({ id, size }) else Consent.roc_install({ id, size })
+				question = if (run.picked and Pin.same_id(id, run.held)) Consent.roc_install_default({ id, size }) else Consent.roc_install({ id, size })
 				asked = Prompt.ask!(fx, question, { mode: ctx.mode, yes: ctx.yes, quiet: ctx.quiet, flag: Err(NoFlag) })?
-				if asked.answer == Yes Ok({}) else Err(Consent.roc_install_declined(id))
+				if (asked.answer == Yes) Ok({}) else Err(Consent.roc_install_declined(id))
 			}
 			_ => Ok({})
 		}

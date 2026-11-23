@@ -50,8 +50,8 @@ expect {
 		and Args.parse(["roc", "rm", "x"]).map_ok(|a| (a.command, a.typed)) == Ok((["roc", "remove"], "roc rm"))
 	bad == []
 		and alias_ok
-			and listed(["roc", "ls", "--json"]) == Ok({})
-				and listed(["roc", "ls", "x"]) == Err(Fail.new(Usage, "tln roc list takes no operand, got 1"))
+		and listed(["roc", "ls", "--json"]) == Ok({})
+		and listed(["roc", "ls", "x"]) == Err(Fail.new(Usage, "tln roc list takes no operand, got 1"))
 }
 
 # R-LY1: the kind of an id, and the rows of `roc list`. `default` is `Pin.same_id`, so the other tag form of a nightly is the default too. A missing file, text that is not JSON, a missing field and a bad time give `Err(Unknown)`.
@@ -85,9 +85,9 @@ expect {
 	none = Manage.rows({ found, default: Err(Unset) }).keep_if(|r| r.is_default)
 	bad_kinds == []
 		and texts.all(|(kind, text)| Manage.kind_text(kind) == text)
-			and got.map(|r| (r.id, r.kind, r.installed_at, r.last_use)) == want.map(|r| (r.id, r.kind, r.installed_at, r.last_use))
-				and got.map(|r| r.is_default) == [Bool.False, Bool.True, Bool.False, Bool.False, Bool.False]
-					and none == []
+		and got.map(|r| (r.id, r.kind, r.installed_at, r.last_use)) == want.map(|r| (r.id, r.kind, r.installed_at, r.last_use))
+		and got.map(|r| r.is_default) == [Bool.False, Bool.True, Bool.False, Bool.False, Bool.False]
+		and none == []
 }
 
 # R-OUT2 (proposal): the table of `roc list`. The columns are padded to the widest cell, 2 spaces between them, `* ` marks the default, a date has no time, `-` is an unknown time, no trailing space. No row: one line. A default that is not
@@ -108,15 +108,15 @@ expect {
 			"  link-dev                    link     -           -\n",
 		]
 		and full.stderr == []
-			and missing.stdout
-				== [
-					"  ID                          KIND     INSTALLED   LAST USE\n",
-					"  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22\n",
-				]
-				and missing.stderr == ["warning: the default compiler nightly-2026-10-01-aaaaaaa is not installed\n"]
-					and empty.stdout == ["no compiler is installed. Run: tln roc install @latest\n"]
-						and empty.stderr == []
-							and empty_warn.stderr == ["warning: the default compiler nightly-2026-10-01-aaaaaaa is not installed\n"]
+		and missing.stdout
+			== [
+				"  ID                          KIND     INSTALLED   LAST USE\n",
+				"  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22\n",
+			]
+		and missing.stderr == ["warning: the default compiler nightly-2026-10-01-aaaaaaa is not installed\n"]
+		and empty.stdout == ["no compiler is installed. Run: tln roc install @latest\n"]
+		and empty.stderr == []
+		and empty_warn.stderr == ["warning: the default compiler nightly-2026-10-01-aaaaaaa is not installed\n"]
 }
 
 # R-J3, R-J4, R-OUT4 (proposal): the `data` of `roc list --json`. A time is the UTC text or `null`.
@@ -186,15 +186,15 @@ expect {
 			"  link-dev                    link     -           -           -\n",
 		]
 		and shown.stderr == []
-			and deep.stdout == ["  ID            KIND  INSTALLED  LAST USE  SOURCE\n", "  git-7e7e7e7e  git   -          -         https://github.com/roc-lang/roc/tree/x@deep\n"]
-				and plain.stdout
-					== [
-						"  ID                          KIND     INSTALLED   LAST USE\n",
-						"  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22\n",
-						"  git-7e7e7e7e                git      -           -\n",
-						"  link-dev                    link     -           -\n",
-					]
-					and unmatched.stdout == plain.stdout
+		and deep.stdout == ["  ID            KIND  INSTALLED  LAST USE  SOURCE\n", "  git-7e7e7e7e  git   -          -         https://github.com/roc-lang/roc/tree/x@deep\n"]
+		and plain.stdout
+			== [
+				"  ID                          KIND     INSTALLED   LAST USE\n",
+				"  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22\n",
+				"  git-7e7e7e7e                git      -           -\n",
+				"  link-dev                    link     -           -\n",
+			]
+		and unmatched.stdout == plain.stdout
 }
 
 # R-R15 R-J3 R-OUT4 (slice 071, proposal): the `data` of `roc list --json`. A row of the kind `git` has the keys `repo` and `ref` after `default`: the origin of its id as it is (the stored URL, raw), or `null` for both. A row of another kind has no such key, also when an origin has its id.
@@ -223,10 +223,10 @@ expect {
 	not_text = set("default-roc = 5\n")
 	same == Ok({ previous: Ok(new_id), edit: Same })
 		and replaced == Ok({ previous: Ok(old_id), edit: Set("# mine\nnightly = true\ndefault-roc = \"${new_id}\"   # tln roc default writes it\nmin-release-age = \"2d\"\n") })
-			and inserted == Ok({ previous: Err(Unset), edit: Set("nightly = true\ndefault-roc = \"${new_id}\"\n[probe]\nslots = 12\n") })
-				and created == Ok({ previous: Err(Unset), edit: Set("default-roc = \"${new_id}\"\n") })
-					and bad_toml.map_err(|f| (f.kind.code(), f.message)) == Err((19, "/c/config.toml:1: not valid TOML"))
-						and not_text.map_err(|f| (f.kind.code(), f.message)) == Err((19, "/c/config.toml: default-roc is not a text"))
+		and inserted == Ok({ previous: Err(Unset), edit: Set("nightly = true\ndefault-roc = \"${new_id}\"\n[probe]\nslots = 12\n") })
+		and created == Ok({ previous: Err(Unset), edit: Set("default-roc = \"${new_id}\"\n") })
+		and bad_toml.map_err(|f| (f.kind.code(), f.message)) == Err((19, "/c/config.toml:1: not valid TOML"))
+		and not_text.map_err(|f| (f.kind.code(), f.message)) == Err((19, "/c/config.toml: default-roc is not a text"))
 }
 
 # R-RR1, R-CC6: the edit that unsets the default. The line goes, every other byte stays. No key: `Same`. Not TOML: kind `Input`.
@@ -235,9 +235,9 @@ expect {
 	unset("# mine\nnightly = true\ndefault-roc = \"nightly-2026-10-09-258ab27\"   # c\nmin-release-age = \"2d\"\n")
 		== Ok(Set("# mine\nnightly = true\nmin-release-age = \"2d\"\n"))
 		and unset("default-roc = \"nightly-2026-10-09-258ab27\"\n") == Ok(Set(""))
-			and unset("nightly = true\n") == Ok(Same)
-				and unset("") == Ok(Same)
-					and unset("default-roc = \n").map_err(|f| f.kind.code()) == Err(19)
+		and unset("nightly = true\n") == Ok(Same)
+		and unset("") == Ok(Same)
+		and unset("default-roc = \n").map_err(|f| f.kind.code()) == Err(19)
 }
 
 # R-RR1, R-NS3, R-NS6, R-SO24 (slice 080): the compiler that takes the default. The newest nightly or release by `Pin.order` (with `published_at`), never the removed one, never a `git-`, `link-` or `copy-` build. With the `nightly` switch off: a release first.
@@ -277,8 +277,8 @@ expect {
 	text = "nightly-2026-10-14-38a3029 is a nightly and the nightly switch is off, so commands that use the default stop with exit code 10 until you change the switch or install an admitted compiler"
 	note("nightly-2026-10-14-38a3029", Bool.False) == Ok(text)
 		and note("nightly-2026-10-14-38a3029", Bool.True) == Err(None)
-			and note("0.1.0", Bool.False) == Err(None)
-				and note("0.1.0", Bool.True) == Err(None)
+		and note("0.1.0", Bool.False) == Err(None)
+		and note("0.1.0", Bool.True) == Err(None)
 }
 
 # R-RR2, R-PD9: the known projects that pin the compiler. The other tag form of a nightly counts. A missing file, an unreadable file, a header that does not parse and a header with no pin pin nothing. The paths are in byte order.
@@ -295,8 +295,8 @@ expect {
 	]
 	pinned("nightly-2026-10-14-38a3029", projects) == ["/p/a/main.roc", "/p/b/main.roc"]
 		and pinned("nightly-2026-10-09-258ab27", projects) == ["/p/c/main.roc"]
-			and pinned("link-dev", projects) == []
-				and pinned("nightly-2026-10-14-38a3029", []) == []
+		and pinned("link-dev", projects) == []
+		and pinned("nightly-2026-10-14-38a3029", []) == []
 }
 
 # R-GC3, R-CC10: the compat id of `.talon.json` (the compat dir goes with the compiler), and the name of the trash dir.
@@ -304,11 +304,11 @@ expect {
 	ok = "{\"format\":1,\"id\":\"x\",\"compat\":\"258ab27\",\"installed_at\":\"2026-10-20T12:00:00Z\"}"
 	Manage.compat_of(Ok(ok)) == Ok("258ab27")
 		and Manage.compat_of(Ok(meta("2026-10-20T12:00:00Z"))) == Err(None)
-			and Manage.compat_of(Ok("{\"format\":1}")) == Err(None)
-				and Manage.compat_of(Ok("{\"compat\":5}")) == Err(None)
-					and Manage.compat_of(Ok("not json")) == Err(None)
-						and Manage.compat_of(Err(NotFound)) == Err(None)
-							and Manage.trash_name({ item: "/c/roc/toolchains/nightly-2026-10-09-258ab27", hex: "0123456789abcdef" }) == "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.trash"
+		and Manage.compat_of(Ok("{\"format\":1}")) == Err(None)
+		and Manage.compat_of(Ok("{\"compat\":5}")) == Err(None)
+		and Manage.compat_of(Ok("not json")) == Err(None)
+		and Manage.compat_of(Err(NotFound)) == Err(None)
+		and Manage.trash_name({ item: "/c/roc/toolchains/nightly-2026-10-09-258ab27", hex: "0123456789abcdef" }) == "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.trash"
 }
 
 # R-CS2, R-OUT2, R-J3, R-OUT4 (proposal): the text and the `data` of `roc default`.
@@ -321,9 +321,9 @@ expect {
 	data_none = Manage.default_data({ id, previous: Err(Unset), edit: Same, installed: Bool.False }).render()
 	set == ["${id} is now the default compiler\n"]
 		and same == ["${id} is already the default compiler\n"]
-			and fetched == ["installed ${id}\n", "${id} is now the default compiler\n"]
-				and data == "{\"id\":\"${id}\",\"previous\":\"link-dev\",\"changed\":true,\"installed\":true}"
-					and data_none == "{\"id\":\"${id}\",\"previous\":null,\"changed\":false,\"installed\":false}"
+		and fetched == ["installed ${id}\n", "${id} is now the default compiler\n"]
+		and data == "{\"id\":\"${id}\",\"previous\":\"link-dev\",\"changed\":true,\"installed\":true}"
+		and data_none == "{\"id\":\"${id}\",\"previous\":null,\"changed\":false,\"installed\":false}"
 }
 
 # R-RR1, R-RR2, R-OUT2, R-J3, R-OUT4 (proposal): the text and the `data` of `roc remove`. The projects are listed, the default move is named only when the compiler was the default.
@@ -343,9 +343,9 @@ expect {
 				"  /p/a/main.roc\n",
 				"  /p/b/main.roc\n",
 			]
-			and unset == ["removed ${id}\n", "no default compiler is set now\n"]
-				and data == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"was_default\":true,\"default\":\"nightly-2026-10-12-2664a27\",\"projects\":[\"/p/a/main.roc\"]}"
-					and data_none == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"was_default\":false,\"default\":null,\"projects\":[]}"
+		and unset == ["removed ${id}\n", "no default compiler is set now\n"]
+		and data == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"was_default\":true,\"default\":\"nightly-2026-10-12-2664a27\",\"projects\":[\"/p/a/main.roc\"]}"
+		and data_none == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"was_default\":false,\"default\":null,\"projects\":[]}"
 }
 
 # R-CM15, R-CM19 (slice 026): `roc update` with no operand, also for `up`. The global flags are accepted. Slice 243 (R-CH15): `roc update` takes one channel name now, so the two rows with an operand (`takes no operand`) moved to `ChanneldefaultTest` (`Manage.update_name`).
@@ -357,7 +357,7 @@ expect {
 	alias_ok = Args.parse(["roc", "up"]).map_ok(|a| (a.command, a.typed)) == Ok((["roc", "update"], "roc up"))
 	alias_ok
 		and updated(["roc", "update"]) == Ok({})
-			and updated(["roc", "up", "--json", "--yes", "--offline", "--quiet"]) == Ok({})
+		and updated(["roc", "up", "--json", "--yes", "--offline", "--quiet"]) == Ok({})
 }
 
 # R-RU2 (slice 026): the global default moves when it is not set, a nightly or a release (also the other tag form of a nightly). A `git-`, `link-` or `copy-` default stays (R-NS6). The text of the id decides, not the file.
@@ -365,11 +365,11 @@ expect {
 	moves = |default| Manage.update_move({ default: default })
 	moves(Err(Unset)) == Move
 		and moves(Ok("nightly-2026-10-09-258ab27")) == Move
-			and moves(Ok("nightly-2026-October-14-38a3029")) == Move
-				and moves(Ok("0.1.0")) == Move
-					and moves(Ok("git-dd03c09e")) == Stay
-						and moves(Ok("link-dev")) == Stay
-							and moves(Ok("copy-fix-1")) == Stay
+		and moves(Ok("nightly-2026-October-14-38a3029")) == Move
+		and moves(Ok("0.1.0")) == Move
+		and moves(Ok("git-dd03c09e")) == Stay
+		and moves(Ok("link-dev")) == Stay
+		and moves(Ok("copy-fix-1")) == Stay
 }
 
 # R-RU1, R-RU2, R-OUT2, R-J3, R-OUT4 (slice 026, proposal): the text and the `data` of `roc update`. A compiler that is not new is named, and the default can still move (answer Q1 of the review): then the compat warning is not shown (no install). The compat warnings of an install are on stderr. `changed` is true for the first default too.
@@ -394,19 +394,19 @@ expect {
 	data_newest = Manage.update_data({ id, item: "/c/roc/toolchains/${id}", installed: Bool.False, previous: known, changed: Bool.False }).render()
 	newest == { stdout: ["${id} is the newest\n"], stderr: [] }
 		and there_moved == { stdout: ["${id} is the newest\n", "the default compiler moved from ${old} to ${id}\n"], stderr: [] }
-			and there_set == { stdout: ["${id} is the newest\n", "${id} is now the default compiler\n"], stderr: [] }
-				and there_stays == { stdout: ["${id} is the newest\n", "note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default ${id}\n"], stderr: [] }
-					and data_there == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":false,\"previous\":\"${old}\",\"changed\":true}"
-						and first == { stdout: ["installed ${id}\n", "${id} is now the default compiler\n"], stderr: [] }
-							and moved == { stdout: ["installed ${id}\n", "the default compiler moved from ${old} to ${id}\n"], stderr: [] }
-								and stays == { stdout: ["installed ${id}\n", "note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default ${id}\n"], stderr: [] }
-									and same == { stdout: ["installed ${id}\n"], stderr: [] }
-										and warned == { stdout: ["installed ${id}\n", "the default compiler moved from ${old} to ${id}\n"], stderr: ["warning: the compat id of ${id} is not known: roc check touched no compat dir\n"] }
-											and several.stderr == ["warning: the compat id of ${id} is not known: roc check touched 2 compat dirs (compat-a, compat-b)\n"]
-												and data == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":true,\"previous\":\"${old}\",\"changed\":true}"
-													and data_first == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":true,\"previous\":null,\"changed\":true}"
-														and data_stay == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":true,\"previous\":\"link-dev\",\"changed\":false}"
-															and data_newest == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":false,\"previous\":\"nightly-2026-10-18-aaaaaaa\",\"changed\":false}"
+		and there_set == { stdout: ["${id} is the newest\n", "${id} is now the default compiler\n"], stderr: [] }
+		and there_stays == { stdout: ["${id} is the newest\n", "note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default ${id}\n"], stderr: [] }
+		and data_there == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":false,\"previous\":\"${old}\",\"changed\":true}"
+		and first == { stdout: ["installed ${id}\n", "${id} is now the default compiler\n"], stderr: [] }
+		and moved == { stdout: ["installed ${id}\n", "the default compiler moved from ${old} to ${id}\n"], stderr: [] }
+		and stays == { stdout: ["installed ${id}\n", "note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default ${id}\n"], stderr: [] }
+		and same == { stdout: ["installed ${id}\n"], stderr: [] }
+		and warned == { stdout: ["installed ${id}\n", "the default compiler moved from ${old} to ${id}\n"], stderr: ["warning: the compat id of ${id} is not known: roc check touched no compat dir\n"] }
+		and several.stderr == ["warning: the compat id of ${id} is not known: roc check touched 2 compat dirs (compat-a, compat-b)\n"]
+		and data == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":true,\"previous\":\"${old}\",\"changed\":true}"
+		and data_first == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":true,\"previous\":null,\"changed\":true}"
+		and data_stay == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":true,\"previous\":\"link-dev\",\"changed\":false}"
+		and data_newest == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"installed\":false,\"previous\":\"nightly-2026-10-18-aaaaaaa\",\"changed\":false}"
 }
 
 # R-CS1, R-U1, R-U4 (slice 026b): the operand of `roc use`. One text, as typed: a full id, a prefix, `@latest`, a step, a release. No operand and 2 or more are usage failures. A text that starts with `git-`, `link-` or `copy-` is refused with the
@@ -476,9 +476,9 @@ expect {
 			{ file: "/w/c/main.roc", baseline: old, previous: Err(NoPin), op: Ok(Pin(new)) },
 			{ file: "/w/d/main.roc", baseline: new, previous: Ok(new), op: Err(Same) },
 		])
-			and other_form == Ok([{ file: "/w/a/main.roc", baseline: "nightly-2026-October-14-38a3029", previous: Ok("nightly-2026-October-14-38a3029"), op: Err(Same) }])
-				and local == Ok([{ file: "/w/a/main.roc", baseline: "link-dev", previous: Err(NoPin), op: Ok(Pin(new)) }])
-					and none == Err(Fail.new(Environment, "no compiler is selected. Run: tln roc install @latest, then tln roc default <id>"))
+		and other_form == Ok([{ file: "/w/a/main.roc", baseline: "nightly-2026-October-14-38a3029", previous: Ok("nightly-2026-October-14-38a3029"), op: Err(Same) }])
+		and local == Ok([{ file: "/w/a/main.roc", baseline: "link-dev", previous: Err(NoPin), op: Ok(Pin(new)) }])
+		and none == Err(Fail.new(Environment, "no compiler is selected. Run: tln roc install @latest, then tln roc default <id>"))
 }
 
 # R-U6, R-CS1, R-OUT2, R-J3, R-OUT4 (slice 026b, proposal): the note when `ROC_TOOLCHAIN` is set, the lines of `roc use`, and its `data`. A member with no pin has the line `+ roc:`, a member with a pin has `~ roc: <old> -> <new>`. The keys of `data` are in this order:
@@ -495,9 +495,9 @@ expect {
 	lib_only = Manage.use_data({ id: new, files: [{ file: "/p/main.roc", previous: Ok(old) }], probes: 2, downloads: 0, built: Bool.False, notes: [] }).render()
 	note == "ROC_TOOLCHAIN is ${old}. It has a higher priority than the new pin ${new}, so it still selects the compiler. The pin is used when ROC_TOOLCHAIN is not set."
 		and one == ["/p/main.roc\n", "  ~ roc: ${old} -> ${new}\n", "the roc pin is now ${new}\n"]
-			and added == ["/p/main.roc\n", "  + roc: ${new}\n", "the roc pin is now ${new}\n"]
-				and none == ["the roc pin is already ${new} in every member. Nothing was written.\n"]
-					and many == ["/w/a/main.roc\n", "  ~ roc: ${old} -> ${new}\n", "/w/b/main.roc\n", "  + roc: ${new}\n", "the roc pin is now ${new}\n"]
-						and data == "{\"id\":\"${new}\",\"files\":[{\"path\":\"/w/a/main.roc\",\"previous\":\"${old}\"},{\"path\":\"/w/b/main.roc\",\"previous\":null}],\"probes\":6,\"downloads\":2,\"check\":\"passed\",\"build\":\"passed\",\"notes\":[\"unchanged error: main.roc: type mismatch\"]}"
-							and lib_only == "{\"id\":\"${new}\",\"files\":[{\"path\":\"/p/main.roc\",\"previous\":\"${old}\"}],\"probes\":2,\"downloads\":0,\"check\":\"passed\",\"build\":null,\"notes\":[]}"
+		and added == ["/p/main.roc\n", "  + roc: ${new}\n", "the roc pin is now ${new}\n"]
+		and none == ["the roc pin is already ${new} in every member. Nothing was written.\n"]
+		and many == ["/w/a/main.roc\n", "  ~ roc: ${old} -> ${new}\n", "/w/b/main.roc\n", "  + roc: ${new}\n", "the roc pin is now ${new}\n"]
+		and data == "{\"id\":\"${new}\",\"files\":[{\"path\":\"/w/a/main.roc\",\"previous\":\"${old}\"},{\"path\":\"/w/b/main.roc\",\"previous\":null}],\"probes\":6,\"downloads\":2,\"check\":\"passed\",\"build\":\"passed\",\"notes\":[\"unchanged error: main.roc: type mismatch\"]}"
+		and lib_only == "{\"id\":\"${new}\",\"files\":[{\"path\":\"/p/main.roc\",\"previous\":\"${old}\"}],\"probes\":2,\"downloads\":0,\"check\":\"passed\",\"build\":null,\"notes\":[]}"
 }

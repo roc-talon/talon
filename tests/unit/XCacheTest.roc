@@ -98,13 +98,13 @@ expect {
 	]
 	lay.dir == "/c/roc/talon/x/d1"
 		and lay.bin == "/c/roc/talon/x/d1/foo"
-			and lay.manifest == "/c/roc/talon/x/d1/manifest.json"
-				and lay.temp == "/c/roc/talon/x/d1.0123456789abcdef.tmp"
-					and lay.temp_bin == "/c/roc/talon/x/d1.0123456789abcdef.tmp/foo"
-						and lay.temp_manifest == "/c/roc/talon/x/d1.0123456789abcdef.tmp/manifest.json"
-							and XCache.manifest_of("/c/roc/talon/x/d1") == "/c/roc/talon/x/d1/manifest.json"
-								and XCache.dirs_of({ roots, entries: listing }) == ["/c/roc/talon/x/a1", "/c/roc/talon/x/b2"]
-									and XCache.dirs_of({ roots, entries: [] }) == []
+		and lay.manifest == "/c/roc/talon/x/d1/manifest.json"
+		and lay.temp == "/c/roc/talon/x/d1.0123456789abcdef.tmp"
+		and lay.temp_bin == "/c/roc/talon/x/d1.0123456789abcdef.tmp/foo"
+		and lay.temp_manifest == "/c/roc/talon/x/d1.0123456789abcdef.tmp/manifest.json"
+		and XCache.manifest_of("/c/roc/talon/x/d1") == "/c/roc/talon/x/d1/manifest.json"
+		and XCache.dirs_of({ roots, entries: listing }) == ["/c/roc/talon/x/a1", "/c/roc/talon/x/b2"]
+		and XCache.dirs_of({ roots, entries: [] }) == []
 }
 
 # R-B9 R-TF1: the manifest text is one line with `format` 1 and the fields in this order: name, source, build, sha256, libs, bundle, last_run. A git build has the commit and the ref. `read` gives the entry back.
@@ -128,8 +128,8 @@ expect {
 	dbg git_text
 	text == manifest("acme/foo", "1.1.0", "2026-10-15T12:00:00Z", "B1.1.0")
 		and git_text == "{\"format\":1,\"name\":\"acme/foo\",\"source\":{\"kind\":\"git\",\"commit\":\"dd03c09e5f1a2b3c4d5e6f708192a3b4c5d6e7f8\",\"ref\":\"main\"},\"build\":{\"hashes\":[\"H1\",\"H2\"],\"nightly\":\"nightly-2026-10-14-38a3029\",\"target\":\"x64musl\"},\"sha256\":\"S1.1.0\",\"libs\":[\"libm.so.6\"],\"bundle\":\"dd03c09e5f1a2b3c4d5e6f708192a3b4c5d6e7f8\",\"last_run\":\"2026-10-15T12:00:00Z\"}\n"
-			and back
-				and git_back
+		and back
+		and git_back
 }
 
 # R-TF1 R-TF3 R-TF6 R-B9: reading a manifest. A manifest can be made again by a build, so a newer `format` is ignored (no read, no write) and text that does not parse is deleted with a warning. An object that lacks the name, the source or the bundle is text that does not parse. A missing list or text is empty. An unknown field is ignored.
@@ -176,8 +176,8 @@ expect {
 	dbg got.warnings
 	names == ["/c/roc/talon/x/a:acme/foo", "/c/roc/talon/x/e:acme/bar"]
 		and got.delete == ["/c/roc/talon/x/b"]
-			and got.warnings == ["/c/roc/talon/x/b/manifest.json: the content does not parse. Talon deletes it and makes it again."]
-				and XCache.entries_of({ dirs: [], reads: [] }).found == []
+		and got.warnings == ["/c/roc/talon/x/b/manifest.json: the content does not parse. Talon deletes it and makes it again."]
+		and XCache.entries_of({ dirs: [], reads: [] }).found == []
 }
 
 # R-SC4 R-AD7: the names that a short name can match. One entity for each full name. The installed tools come first (alias is the key, a git tool has no version). An entry adds a name that no tool and no earlier entry has (alias empty). A short name finds a tool by its key, or by the repo name, or an entry by its repo name. A full name that a tool and an entry both have is no tie.
@@ -206,16 +206,16 @@ expect {
 	dbg cells
 	cells == ["q|acme/qux||", "g|acme/gee||", "|acme/foo||", "|other/roc-bar||"]
 		and versions == [Ok("1.0.0"), Err(None), Ok("1.0.0"), Ok("3.0.0")]
-			and lookup("q") == "existing acme/qux"
-				and lookup("qux") == "existing acme/qux"
-					and lookup("acme/qux") == "existing acme/qux"
-						and lookup("foo") == "existing acme/foo"
-							and lookup("bar") == "existing other/roc-bar"
-								and lookup("roc-bar") == "existing other/roc-bar"
-									and lookup("g") == "existing acme/gee"
-										and lookup("acme/new") == "new acme/new"
-											and lookup("nope") == "tln: error[usage]: 'nope' matches no installed tool or cached app. Use the full name (owner/repo)."
-												and XCache.entities({ tools: [], entries: [] }) == []
+		and lookup("q") == "existing acme/qux"
+		and lookup("qux") == "existing acme/qux"
+		and lookup("acme/qux") == "existing acme/qux"
+		and lookup("foo") == "existing acme/foo"
+		and lookup("bar") == "existing other/roc-bar"
+		and lookup("roc-bar") == "existing other/roc-bar"
+		and lookup("g") == "existing acme/gee"
+		and lookup("acme/new") == "new acme/new"
+		and lookup("nope") == "tln: error[usage]: 'nope' matches no installed tool or cached app. Use the full name (owner/repo)."
+		and XCache.entities({ tools: [], entries: [] }) == []
 }
 
 # R-B1 R-B2 R-B3 R-B10 (online): the build that a request uses. A build matches when the full name, the source kind (release) and the target are equal. No selector: any version. A selector: the version is `first` (the version that the selector means). The highest version wins (numbers), the installed tool wins a tie. The winner must be a candidate of the list (R-B3):
@@ -319,7 +319,7 @@ expect {
 	dbg bad
 	bad == []
 		and XCache.take_how({ project_uses: Bool.False }) == Move
-			and XCache.take_how({ project_uses: Bool.True }) == Copy
+		and XCache.take_how({ project_uses: Bool.True }) == Copy
 }
 
 # R-GC7 R-GC9 R-PT14: the entry dirs that GC removes. An entry goes when its `last_run` is more than `age` seconds before `now` (the time of Talon). Exactly `age` stays. A time in the future stays. An entry whose bundle is in `kept` (a `[tools]` URL of a live known project) stays, also when it is old.
@@ -346,6 +346,6 @@ expect {
 	dbg got
 	got == ["/x/old", "/x/ancient"]
 		and none_kept == ["/x/old", "/x/kept", "/x/ancient"]
-			and XCache.expired({ dirs: [], reads: [], now, age, kept: [] }) == []
-				and XCache.expired({ dirs, reads, now, age: 0, kept: [] }) == ["/x/boundary", "/x/old", "/x/fresh", "/x/kept", "/x/ancient"]
+		and XCache.expired({ dirs: [], reads: [], now, age, kept: [] }) == []
+		and XCache.expired({ dirs, reads, now, age: 0, kept: [] }) == ["/x/boundary", "/x/old", "/x/fresh", "/x/kept", "/x/ancient"]
 }

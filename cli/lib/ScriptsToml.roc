@@ -157,7 +157,7 @@ table_step = |t| {
 		Ok(value) => {
 			codes = ok_codes(value) ? |_| OkExit
 			line = run.trim()
-			if line.starts_with("@") Err(At(line.drop_prefix("@"))) else Ok(Run({ dir, run, ok_exit: codes }))
+			if (line.starts_with("@")) Err(At(line.drop_prefix("@"))) else Ok(Run({ dir, run, ok_exit: codes }))
 		}
 	}
 }

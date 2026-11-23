@@ -37,9 +37,9 @@ Link :: [].{
 		force = has_flag(args, "--force")
 		match args.operands {
 			[name, path] => {
-				if force and !copy return Err(Fail.new(Usage, "flag '--force' is not for 'roc link' without --copy"))
-				if !valid_name(name) return Err(Fail.new(Usage, "${name} is not a valid compiler name: use one word with no space, no / and no \\"))
-				Ok({ copy, force, name, id: if copy "copy-${name}" else "link-${name}", path })
+				if (force and !copy) return Err(Fail.new(Usage, "flag '--force' is not for 'roc link' without --copy"))
+				if (!valid_name(name)) return Err(Fail.new(Usage, "${name} is not a valid compiler name: use one word with no space, no / and no \\"))
+				Ok({ copy, force, name, id: if (copy) "copy-${name}" else "link-${name}", path })
 			}
 			[] | [_] => Err(Fail.new(Usage, "tln roc link needs a name and a path: tln roc link <name> <path>"))
 			many => Err(Fail.new(Usage, "tln roc link takes a name and a path, got ${many.len().to_str()} operands"))
@@ -122,7 +122,7 @@ Link :: [].{
 			no_path = Fail.new(Input, "${facts.path}: the link ${facts.id} has no absolute target path")
 			match TalonFile.open({ path: facts.path, text, newest: TalonFile.record_format, can_recreate: Bool.False })? {
 				Use(file) => match file.fields.find_first(|(key, _)| key == "path") {
-					Ok((_, JsonDoc.Text(target))) if target.starts_with("/") => Ok(target)
+					Ok((_, JsonDoc.Text(link_target))) if link_target.starts_with("/") => Ok(link_target)
 					_ => Err(no_path)
 				}
 				_ => Err(no_path)
@@ -155,5 +155,5 @@ has_flag = |args, flag| args.options.any(|(name, _)| name == flag)
 valid_name : Str -> Bool
 valid_name = |name| !name.is_empty()
 	and !name.ends_with(".lock")
-		and !name.ends_with(".tmp")
-			and name.to_utf8().all(|b| b != 47 and b != 92 and b != 32 and !(b >= 9 and b <= 13))
+	and !name.ends_with(".tmp")
+	and name.to_utf8().all(|b| b != 47 and b != 92 and b != 32 and !(b >= 9 and b <= 13))

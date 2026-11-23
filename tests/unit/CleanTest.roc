@@ -62,19 +62,19 @@ expect {
 	dbg (paths({ roots: split, all: Bool.False, builds }), paths({ roots: split, all: Bool.True, builds }), paths({ roots: same, all: Bool.True, builds: root_listing }))
 	paths({ roots: split, all: Bool.False, builds }) == ["/c/roc/talon/index", "/c/roc/talon/x"]
 		and paths({ roots: split, all: Bool.False, builds: [] }) == ["/c/roc/talon/index", "/c/roc/talon/x"]
-			and paths({ roots: split, all: Bool.True, builds })
-				== [
-					"/c/roc/talon/index",
-					"/c/roc/talon/x",
-					"/c/roc/packages",
-					"/b/compat-aaaaaaa",
-					"/b/compat-bbbbbbb",
-					"/b/debug-1234567",
-					"/b/nightly-2026-01-01-abc1234",
-				]
-				and both.all(|ask| ask.item == ask.path)
-					and paths({ roots: same, all: Bool.True, builds: root_listing }) == ["/c/roc/talon/index", "/c/roc/talon/x", "/c/roc/packages", "/c/roc/compat-ten"]
-						and paths({ roots: split, all: Bool.True, builds: [] }) == ["/c/roc/talon/index", "/c/roc/talon/x", "/c/roc/packages"]
+		and paths({ roots: split, all: Bool.True, builds })
+			== [
+				"/c/roc/talon/index",
+				"/c/roc/talon/x",
+				"/c/roc/packages",
+				"/b/compat-aaaaaaa",
+				"/b/compat-bbbbbbb",
+				"/b/debug-1234567",
+				"/b/nightly-2026-01-01-abc1234",
+			]
+		and both.all(|ask| ask.item == ask.path)
+		and paths({ roots: same, all: Bool.True, builds: root_listing }) == ["/c/roc/talon/index", "/c/roc/talon/x", "/c/roc/packages", "/c/roc/compat-ten"]
+		and paths({ roots: split, all: Bool.True, builds: [] }) == ["/c/roc/talon/index", "/c/roc/talon/x", "/c/roc/packages"]
 }
 
 # R-GC14: which asked paths are items. A path that is missing (`NotFound`) is no item: nothing to remove. A path that cannot be read (`Denied`, `Other`) is an item with no size (question Q5). `sizes` has a row for each `Ok` row, the `item` is the path.
@@ -95,7 +95,7 @@ expect {
 			sizes: [{ item: "/c/roc/talon/index", bytes: 1500000 }, { item: "/b/compat-aaaaaaa", bytes: 0 }],
 		}
 		and Clean.found([row("/c/roc/talon/index", Err(NotFound)), row("/c/roc/talon/x", Err(NotFound))]) == { paths: [], sizes: [] }
-			and Clean.found([]) == { paths: [], sizes: [] }
+		and Clean.found([]) == { paths: [], sizes: [] }
 }
 
 # R-GC14 R-OUT2 (proposal): the report and the bytes. The size is `Toolchain.size_text`. An item with no size has no suffix. The total line is there when one item has a size at least. A dry run has `would` and the last line. A declined run says that nothing was removed.
@@ -131,15 +131,15 @@ expect {
 				"would free 3.1 GB\n",
 				"dry run: nothing was removed\n",
 			]
-			and Clean.report(blind) == ["removed /c/roc/talon/index\n"]
-				and Clean.report(blind_dry) == ["would remove /c/roc/talon/index\n", "dry run: nothing was removed\n"]
-					and Clean.report(declined) == ["nothing was removed\n"]
-						and Clean.report(nothing) == ["nothing to remove\n"]
-							and Clean.freed(run) == 3101500999
-								and Clean.freed(dry) == 3101500999
-									and Clean.freed(blind) == 0
-										and Clean.freed(declined) == 0
-											and Clean.freed(nothing) == 0
+		and Clean.report(blind) == ["removed /c/roc/talon/index\n"]
+		and Clean.report(blind_dry) == ["would remove /c/roc/talon/index\n", "dry run: nothing was removed\n"]
+		and Clean.report(declined) == ["nothing was removed\n"]
+		and Clean.report(nothing) == ["nothing to remove\n"]
+		and Clean.freed(run) == 3101500999
+		and Clean.freed(dry) == 3101500999
+		and Clean.freed(blind) == 0
+		and Clean.freed(declined) == 0
+		and Clean.freed(nothing) == 0
 }
 
 # R-GC14 R-J3 R-OUT4 (proposal): the `data` of `--json`. The keys are `dry_run`, `all`, `removed`, `items`, `freed`. An item with no size has `"bytes":null`. A declined run lists the items and has `removed` false and `freed` 0.
@@ -152,10 +152,10 @@ expect {
 		== "{\"dry_run\":false,\"all\":true,\"removed\":true,\"items\":[{\"path\":\"/c/roc/talon/index\",\"bytes\":1500000},{\"path\":\"/c/roc/packages\",\"bytes\":null}],\"freed\":1500000}"
 		and Clean.data({ ..run, outcome: DryRun }).render()
 			== "{\"dry_run\":true,\"all\":true,\"removed\":false,\"items\":[{\"path\":\"/c/roc/talon/index\",\"bytes\":1500000},{\"path\":\"/c/roc/packages\",\"bytes\":null}],\"freed\":1500000}"
-			and Clean.data({ ..run, outcome: Declined }).render()
-				== "{\"dry_run\":false,\"all\":true,\"removed\":false,\"items\":[{\"path\":\"/c/roc/talon/index\",\"bytes\":1500000},{\"path\":\"/c/roc/packages\",\"bytes\":null}],\"freed\":0}"
-				and Clean.data({ all: Bool.False, outcome: Nothing, paths: [], sizes: [] }).render()
-					== "{\"dry_run\":false,\"all\":false,\"removed\":false,\"items\":[],\"freed\":0}"
+		and Clean.data({ ..run, outcome: Declined }).render()
+			== "{\"dry_run\":false,\"all\":true,\"removed\":false,\"items\":[{\"path\":\"/c/roc/talon/index\",\"bytes\":1500000},{\"path\":\"/c/roc/packages\",\"bytes\":null}],\"freed\":0}"
+		and Clean.data({ all: Bool.False, outcome: Nothing, paths: [], sizes: [] }).render()
+			== "{\"dry_run\":false,\"all\":false,\"removed\":false,\"items\":[],\"freed\":0}"
 }
 
 # R-GC14 (question Q4): the result of the one `delete!` call. `NotFound` is not a failure (the item went since the measure). The first other error is a failure of kind Environment (exit 18) that names the path and the error. A result list that is all `Ok` is `Ok`.

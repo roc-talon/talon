@@ -143,7 +143,7 @@ new_alias : { name : Str, url : Str, is_platform : Bool, as_alias : Try(Str, [Un
 new_alias = |req| {
 	alias = match req.as_alias {
 		Ok(a) => a
-		Err(Unset) => if req.is_platform "pf" else Alias.default(req.name)
+		Err(Unset) => if (req.is_platform) "pf" else Alias.default(req.name)
 	}
 	refuse = |why| Err(Fail.new(Usage, refusal(why, alias, req.name, req.as_alias.is_ok())))
 	match Alias.check(alias) {
@@ -153,7 +153,7 @@ new_alias = |req| {
 			Err(_) => Ok(New(alias))
 			Ok(row) => match unmanaged_kind(row.url) {
 				# R-AD38: only `--as` replaces an unmanaged entry. The default alias stops (R-AD18).
-				Ok(kind) => if req.as_alias.is_ok() Ok(Unmanaged(alias)) else Err(Fail.new(Usage, "the default alias '${alias}' for '${req.name}' is used by ${kind} in the header. Use --as <alias>, or --as ${alias} to replace that entry."))
+				Ok(kind) => if (req.as_alias.is_ok()) Ok(Unmanaged(alias)) else Err(Fail.new(Usage, "the default alias '${alias}' for '${req.name}' is used by ${kind} in the header. Use --as <alias>, or --as ${alias} to replace that entry."))
 				Err(Release) => refuse(Taken)
 			}
 		}
@@ -164,7 +164,7 @@ new_alias = |req| {
 unmanaged_kind : Str -> Try(Str, [Release])
 unmanaged_kind = |value| match Ident.of_url(value) {
 	Ok(_) => Err(Release)
-	Err(Foreign) => if value.contains("://") Ok("a foreign URL") else Ok("a path entry")
+	Err(Foreign) => if (value.contains("://")) Ok("a foreign URL") else Ok("a path entry")
 }
 
 # The texts of the failures (proposal, slice 004, "Output"). `given` is true for `--as`.

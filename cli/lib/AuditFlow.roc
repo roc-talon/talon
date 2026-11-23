@@ -48,7 +48,7 @@ AuditFlow :: [].{
 go! : Fx, Args => Try(I32, Fail)
 go! = |fx, args| {
 	opts = AuditCheck.read(args)?
-	if args.offline return Err(Fail.new(Usage, "tln audit reads the index of now, so it does not take --offline"))
+	if (args.offline) return Err(Fail.new(Usage, "tln audit reads the index of now, so it does not take --offline"))
 	read = Ls.load_full!(fx, args)?
 	from_toml = root_items(read)?
 	set = InstallFlow.setting_of({ ..read.request, registry: Setting(args.registry) }, read.loaded)?
@@ -67,7 +67,7 @@ go! = |fx, args| {
 	if AuditCheck.code(report.findings) == 21 {
 		Err(AuditCheck.failure(report))
 	} else {
-		if args.json fx.out!(Out.json_ok({ command: args.typed, data: AuditCheck.data(report) }))
+		if (args.json) fx.out!(Out.json_ok({ command: args.typed, data: AuditCheck.data(report) }))
 		Ok(0)
 	}
 }
@@ -78,7 +78,7 @@ registry! = |fx, ctx| {
 	read = ctx.read
 	entries = read.loaded.members.join_map(|m| m.locked.rows.map(|r| r.value)).concat(ctx.tools.map(|t| t.url))
 	sources = IndexQuery.sources({ groups: [], entries })
-	refused = if sources.is_empty() [] else PrivacyGuard.collect!(fx, { net: ctx.set.net, roots: ctx.set.roots, sources, offline: Bool.False, frozen: Bool.False })?
+	refused = if (sources.is_empty()) [] else PrivacyGuard.collect!(fx, { net: ctx.set.net, roots: ctx.set.roots, sources, offline: Bool.False, frozen: Bool.False })?
 	kept = entries.keep_if(|u| AuditDirect.repo_of(u).map_ok(|r| refused.contains("${r.owner}/${r.repo}")) != Ok(Bool.True))
 	answer = if IndexQuery.sources({ groups: [], entries: kept }).is_empty() {
 		empty_answer
@@ -114,7 +114,7 @@ State : { index : [Registry, Direct], tally : { checked : U64, findings : List(A
 leaf_walk! : Fx, ReadState => Try({ closures : List({ file : Str, walked : Closure.Walked }), gone : List(Str) }, Fail)
 leaf_walk! = |fx, read| {
 	named = read.loaded.members.keep_if(|m| m.file == (read.project.file ?? ""))
-	members = if named.is_empty() read.loaded.members else named
+	members = if (named.is_empty()) read.loaded.members else named
 	var $nodes = []
 	var $done = []
 	var $gone = []
@@ -142,7 +142,7 @@ root_items = |read| match AuditResolve.root_toml({ project: read.project, loaded
 # Q502 as `tln why`: the nightly of the workspace is the window when the pins of the members agree.
 pin_window : List(Str) -> ClosureRequest.Window
 pin_window = |pins| match pins {
-	[first, .. as rest] => if rest.all(|id| Pin.same_id(id, first)) Held(first) else None
+	[first, .. as rest] => if (rest.all(|id| Pin.same_id(id, first))) Held(first) else None
 	[] => None
 }
 

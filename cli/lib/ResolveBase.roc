@@ -276,7 +276,7 @@ ResolveBase :: [].{
 		intent = loaded.intent
 		strategy = match request.strategy {
 			Ok(s) => s
-			Err(Unset) => if request.command == Upgrade Highest else intent.resolution.strategy ?? Highest
+			Err(Unset) => if (request.command == Upgrade) Highest else intent.resolution.strategy ?? Highest
 		}
 		(nightly, nightly_from) = match (request.nightly, intent.toolchain.nightly, loaded.config.nightly) {
 			(Ok(b), _, _) => (b, Env)
@@ -338,7 +338,7 @@ ResolveBase :: [].{
 	write_checked! = |fx, run| {
 		ordered = Guard.check_all(run.files)?
 		changed = ordered.keep_oks(|o| run.edited.find_first(|e| e.path == o.path)).keep_if(|e| e.new != e.now)
-		if changed.is_empty() return Ok([])
+		if (changed.is_empty()) return Ok([])
 		match fx.write_atomic!(changed.map(|e| { path: e.path, content: e.new })) {
 			Ok(_) => Ok(changed.map(|e| e.path))
 			Err(failed) => Err(Fail.new(Environment, "cannot write ${failed.path}"))
@@ -440,7 +440,7 @@ ResolveBase :: [].{
 				_ => Err(NotMoved)
 			},
 		)
-		.fold(ResolveBase.no_names, |found, text| if found.contains(text) found else found.append(text))
+		.fold(ResolveBase.no_names, |found, text| if (found.contains(text)) found else found.append(text))
 
 	## Slice 010 (R-AL2): the entries of a member after the planned edits. A `Set` or `Replace` changes the value of an entry, an `Add` appends one. The pin write is no entry.
 	entries_after : Vars.Member, List(Edit) -> List(Closure.Entry)
@@ -450,8 +450,8 @@ ResolveBase :: [].{
 		ops.fold(
 			start,
 			|rows, op| match op {
-				Set({ alias, url }) => rows.map(|r| if r.alias == alias { ..r, value: url } else r)
-				Replace({ alias, url }) => rows.map(|r| if r.alias == alias { ..r, value: url } else r)
+				Set({ alias, url }) => rows.map(|r| if (r.alias == alias) { ..r, value: url } else r)
+				Replace({ alias, url }) => rows.map(|r| if (r.alias == alias) { ..r, value: url } else r)
 				Add({ alias, url, is_platform }) => rows.append({ alias, value: url, is_platform })
 				Remove(alias) => rows.keep_if(|r| r.alias != alias)
 				Pin(_) => rows
@@ -494,7 +494,7 @@ ResolveBase :: [].{
 	## Slice 010 (R-C8, question Q11): the warnings of the closures on stderr, one line for each text, no repeat. `--quiet` hides them (question Q22).
 	closure_notes! : Fx, Request, List({ file : Str, walked : Closure.Walked }) => {}
 	closure_notes! = |fx, request, closures| {
-		lines = closures.join_map(|c| Closure.notes(c.walked.rows)).fold(ResolveBase.no_names, |found, line| if found.contains(line) found else found.append(line))
+		lines = closures.join_map(|c| Closure.notes(c.walked.rows)).fold(ResolveBase.no_names, |found, line| if (found.contains(line)) found else found.append(line))
 		if !request.prompt.quiet {
 			for line in lines {
 				fx.err!("${line}\n")

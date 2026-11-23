@@ -29,12 +29,12 @@ expect {
 		== Ok([nm("acme", "lib"), nm("acme", "json"), nm("acme", "web"), nm("zed", "app")])
 		and check([Short("jsn"), Group("example.com/pkg/{v}/"), Url("https://example.org/a/b/c/d/e.tar.zst")])
 			== Ok([])
-			and check([])
-				== Ok([])
-				and PrivacyGuard.repos_to_check({ sources: all, offline: Bool.True, frozen: Bool.False })
-					== Ok([])
-					and PrivacyGuard.repos_to_check({ sources: all, offline: Bool.False, frozen: Bool.True })
-						== Ok([])
+		and check([])
+			== Ok([])
+		and PrivacyGuard.repos_to_check({ sources: all, offline: Bool.True, frozen: Bool.False })
+			== Ok([])
+		and PrivacyGuard.repos_to_check({ sources: all, offline: Bool.False, frozen: Bool.True })
+			== Ok([])
 }
 
 # R-RG4, G-C39 (Design Q219) rows 1 to 3: each `github.com` text of a request names a repository, the first 2 path parts: a URL with the host github.com and no path after the 2 parts, or any path (not only releases/download), a group or a URL with no scheme.
@@ -66,10 +66,10 @@ expect {
 		== Err(BadName("../lib"))
 		and check([Repo("acme/.."), Repo("acme/lib")])
 			== Err(BadName("acme/.."))
-			and PrivacyGuard.repos_to_check({ sources: [Repo("../lib")], offline: Bool.True, frozen: Bool.False })
-				== Ok([])
-				and PrivacyGuard.repos_to_check({ sources: [Repo("../lib")], offline: Bool.False, frozen: Bool.True })
-					== Ok([])
+		and PrivacyGuard.repos_to_check({ sources: [Repo("../lib")], offline: Bool.True, frozen: Bool.False })
+			== Ok([])
+		and PrivacyGuard.repos_to_check({ sources: [Repo("../lib")], offline: Bool.False, frozen: Bool.True })
+			== Ok([])
 }
 
 # R-RG5, Design Q200, G-C39: the file of a kept answer is `<index>/github/<owner>/<repo>/repo.json`, the key in lower case. An unsafe part has no file. R-RG4: the URL of the request is `<api>/repos/<owner>/<repo>`, with the base of the test hook too.
@@ -78,14 +78,14 @@ expect {
 		== Ok("/c/roc/talon/index/github/acme/lib/repo.json")
 		and PrivacyGuard.repo_file({ roots, owner: "Acme", repo: "LIB" })
 			== Ok("/c/roc/talon/index/github/acme/lib/repo.json")
-			and PrivacyGuard.repo_file({ roots, owner: "..", repo: "lib" })
-				== Err(BadPart)
-				and PrivacyGuard.repo_file({ roots, owner: "acme", repo: "a/b" })
-					== Err(BadPart)
-					and PrivacyGuard.repo_url({ api: "https://api.github.com", owner: "acme", repo: "lib" })
-						== "https://api.github.com/repos/acme/lib"
-						and PrivacyGuard.repo_url({ api: "http://127.0.0.1:1/api", owner: "acme", repo: "lib" })
-							== "http://127.0.0.1:1/api/repos/acme/lib"
+		and PrivacyGuard.repo_file({ roots, owner: "..", repo: "lib" })
+			== Err(BadPart)
+		and PrivacyGuard.repo_file({ roots, owner: "acme", repo: "a/b" })
+			== Err(BadPart)
+		and PrivacyGuard.repo_url({ api: "https://api.github.com", owner: "acme", repo: "lib" })
+			== "https://api.github.com/repos/acme/lib"
+		and PrivacyGuard.repo_url({ api: "http://127.0.0.1:1/api", owner: "acme", repo: "lib" })
+			== "http://127.0.0.1:1/api/repos/acme/lib"
 }
 
 # R-RG5, R-RG6, G-C39 row 4: the verdict. `private` false is public. `private` true and a 404 are refused (with no token a private repository is a 404). Any other status is not the guard's: a rate limit and a server fault.
@@ -97,30 +97,30 @@ expect {
 		== Public
 		and verdict(200, body("true"))
 			== Refused
-			and verdict(404, "{\"message\":\"Not Found\"}")
-				== Refused
-				and verdict(403, "{\"message\":\"API rate limit exceeded\"}")
-					== Other
-					and verdict(429, "")
-						== Other
-						and verdict(500, "")
-							== Other
-							and verdict(301, "")
-								== Other
-								and verdict(200, "{\"id\":1,\"name\":\"lib\"}")
-									== BadBody
-									and verdict(200, "{\"private\":\"false\"}")
-										== BadBody
-										and verdict(200, "{\"private\":null}")
-											== BadBody
-											and verdict(200, "{\"owner\":{\"private\":false}}")
-												== BadBody
-												and verdict(200, "<html>rate limited</html>")
-													== BadBody
-													and verdict(200, "")
-														== BadBody
-														and verdict(200, "[false]")
-															== BadBody
+		and verdict(404, "{\"message\":\"Not Found\"}")
+			== Refused
+		and verdict(403, "{\"message\":\"API rate limit exceeded\"}")
+			== Other
+		and verdict(429, "")
+			== Other
+		and verdict(500, "")
+			== Other
+		and verdict(301, "")
+			== Other
+		and verdict(200, "{\"id\":1,\"name\":\"lib\"}")
+			== BadBody
+		and verdict(200, "{\"private\":\"false\"}")
+			== BadBody
+		and verdict(200, "{\"private\":null}")
+			== BadBody
+		and verdict(200, "{\"owner\":{\"private\":false}}")
+			== BadBody
+		and verdict(200, "<html>rate limited</html>")
+			== BadBody
+		and verdict(200, "")
+			== BadBody
+		and verdict(200, "[false]")
+			== BadBody
 }
 
 # R-RG6, R-EC2: the 2 failures. Both are exit 2 (usage), say that private packages are not supported, and name the full name. With no token the text says "not found, or private" and names the 3 token sources of R-RG3.
@@ -131,10 +131,10 @@ expect {
 		== 2
 		and no_token.kind.code()
 			== 2
-			and with_token.message
-				== "GitHub repository acme/lib is private or does not exist. Private packages are not supported."
-				and no_token.message
-					== "GitHub repository acme/lib: not found, or private. Private packages are not supported. With no token GitHub answers 404 for a private repository: set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login), and run the command again."
+		and with_token.message
+			== "GitHub repository acme/lib is private or does not exist. Private packages are not supported."
+		and no_token.message
+			== "GitHub repository acme/lib: not found, or private. Private packages are not supported. With no token GitHub answers 404 for a private repository: set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login), and run the command again."
 }
 
 # R-RG4 row 4, R-E6, G-C39: the failure for an answer with no boolean private (or not JSON): kind network (exit 15), the text names the URL. The text is a proposal (TW24).

@@ -89,7 +89,7 @@ Toolchain :: [].{
 	domain = |facts| {
 		found = Nightlies.candidates(facts.releases)
 		shown = Nightlies.visible({ list: found, now: facts.now, min_age: facts.min_age, snapshot: Err(None), keep: [], exclude: facts.exclude })
-		{ named: found.map(|r| r.id), auto: if facts.nightly shown.map(|r| r.id) else [] }
+		{ named: found.map(|r| r.id), auto: if (facts.nightly) shown.map(|r| r.id) else [] }
 	}
 
 	## R-ST16, R-RU1, R-SO14 (slice 072a): the latest compiler in the channel: the newest release that the `nightly` switch and `min-release-age` allow. It is the last id of `auto` of `domain`.
@@ -123,7 +123,7 @@ Toolchain :: [].{
 	range_pick : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, exclude : List(Str) } -> Try(Str, [NoneKnown])
 	range_pick = |facts| {
 		times = facts.releases.map(|r| { id: r.id, published_at: r.published_at })
-		newest = |best, id| if Pin.order({ a: id, b: best, times }) == After id else best
+		newest = |best, id| if (Pin.order({ a: id, b: best, times }) == After) id else best
 		match Toolchain.range_allowed(facts).map(|r| r.id) {
 			[first, .. as rest] => Ok(rest.fold(first, newest))
 			[] => Err(NoneKnown)

@@ -271,8 +271,8 @@ expect {
 	dbg range
 	none.kind.code() == 18
 		and none.message == "no compiler is selected. Run: tln roc install @latest, then tln roc default <id>"
-			and range.kind.code() == 13
-				and range.message == want
+		and range.kind.code() == 13
+		and range.message == want
 }
 
 # R-SO2 R-NS6 R-SC12 (slice 023, G1 of the review): `ROC_TOOLCHAIN` is a full compiler id of any kind: a nightly, a release, or a named build (`git-<name>`, `link-<name>`, `copy-<name>`, R-NS6). An empty value

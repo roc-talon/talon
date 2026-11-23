@@ -52,7 +52,7 @@ Out :: [].{
 	## The message of the human text and of `error.message` is the same string.
 	fail : { command : Str, json : Bool, fail : Fail } -> { stdout : Str, stderr : Str }
 	fail = |run| {
-		stdout: if run.json json_fail({ command: run.command, fail: run.fail }) else "",
+		stdout: if (run.json) json_fail({ command: run.command, fail: run.fail }) else "",
 		stderr: "${run.fail.line()}\n",
 	}
 

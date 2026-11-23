@@ -20,7 +20,7 @@ row = |version, yanked| {
 	repo: Ok("acme/json"),
 	published_at: 1000,
 	yanked,
-	yank_reason: if yanked Ok("bad") else Err(None),
+	yank_reason: if (yanked) Ok("bad") else Err(None),
 	withdrawn: Err(None),
 	provenance: ["oidc"],
 }
@@ -36,11 +36,11 @@ expect {
 	rows = [row("1.0.0", Bool.False), row("2.0.0", Bool.False), row("1.9.0", Bool.False), row("2.0.5", Bool.False), row("3.0.0", Bool.False)]
 	prev("2.1.0", rows) == "2.0.5"
 		and prev("2.1.0", rows.rev()) == "2.0.5"
-			and prev("2.0.5", rows) == "2.0.0"
-				and prev("2.0.0", rows) == "1.9.0"
-					and prev("10.0.0", rows) == "3.0.0"
-						# the order of versions is by number, not by text (1.10.0 is larger than 1.9.0)
-						and prev("2.0.0", [row("1.9.0", Bool.False), row("1.10.0", Bool.False)]) == "1.10.0"
+		and prev("2.0.5", rows) == "2.0.0"
+		and prev("2.0.0", rows) == "1.9.0"
+		and prev("10.0.0", rows) == "3.0.0"
+		# the order of versions is by number, not by text (1.10.0 is larger than 1.9.0)
+		and prev("2.0.0", [row("1.9.0", Bool.False), row("1.10.0", Bool.False)]) == "1.10.0"
 }
 
 # R-PU39: a yanked release is never the previous release. The check goes to the newest release below that is not yanked.
@@ -54,8 +54,8 @@ expect {
 expect {
 	prev("2.1.0", []) == "none"
 		and prev("2.1.0", [row("2.1.0", Bool.False)]) == "none"
-			and prev("2.1.0", [row("3.0.0", Bool.False), row("2.1.1", Bool.False), row("2.1.0", Bool.False)]) == "none"
-				and prev("1.0.0", [row("1.0.0", Bool.False), row("1.0.1", Bool.False)]) == "none"
+		and prev("2.1.0", [row("3.0.0", Bool.False), row("2.1.1", Bool.False), row("2.1.0", Bool.False)]) == "none"
+		and prev("1.0.0", [row("1.0.0", Bool.False), row("1.0.1", Bool.False)]) == "none"
 }
 
 # R-PU39: the result is the whole row, so the flow has its `url` (the `--old` argument).
@@ -76,7 +76,7 @@ expect {
 	wrow = |version| { ..row(version, Bool.False), withdrawn: Ok("gone") }
 	prev("2.1.0", [wrow("2.0.5"), row("2.0.0", Bool.False)]) == "2.0.0"
 		and prev("2.1.0", [row("2.0.5-rc.1", Bool.False), row("2.0.0", Bool.False)]) == "2.0.0"
-			and prev("2.1.0", [wrow("2.0.5"), row("2.0.0-rc.1", Bool.False)]) == "none"
+		and prev("2.1.0", [wrow("2.0.5"), row("2.0.0-rc.1", Bool.False)]) == "none"
 }
 
 # The texts of `roc bump` (research/roc-bump/results.txt, nightly 2026-10-14). The stdout of the 5 nightlies is the same. The two parts of a text are joined with a new line.
@@ -107,26 +107,26 @@ bad_err = join([head("name not in scope"), "", "Nothing is named nope in this sc
 expect {
 	PublishCheck.verdict({ ended: Exited(0), stdout: pass_out, stderr: "" }) == Pass
 		and PublishCheck.verdict({ ended: Exited(0), stdout: "", stderr: "" }) == Pass
-			and PublishCheck.verdict({ ended: Exited(1), stdout: minor_out, stderr: minor_err }) == Less({ level: "MINOR", next: "1.1.0" })
-				and PublishCheck.verdict({ ended: Exited(1), stdout: minor_out, stderr: minor_err_wrapped }) == Less({ level: "MINOR", next: "1.1.0" })
-					and PublishCheck.verdict({ ended: Exited(1), stdout: major_out, stderr: major_err }) == Less({ level: "MAJOR", next: "2.0.0" })
+		and PublishCheck.verdict({ ended: Exited(1), stdout: minor_out, stderr: minor_err }) == Less({ level: "MINOR", next: "1.1.0" })
+		and PublishCheck.verdict({ ended: Exited(1), stdout: minor_out, stderr: minor_err_wrapped }) == Less({ level: "MINOR", next: "1.1.0" })
+		and PublishCheck.verdict({ ended: Exited(1), stdout: major_out, stderr: major_err }) == Less({ level: "MAJOR", next: "2.0.0" })
 }
 
 # Q525: every other result is not `Less`. `does not move forward` has the headline and no `must be at least`. A compile error is `package does not compile` (the last headline). The headline without the stdout lines is not read (no guess).
 expect {
 	PublishCheck.verdict({ ended: Exited(1), stdout: back_out, stderr: back_err }) == Other("insufficient version bump")
 		and PublishCheck.verdict({ ended: Exited(1), stdout: "", stderr: bad_err }) == Other("package does not compile")
-			and PublishCheck.verdict({ ended: Exited(1), stdout: "", stderr: minor_err }) == Other("insufficient version bump")
-				and PublishCheck.verdict({ ended: Exited(1), stdout: "Comparing...\n", stderr: minor_err }) == Other("insufficient version bump")
-					# the stdout lines with no headline: a note, never a warning
-					and PublishCheck.verdict({ ended: Exited(1), stdout: minor_out, stderr: join([head("download failed"), "", "roc bump failed.", ""]) }) == Other("download failed")
+		and PublishCheck.verdict({ ended: Exited(1), stdout: "", stderr: minor_err }) == Other("insufficient version bump")
+		and PublishCheck.verdict({ ended: Exited(1), stdout: "Comparing...\n", stderr: minor_err }) == Other("insufficient version bump")
+		# the stdout lines with no headline: a note, never a warning
+		and PublishCheck.verdict({ ended: Exited(1), stdout: minor_out, stderr: join([head("download failed"), "", "roc bump failed.", ""]) }) == Other("download failed")
 }
 
 # Q525, Q526: the run that Talon cut, a signal and a program that did not start.
 expect {
 	PublishCheck.verdict({ ended: TimedOut, stdout: minor_out, stderr: minor_err }) == TimedOut
 		and PublishCheck.verdict({ ended: Signaled(9), stdout: "", stderr: "" }) == Signaled(9)
-			and PublishCheck.verdict({ ended: NotStarted("no such file"), stdout: "", stderr: "" }) == NotStarted("no such file")
+		and PublishCheck.verdict({ ended: NotStarted("no such file"), stdout: "", stderr: "" }) == NotStarted("no such file")
 }
 
 # R-PU39, R-PUB4 item 13 (proposals, R-OUT2): the warning for `Less`, no line for a pass, the notes for the other results.
@@ -135,10 +135,10 @@ expect {
 	lined(Less({ level: "MINOR", next: "2.1.0" }))
 		== Ok({ kind: Warning, text: "2.0.1 bumps less than the API change of 2.0.0 needs: roc bump wants at least 2.1.0 (a MINOR change). The publish goes on." })
 		and lined(Pass) == Err(Silent)
-			and lined(Other("package does not compile"))
-				== Ok({ kind: Note, text: "roc bump did not compare 2.0.0 and 2.0.1: package does not compile. The publish goes on." })
-				and lined(TimedOut) == Ok({ kind: Note, text: "roc bump did not end in 30 s: no API check. The publish goes on." })
-					and lined(NotStarted("no such file")) == Ok({ kind: Note, text: "roc bump could not start (no such file): no API check." })
+		and lined(Other("package does not compile"))
+			== Ok({ kind: Note, text: "roc bump did not compare 2.0.0 and 2.0.1: package does not compile. The publish goes on." })
+		and lined(TimedOut) == Ok({ kind: Note, text: "roc bump did not end in 30 s: no API check. The publish goes on." })
+		and lined(NotStarted("no such file")) == Ok({ kind: Note, text: "roc bump could not start (no such file): no API check." })
 }
 
 # R-PUB4 item 13 (proposals): the note when no check can run, and the note for a group read that failed.
@@ -158,7 +158,7 @@ expect {
 expect {
 	PublishCheck.verdict({ ended: Exited(1), stdout: "", stderr: "Error: no value was supplied for --old\n" }) == Other("")
 		and PublishCheck.verdict({ ended: Exited(2), stdout: minor_out, stderr: minor_err }) == Other("exit code 2")
-			and PublishCheck.verdict({ ended: Exited(127), stdout: "", stderr: "" }) == Other("exit code 127")
+		and PublishCheck.verdict({ ended: Exited(127), stdout: "", stderr: "" }) == Other("exit code 127")
 }
 
 # Q531, Q532 (proposals): the notes for a signal, for no cause, and for an exit code.
@@ -166,5 +166,5 @@ expect {
 	lined = |verdict| PublishCheck.report({ verdict, old: "2.0.0", version: "2.0.1", timeout: 30 })
 	lined(Signaled(9)) == Ok({ kind: Note, text: "roc bump ended with signal 9: no API check. The publish goes on." })
 		and lined(Other("")) == Ok({ kind: Note, text: "roc bump did not compare 2.0.0 and 2.0.1. The publish goes on." })
-			and lined(Other("exit code 2")) == Ok({ kind: Note, text: "roc bump did not compare 2.0.0 and 2.0.1: exit code 2. The publish goes on." })
+		and lined(Other("exit code 2")) == Ok({ kind: Note, text: "roc bump did not compare 2.0.0 and 2.0.1: exit code 2. The publish goes on." })
 }

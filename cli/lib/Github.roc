@@ -42,7 +42,7 @@ Github :: [].{
 	## `/`, `\` or a NUL byte. A tag such as `v1..2` or `a.b` is safe (only the whole text `.` or `..` is not).
 	hint_file : { roots : Roots, owner : Str, repo : Str, tag : Str } -> Try(Str, [BadPart])
 	hint_file = |facts| match Github.index_dir({ roots: facts.roots, owner: facts.owner, repo: facts.repo }) {
-		Ok(dir) => if Ident.safe_part(facts.tag) Ok(Text.join(dir, "${facts.tag}.roc-version")) else Err(BadPart)
+		Ok(dir) => if (Ident.safe_part(facts.tag)) Ok(Text.join(dir, "${facts.tag}.roc-version")) else Err(BadPart)
 		Err(BadPart) => Err(BadPart)
 	}
 
@@ -134,9 +134,9 @@ Github :: [].{
 	## | No page | no | `Fetch` |
 	plan : { cached : Try(Cached, [Missing]), now : U64, offline : Bool } -> [Use, Revalidate(Str), Fetch, Missing]
 	plan = |facts| match facts.cached {
-		Err(Missing) => if facts.offline Missing else Fetch
+		Err(Missing) => if (facts.offline) Missing else Fetch
 		Ok(page) => {
-			age = if page.mtime >= facts.now 0 else facts.now - page.mtime
+			age = if (page.mtime >= facts.now) 0 else facts.now - page.mtime
 			if facts.offline or age < 60 {
 				Use
 			} else {
@@ -238,7 +238,7 @@ Github :: [].{
 	audit_list! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64 } => Try([NotFound, Pages({ pages : List(Str), redirected : Bool })], Fail)
 	audit_list! = |fx, facts| {
 		state = fetch!(fx, { net: facts.net, roots: facts.roots, owner: facts.owner, repo: facts.repo, now: facts.now, offline: Bool.False, limit: 0, audit: Bool.True })?
-		if state.gone Ok(NotFound) else Ok(Pages({ pages: state.pages, redirected: state.moved }))
+		if (state.gone) Ok(NotFound) else Ok(Pages({ pages: state.pages, redirected: state.moved }))
 	}
 
 	## The `.roc-version` hint of a tag (R-DI8, slice 068). It keeps each answer in the cache file `hint_file` and never asks again for a tag that has one. The calls, in order (the L2 case `index/di-list-flow` fixes them):
@@ -257,7 +257,7 @@ Github :: [].{
 		Err(BadPart) => Ok(Err(NoHint))
 		Ok(path) => match fx.read_files!([path]) {
 			[Ok(text)] => Ok(kept_hint(text))
-			_ => if facts.offline Ok(Err(NoHint)) else ask_hint!(fx, facts, path)
+			_ => if (facts.offline) Ok(Err(NoHint)) else ask_hint!(fx, facts, path)
 		}
 	}
 
@@ -353,7 +353,7 @@ next_target : Str -> Try(Str, [NotFound])
 next_target = |part| {
 	link = part.trim()
 	match link.split_first(">") {
-		Ok(found) => if link.starts_with("<") and found.after.contains("rel=\"next\"") Ok(found.before.drop_prefix("<")) else Err(NotFound)
+		Ok(found) => if (link.starts_with("<") and found.after.contains("rel=\"next\"")) Ok(found.before.drop_prefix("<")) else Err(NotFound)
 		Err(NotFound) => Err(NotFound)
 	}
 }
@@ -397,7 +397,7 @@ pages_from! = |fx, run, state, n, url| {
 		(Missing, _) => Ok(state)
 		(Use, Ok(c)) => {
 			oldest = match state.oldest {
-				Ok(t) => if t < c.mtime t else c.mtime
+				Ok(t) => if (t < c.mtime) t else c.mtime
 				Err(None) => c.mtime
 			}
 			next_page!(fx, run, { ..state, pages: state.pages.append(c.body), oldest: Ok(oldest) }, n, c.next)
@@ -422,7 +422,7 @@ pages_from! = |fx, run, state, n, url| {
 						new_etag = header_value(answer.headers, "etag").map_err(|_| None)
 						next = Github.next_link(answer.headers)
 						# G3: a body that is not a JSON array is not cached, so the next call asks again.
-						writes = if is_list(answer.body) and !state.moved [{ path: files.body, content: answer.body }, { path: files.meta, content: Github.meta_text({ etag: new_etag, next }) }] else []
+						writes = if (is_list(answer.body) and !state.moved) [{ path: files.body, content: answer.body }, { path: files.meta, content: Github.meta_text({ etag: new_etag, next }) }] else []
 						next_page!(fx, run, { ..asked, pages: asked.pages.append(answer.body), writes: asked.writes.concat(writes) }, n, next)
 					}
 					(304, Ok(c)) if etag != Err(None) => {

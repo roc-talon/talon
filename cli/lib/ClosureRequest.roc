@@ -47,7 +47,7 @@ ClosureRequest :: [].{
 	request = |facts| {
 		compilers = ClosureRequest.window_of(facts.window)?
 		found = facts.entries.keep_oks(|entry| Ident.of_url(entry).map_ok(|ident| ident.hash))
-		hashes = found.fold([], |acc, hash| if acc.contains(hash) acc else acc.append(hash))
+		hashes = found.fold([], |acc, hash| if (acc.contains(hash)) acc else acc.append(hash))
 		Ok({ groups: facts.groups, hashes, compilers })
 	}
 
@@ -56,12 +56,12 @@ ClosureRequest :: [].{
 		None => Ok(Err(None))
 		Held(id) => Ok(Ok({ from: Ok(id), to: Ok(id) }))
 		Report(domain) => match ClosureRequest.ends(ClosureRequest.staying(domain), domain.rows) {
-			Ok(ends) => Ok(Ok({ from: Ok(ends.oldest), to: Ok(ends.newest) }))
+			Ok(span) => Ok(Ok({ from: Ok(span.oldest), to: Ok(span.newest) }))
 			Err(NoCompiler) => Ok(Err(None))
 		}
 		Free(domain) => {
-			ends = ClosureRequest.ends(ClosureRequest.staying(domain), domain.rows)?
-			Ok(Ok({ from: Ok(ends.oldest), to: Ok(ends.newest) }))
+			span = ClosureRequest.ends(ClosureRequest.staying(domain), domain.rows)?
+			Ok(Ok({ from: Ok(span.oldest), to: Ok(span.newest) }))
 		}
 	}
 
@@ -79,9 +79,9 @@ ClosureRequest :: [].{
 				|r| (!Pin.is_nightly(r.id) or domain.nightly)
 					# R-CH16: a user-channel build is local only, so it is never in a registry window.
 					and (Pin.is_nightly(r.id) or !Pin.counts_as_nightly(r.id))
-						and Pin.admits({ req: parsed, id: r.id, times })
-							and !Age.hides({ now: domain.now, min_age: domain.min_age, published_at: r.published_at, exclude: domain.exclude, name: Ok(Age.compiler_name(r.id)) })
-								and ClosureRequest.allowed(domain.snapshot, r),
+					and Pin.admits({ req: parsed, id: r.id, times })
+					and !Age.hides({ now: domain.now, min_age: domain.min_age, published_at: r.published_at, exclude: domain.exclude, name: Ok(Age.compiler_name(r.id)) })
+					and ClosureRequest.allowed(domain.snapshot, r),
 			)
 		}
 	}
@@ -104,8 +104,8 @@ ClosureRequest :: [].{
 				rest.fold(
 					{ oldest: first.id, newest: first.id },
 					|acc, r| {
-						oldest = if ordered(r.id, acc.oldest) == Before r.id else acc.oldest
-						newest = if ordered(r.id, acc.newest) == After r.id else acc.newest
+						oldest = if (ordered(r.id, acc.oldest) == Before) r.id else acc.oldest
+						newest = if (ordered(r.id, acc.newest) == After) r.id else acc.newest
 						{ oldest, newest }
 					},
 				),
@@ -116,8 +116,8 @@ ClosureRequest :: [].{
 	## R-AP74 row 3, G-C26 (slice 205b): the one `range` text of a variable with 2 or more ranges. The distinct ranges in the order of first appearance, joined with `, ` (the intersection). A range `*` is dropped. No range left (also an empty list): `Err(None)`, and `range` is left out.
 	join_ranges : List(Str) -> Try(Str, [None])
 	join_ranges = |ranges| {
-		distinct = ranges.fold([], |acc, range| if range == "*" or acc.contains(range) acc else acc.append(range))
-		if distinct.is_empty() Err(None) else Ok(Str.join_with(distinct, ", "))
+		distinct = ranges.fold([], |acc, range| if (range == "*" or acc.contains(range)) acc else acc.append(range))
+		if (distinct.is_empty()) Err(None) else Ok(Str.join_with(distinct, ", "))
 	}
 
 	## Slice 206d2 (Design Q468): the switch and the range cause give `Toolchain.range_failed` (exit 10), as `direct`. The other causes keep the texts below.

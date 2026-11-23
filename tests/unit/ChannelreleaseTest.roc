@@ -30,14 +30,14 @@ hex64 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
 asset : { name : Str, size : U64, digest : Str } -> Str
 asset = |a| {
-	digest = if a.digest == "" "" else ",\"digest\":${a.digest}"
+	digest = if (a.digest == "") "" else ",\"digest\":${a.digest}"
 	"{\"id\":9,\"name\":\"${a.name}\",\"size\":${a.size.to_str()}${digest},\"content_type\":\"application/gzip\",\"browser_download_url\":\"http://127.0.0.1:1/dl/x/${a.name}\"}"
 }
 
 release : { tag : Str, draft : Bool, pre : Bool, published : Str, assets : List(Str) } -> Str
 release = |r| {
-	published = if r.published == "null" "null" else "\"${r.published}\""
-	"{\"id\":1,\"tag_name\":\"${r.tag}\",\"name\":\"${r.tag}\",\"draft\":${if r.draft "true" else "false"},\"prerelease\":${if r.pre "true" else "false"},\"published_at\":${published},\"assets\":[${Str.join_with(r.assets, ",")}]}"
+	published = if (r.published == "null") "null" else "\"${r.published}\""
+	"{\"id\":1,\"tag_name\":\"${r.tag}\",\"name\":\"${r.tag}\",\"draft\":${if (r.draft) "true" else "false"},\"prerelease\":${if (r.pre) "true" else "false"},\"published_at\":${published},\"assets\":[${Str.join_with(r.assets, ",")}]}"
 }
 
 plain : { tag : Str, published : Str, assets : List(Str) } -> Str
@@ -180,8 +180,8 @@ expect {
 	run = |pages| Nightlies.releases_of({ host: LinuxX64, pages, channel: reify }).map_ok(|l| l.len())
 	run([page([ok_build]), "{\"message\":\"Not Found\"}"]) == Err(BadPage(2))
 		and run([page([bad_time])]) == Err(BadPage(1))
-			and run([page([other_time])]) == Ok(0)
-				and run([]) == Ok(0)
+		and run([page([other_time])]) == Ok(0)
+		and run([]) == Ok(0)
 }
 
 # R-CH9 R-NS1: a channel is ordered alone, by the date of the id (the year, the month, the day), then `published_at`, then the text. A later
@@ -233,7 +233,7 @@ expect {
 	see = |exclude, rec| Nightlies.visible({ list: [new_r], now, min_age: 2 * day, snapshot: Err(None), keep: [], exclude, channels: [], recorded: rec }).map(|r| r.id)
 	see(["Karakatiza666/*"], recorded) == [new_r.id]
 		and see(["Karakatiza666/roc-reify-nightlies"], recorded) == [new_r.id]
-			and see(["roc-lang/*"], recorded) == []
-				and see(["Karakatiza666/*"], []) == []
-					and see([], recorded) == []
+		and see(["roc-lang/*"], recorded) == []
+		and see(["Karakatiza666/*"], []) == []
+		and see([], recorded) == []
 }

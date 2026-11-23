@@ -91,7 +91,7 @@ GitBuild :: [].{
 			NotStarted(why) => "did not start: ${why}"
 		}
 		last = facts.last_line.trim()
-		tail = if last.is_empty() "" else ": ${last}"
+		tail = if (last.is_empty()) "" else ": ${last}"
 		Fail.new(Internal, "zig build of ${facts.id} failed (${how})${tail}")
 	}
 
@@ -108,11 +108,11 @@ GitBuild :: [].{
 		found = facts.rows.fold(
 			{ id: "", at: 0, any: Bool.False },
 			|best, row| match built_at(facts.source, row.text) {
-				Ok(at) => if !best.any or at >= best.at { id: row.id, at, any: Bool.True } else best
+				Ok(at) => if (!best.any or at >= best.at) { id: row.id, at, any: Bool.True } else best
 				Err(NoMatch) => best
 			},
 		)
-		if found.any Ok(found.id) else Err(None)
+		if (found.any) Ok(found.id) else Err(None)
 	}
 
 	## R-R5: no build of that repo and ref: kind `Usage`: `no build of <owner>/<repo>@<ref> is installed. Run: tln roc install --git <owner>/<repo>@<ref>`.

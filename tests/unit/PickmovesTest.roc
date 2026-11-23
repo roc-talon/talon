@@ -102,7 +102,7 @@ expect {
 	core = slot("core", Bool.False, ["^1"], u("core", "1.2.0"), Movable, [cand(u("core", "1.0.0"), 30), cand(u("core", "1.1.0"), 30), cand(u("core", "1.2.0"), 30), cand(u("core", "1.3.0"), 30), cand(u("core", "1.4.0"), 30)])
 	entry = |versions| fresh(slot("core2", Bool.False, ["^1"], u("core", "1.2.0"), Free, versions.map(|v| cand(u("core", v), 30))))
 	facts = ["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0"].map(|v| pkg(u("core", v), []))
-	pair = |version, old| Ok([("core", version, if old == "" Keep else Move(old)), ("core2", version, Move(""))])
+	pair = |version, old| Ok([("core", version, if (old == "") Keep else Move(old)), ("core2", version, Move(""))])
 	both = ["1.0.0", "1.1.0", "1.3.0", "1.4.0"]
 	rows = [
 		("the first search: the new entry has no 1.2.0, so no tuple", run([core, entry(both)], facts, Highest, Bool.False), no_fit("core, core2")),

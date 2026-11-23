@@ -70,7 +70,7 @@ Pin :: [].{
 		# Slice 241 (R-CH7, Design Q612 item 3): `*`, a semver range and `>=<nightly>` never admit a user build. `=<user id>` and `>=<user id>` are over that channel only.
 		Any => Channel.user_parts(facts.id).is_err()
 		Exactly(a) => Pin.same_id(a, facts.id)
-		AtLeast(a) => if Channel.user_parts(a).is_ok() Channel.user_at_least(a, facts.id, facts.times) else PinOrder.at_least(a, facts.id, facts.times)
+		AtLeast(a) => if (Channel.user_parts(a).is_ok()) Channel.user_at_least(a, facts.id, facts.times) else PinOrder.at_least(a, facts.id, facts.times)
 		Semver(range) => !Pin.is_nightly(facts.id) and Channel.user_parts(facts.id).is_err() and Ranges.admits({ ranges: [range], version: facts.id })
 	}
 
@@ -360,7 +360,7 @@ outside_pin = |texts, facts| match texts {
 			Ok(req) => !Pin.admits({ req, id: pin, times: [] })
 			Err(Unset) => Bool.False
 		}
-		if out_of_range or (Pin.is_nightly(pin) and !facts.nightly) Ok(pin) else Err(None)
+		if (out_of_range or (Pin.is_nightly(pin) and !facts.nightly)) Ok(pin) else Err(None)
 	}
 	_ => Err(None)
 }

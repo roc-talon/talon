@@ -63,7 +63,7 @@ Prompt := {
 	## Options: `<question> [1-<count>, default <n>] `.
 	text : Prompt -> Str
 	text = |prompt| match prompt.shape {
-		YesNo => if prompt.default == Yes "${prompt.question} [Y/n] " else "${prompt.question} [y/N] "
+		YesNo => if (prompt.default == Yes) "${prompt.question} [Y/n] " else "${prompt.question} [y/N] "
 		Options(count) => {
 			default_option = match prompt.default {
 				Option(n) => n

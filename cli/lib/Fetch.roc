@@ -84,7 +84,7 @@ Fetch :: [].{
 	## R-FE4, Resolution 13 (slice 060, question Q1): the compiler that a fetch calls "selected". `held` is the compiler that the command holds (`Pin.Decision.held`), `""` when the flow has no decision. `default` is `default-roc` of `config.toml`
 	## (rank 6), `""` when it is not set or the flow does not know it. The held compiler wins. Else the default. Else `""`: no selected compiler.
 	selected : { held : Str, default : Str } -> Str
-	selected = |x| if x.held.is_empty() x.default else x.held
+	selected = |x| if (x.held.is_empty()) x.default else x.held
 
 	## The failure of a download that ended with an error (R-DA7, R-FE6, R-FE10). `outcome` is `Download.outcome`. In P0 there is
 	## no mirror (R-FE6), so an HTTP error answer is a failure of kind `Network` (exit 15):
@@ -103,7 +103,7 @@ Fetch :: [].{
 			(Http(Err(Unknown)), _) => Fail.new(Network, "download of ${p.what} failed: HTTP error (${p.url}). Run tln audit to see why.")
 			(Failed, NotStarted(text)) => Fail.new(Environment, "cannot run ${program}: ${text}")
 			(Failed, ended) => {
-				why = if facts.last_line.is_empty() ended_text(program, ended) else facts.last_line
+				why = if (facts.last_line.is_empty()) ended_text(program, ended) else facts.last_line
 				Fail.new(Network, "download of ${p.what} failed: ${why} (${p.url})")
 			}
 		}
@@ -166,7 +166,7 @@ Fetch :: [].{
 			_ => []
 		}
 		start = facts.urls.map(|url| start_state(Fetch.plan({ roots: facts.roots, url, hex }), listing, facts.offline))
-		done = if pending_plans(start).is_empty() start else run!(fx, facts, start)
+		done = if (pending_plans(start).is_empty()) start else run!(fx, facts, start)
 		done.map(final_result)
 	}
 }
@@ -313,7 +313,7 @@ program_of! = |fx, facts| match facts.unbundler {
 	Program(roc) => Ok(roc)
 	Choose({ selected, none }) => {
 		installed = Launch.toolchains!(fx, facts.roots)
-		path = if installed.any(Pin.is_id) Err(NoCompiler) else OnPath.file!(fx, facts.roots)
+		path = if (installed.any(Pin.is_id)) Err(NoCompiler) else OnPath.file!(fx, facts.roots)
 		match Fetch.unbundler({ selected, installed, path }) {
 			Ok(id) => Launch.program!(fx, { roots: facts.roots, id, installed, path })
 			Err(NoCompiler) => match none {

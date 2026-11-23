@@ -236,7 +236,7 @@ Zig :: [].{
 			_ => return Err(no_archive)
 		}
 		archive = Text.last_segment(url)
-		if !Ident.safe_part(archive) return Err(no_archive)
+		if (!Ident.safe_part(archive)) return Err(no_archive)
 		sha256 = match member(target_pairs, "shasum") {
 			Ok(Text(text)) if is_sha256(text) => text
 			_ => return Err(Fail.new(Integrity, "the Zig index has no sha256 for zig ${release.version} (${key}). Talon does not install it."))
@@ -331,7 +331,7 @@ Zig :: [].{
 # The value of an environment variable. An empty value is the same as no value (as `Net.from_env`).
 var_of : List((Str, Str)), Str -> Try(Str, [NotSet])
 var_of = |env, name| match env.find_first(|(key, _)| key == name) {
-	Ok((_, value)) => if value.is_empty() Err(NotSet) else Ok(value)
+	Ok((_, value)) => if (value.is_empty()) Err(NotSet) else Ok(value)
 	Err(_) => Err(NotSet)
 }
 
@@ -340,11 +340,11 @@ key_value : Str -> Try(Str, [NoKey])
 key_value = |line| {
 	trimmed = line.trim()
 	key = ".minimum_zig_version"
-	if !trimmed.starts_with(key) return Err(NoKey)
+	if (!trimmed.starts_with(key)) return Err(NoKey)
 	rest = trimmed.drop_prefix(key).trim_start()
-	if !rest.starts_with("=") return Err(NoKey)
+	if (!rest.starts_with("=")) return Err(NoKey)
 	after = rest.drop_prefix("=").trim_start()
-	if !after.starts_with("\"") return Err(NoKey)
+	if (!after.starts_with("\"")) return Err(NoKey)
 	match after.drop_prefix("\"").split_first("\"") {
 		Ok(parts) => Ok(parts.before)
 		Err(_) => Err(NoKey)
@@ -407,7 +407,7 @@ newest_fitting = |need, list| list.keep_if(|c| fits(need, c)).fold(
 	Err(NoneFits),
 	|best, c| match best {
 		Err(NoneFits) => Ok(c)
-		Ok(old) => if is_newer(order_key(version_text(c)), order_key(version_text(old))) Ok(c) else Ok(old)
+		Ok(old) => if (is_newer(order_key(version_text(c)), order_key(version_text(old)))) Ok(c) else Ok(old)
 	},
 )
 
@@ -460,6 +460,6 @@ size_of = |doc| match doc {
 row : Str, Str, Str -> Str
 row = |mark, name, text| {
 	size = name.count_utf8_bytes()
-	pad = " ".repeat(if size >= 22 0 else 22 - size)
+	pad = " ".repeat(if (size >= 22) 0 else 22 - size)
 	"  [${mark}] ${name}${pad}${text}"
 }

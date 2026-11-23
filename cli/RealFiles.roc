@@ -247,7 +247,7 @@ tree_one! = |text| match tree_files!(text) {
 		Ok(IsDir) => Ok({ newest: seconds_of!(Path.utf8(text)), size: 0 })
 		_ => Ok({ newest: 0, size: 0 })
 	}
-	Ok(files) => Ok({ newest: files.fold(0, |top, one| if one.time > top one.time else top), size: files.fold(0, |sum, one| sum + one.size) })
+	Ok(files) => Ok({ newest: files.fold(0, |top, one| if (one.time > top) one.time else top), size: files.fold(0, |sum, one| sum + one.size) })
 }
 
 # The files below a path (or the path itself, a file). `Path.type!` does not follow a link: a link is no file and is not entered.

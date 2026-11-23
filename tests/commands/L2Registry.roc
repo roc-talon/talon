@@ -243,7 +243,7 @@ L2Registry :: [].{
 					)
 					window = match rest.find_first(|word| word.starts_with("held=")) {
 						Ok(word) => Held(word.drop_prefix("held="))
-						Err(_) => if rest.contains("free-empty") Free({ rows: [], nightly: Bool.True, req: Err(Unset), now: 1792065600, min_age: 0, exclude: [], snapshot: None }) else None
+						Err(_) => if (rest.contains("free-empty")) Free({ rows: [], nightly: Bool.True, req: Err(Unset), now: 1792065600, min_age: 0, exclude: [], snapshot: None }) else None
 					}
 					facts = { groups, entries: entries.map(|e| e.value), window }
 					match ClosureIndex.query!(fx, { origin, version: Help.version, facts }) {
@@ -293,7 +293,7 @@ L2Registry :: [].{
 										for word in rest.keep_if(|word| word.starts_with("name2=")) {
 											name = word.drop_prefix("name2=")
 											for x in ClosureIndex.candidates({ releases: second.releases, artifacts: second.artifacts, name }) {
-												tag = if x.tag.is_empty() "-" else x.tag
+												tag = if (x.tag.is_empty()) "-" else x.tag
 												fx.out!("second candidate ${name} ${x.ident.version} ${tag} ${x.published_at.to_str()} ${x.size.to_str()} ${x.url}\n")
 											}
 										}
@@ -305,7 +305,7 @@ L2Registry :: [].{
 				}
 				["settle", .. as rest] => {
 					origin = "http://127.0.0.1:9"
-					entries = rest.keep_oks(|word| if word.starts_with("entry=") Ok(word.drop_prefix("entry=")) else Err(NotEntry))
+					entries = rest.keep_oks(|word| if (word.starts_with("entry=")) Ok(word.drop_prefix("entry=")) else Err(NotEntry))
 					facts = { groups: [], entries, window: None }
 					match ClosureIndex.query!(fx, { origin, version: Help.version, facts }) {
 						Err(fail) => L2Util.report!(fx, fail)
@@ -433,7 +433,7 @@ after_query! = |fx, w, request, words, entries, index| {
 			Ok(found) => {
 				for c in found {
 					for x in c.list {
-						tag = if x.tag.is_empty() "-" else x.tag
+						tag = if (x.tag.is_empty()) "-" else x.tag
 						fx.out!("candidate ${c.name} ${x.ident.version} ${tag} ${x.published_at.to_str()} ${x.size.to_str()} ${x.url}\n")
 					}
 					if c.missing {
@@ -481,7 +481,7 @@ after_query! = |fx, w, request, words, entries, index| {
 		Answer(a) => {
 			for name in of("checked=") {
 				match ClosureIndex.checked_of(a.answer, name) {
-					Ok(c) => fx.out!("checked ${c.name} ${c.checked_at.map_ok(|t| t.to_str()) ?? "null"} ${if c.stale "stale" else "fresh"}\n")
+					Ok(c) => fx.out!("checked ${c.name} ${c.checked_at.map_ok(|t| t.to_str()) ?? "null"} ${if (c.stale) "stale" else "fresh"}\n")
 					Err(None) => fx.out!("checked ${name} none\n")
 				}
 			}

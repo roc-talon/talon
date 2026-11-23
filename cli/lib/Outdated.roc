@@ -32,10 +32,10 @@ import ProbeRange
 Outdated :: [].{
 
 	## The nightly range of a row: `Known` is the result of `ProbeRange.found` over the facts. `Unread` is no list of compilers (D is empty).
-	Range : [Known(ProbeRange.Found), Unread]
+	NightlyRange : [Known(ProbeRange.Found), Unread]
 
 	## One row of the table. The versions are `X.Y.Z`. `name` is `owner/repo`.
-	Row : { alias : Str, name : Str, current : Str, wanted : Str, latest : Str, new_series : Bool, range : Outdated.Range }
+	Row : { alias : Str, name : Str, current : Str, wanted : Str, latest : Str, new_series : Bool, range : Outdated.NightlyRange }
 
 	## One member: its project file, the rows that are behind, and the hosts with no index (R-DI11), in the order of the groups, with no repeat.
 	Member : { file : Str, rows : List(Outdated.Row), fixed : List(Str) }
@@ -48,7 +48,7 @@ Outdated :: [].{
 	read : Args -> Try({}, Fail)
 	read = |args| {
 		_ = Opts.read(args)?
-		if args.operands.is_empty() Ok({}) else Err(Fail.new(Usage, "tln outdated takes no name"))
+		if (args.operands.is_empty()) Ok({}) else Err(Fail.new(Usage, "tln outdated takes no name"))
 	}
 
 	## The `wanted` and the `latest` version of one group (R-UP10, R-UP12). `current` is the URL of the header. `list` are the candidates of the repository (`Index.candidates`, any URL form and series).
@@ -78,11 +78,11 @@ Outdated :: [].{
 
 	## The nightly range of the hash on the compiler list `domain` (R-PB3): `ProbeRange.found` with no askable release, so it reads facts only. An empty `domain` is `Unread`.
 	## Slice 206e3 (R-EP15): `epochs` go to `ProbeRange.Input.epochs` (`[]` with no registry answer).
-	range_of : { hash : Str, domain : List(Str), facts : List(Db.Fact), epochs : List(Epochs.Interval) } -> Outdated.Range
-	range_of = |x| if x.domain.is_empty() Unread else Known(ProbeRange.found({ hash: x.hash, domain: x.domain, askable: [], facts: x.facts, epochs: x.epochs }))
+	range_of : { hash : Str, domain : List(Str), facts : List(Db.Fact), epochs : List(Epochs.Interval) } -> Outdated.NightlyRange
+	range_of = |x| if (x.domain.is_empty()) Unread else Known(ProbeRange.found({ hash: x.hash, domain: x.domain, askable: [], facts: x.facts, epochs: x.epochs }))
 
 	## The cell of the range. `<from> .. <to>`, with a `?` after an end that is not a real fact (R-PB4). No real pass: `none known`. No list: `-`.
-	range_text : Outdated.Range -> Str
+	range_text : Outdated.NightlyRange -> Str
 	range_text = |range| match range {
 		Unread => "-"
 		Known(NoPass) => "none known"
@@ -145,7 +145,7 @@ Outdated :: [].{
 	## Slice 252 (section 7a, a proposal): `text` with the `Moved` items. The `latest` cell of a row whose name has a successor ends with ` (moved to <successor>)`, after ` (new series)`.
 	text_moved : Outdated.Member, List(Outdated.Moved), List(Outdated.Pin) -> Str
 	text_moved = |member, moved, pins| {
-		shown = if member.rows.is_empty() ["  all packages are up to date\n"] else table_lines(member.file, member.rows, moved, pins)
+		shown = if (member.rows.is_empty()) ["  all packages are up to date\n"] else table_lines(member.file, member.rows, moved, pins)
 		fixed = member.fixed.map(|host| "  ${Index.fixed_line(host)}\n")
 		"${member.file}\n${Str.join_with(shown.concat(fixed), "")}"
 	}
@@ -168,20 +168,20 @@ Outdated :: [].{
 
 # R-PB4: an end that is no real fact has a `?`.
 end_text : ProbeRange.End -> Str
-end_text = |end| if end.real end.id else "${end.id}?"
+end_text = |end| if (end.real) end.id else "${end.id}?"
 
 # The header row and one row for each row, the first 4 columns padded to the longest cell and 2 spaces.
 table_lines : Str, List(Outdated.Row), List(Outdated.Moved), List(Outdated.Pin) -> List(Str)
 table_lines = |file, rows, moved, pins| {
 	head = { alias: "package", current: "current", wanted: "wanted", latest: "latest", range: "nightly range" }
 	latest_cell = |r| {
-		series = if r.new_series "${r.latest} (new series)" else r.latest
+		series = if (r.new_series) "${r.latest} (new series)" else r.latest
 		match Outdated.successor_of(r, moved) {
 			Ok(successor) => "${series} (moved to ${successor})"
 			Err(None) => series
 		}
 	}
-	cells = [head].concat(rows.map(|r| { alias: r.alias, current: r.current, wanted: if Outdated.pin_of(file, r, pins).is_ok() "${r.wanted} (pinned)" else r.wanted, latest: latest_cell(r), range: Outdated.range_text(r.range) }))
+	cells = [head].concat(rows.map(|r| { alias: r.alias, current: r.current, wanted: if (Outdated.pin_of(file, r, pins).is_ok()) "${r.wanted} (pinned)" else r.wanted, latest: latest_cell(r), range: Outdated.range_text(r.range) }))
 	widths = {
 		alias: widest(cells.map(|c| c.alias)),
 		current: widest(cells.map(|c| c.current)),
@@ -229,7 +229,7 @@ row_doc = |row, pin, moved| {
 	)
 }
 
-range_doc : Outdated.Range -> JsonDoc
+range_doc : Outdated.NightlyRange -> JsonDoc
 range_doc = |range| match range {
 	Unread => JsonDoc.Obj([("state", Text("unread"))])
 	Known(NoPass) => JsonDoc.Obj([("state", Text("no-pass"))])

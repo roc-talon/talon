@@ -16,7 +16,7 @@ Compiler :: [].{
 	version_id = |text| {
 		prefix = "Roc compiler version "
 		id = text.trim().drop_prefix(prefix)
-		if text.trim().starts_with(prefix) and !id.is_empty() and !id.contains(" ") Ok(id) else Err(BadVersion)
+		if (text.trim().starts_with(prefix) and !id.is_empty() and !id.contains(" ")) Ok(id) else Err(BadVersion)
 	}
 
 	## R-SO10, R-SO11: `Nightly` for a nightly tag (`Pin.is_nightly`), `Release` for a release version (`X.Y.Z`, no pre-release part), else `Local`
@@ -121,7 +121,7 @@ Compiler :: [].{
 	## The order is `Pin.order` with `times`, as rank 4 and `Manage.next_default`: a release with a date in `times` is ordered by its date. No nightly and no release: `Err(None)`. `select` calls it for rank 6 when `default` is not set, before rank 7.
 	newest_installed : { installed : List(Str), times : List({ id : Str, published_at : U64 }) } -> Try(Str, [None])
 	newest_installed = |facts| match facts.installed.keep_if(Pin.is_id) {
-		[first, .. as rest] => Ok(rest.fold(first, |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best))
+		[first, .. as rest] => Ok(rest.fold(first, |best, id| if (Pin.order({ a: id, b: best, times: facts.times }) == After) id else best))
 		[] => Err(None)
 	}
 
@@ -221,7 +221,7 @@ not_installed = |id| Fail.new(Consent, "the compiler ${id} is not installed. Run
 chosen : Str, Compiler.Rank, Compiler.Facts -> { id : Str, rank : Compiler.Rank, state : [Installed, Missing] }
 chosen = |id, rank, facts| {
 	known = facts.installed.contains(id) or facts.path == Ok(id)
-	{ id, rank, state: if known Installed else Missing }
+	{ id, rank, state: if (known) Installed else Missing }
 }
 
 # R-SO4, R-SO13, R-NS3, R-NS6: the newest candidate in the range. No candidate is `NoneInRange`: the ranks below do not run.
@@ -233,7 +233,7 @@ in_range = |req, facts| {
 	}
 	# Slice 241 (R-CH7, R-CH9): a user build is a candidate for `=<user id>` and `>=<user id>` (`Pin.admits`), and counts as a nightly for the switch.
 	fits = |id| (Pin.is_id(id) or Channel.user_parts(id).is_ok()) and Pin.admits({ req, id, times: facts.times }) and (facts.nightly or !Pin.counts_as_nightly(id))
-	newest = |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best
+	newest = |best, id| if (Pin.order({ a: id, b: best, times: facts.times }) == After) id else best
 	match facts.installed.concat(on_path).keep_if(fits) {
 		[first, .. as rest] => Ok({ id: rest.fold(first, newest), rank: Range, state: Installed })
 		[] => Err(NoneInRange)

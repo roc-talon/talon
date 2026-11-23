@@ -35,7 +35,7 @@ Units :: [].{
 	nodes : List(Closure.Walked) -> List(Node)
 	nodes = |closures| closures
 		.join_map(|walked| walked.rows.keep_oks(node_of))
-		.fold([], |found, node| if found.any(|seen| seen.hash == node.hash) found else found.append(node))
+		.fold([], |found, node| if (found.any(|seen| seen.hash == node.hash)) found else found.append(node))
 
 	## The keys of `compat.db` for the nodes (R-EF1, R-P4): `{ hash, nightly, target: "any" }` for each node (a check has the target `any`), in the order of the nodes. `nightly` is the id of the compiler that runs
 	## the ladder (`Start.Started.id`: R-NS12, a release is a compiler id in the same fact).
@@ -72,12 +72,12 @@ Units :: [].{
 	## | Else | `Ok({ run: <what is left after fixed>, cut: Bool.True })`: the first `run` unit probes start, in the order of the list |
 	budget : { max : U64, started : U64, fixed : U64, wanted : U64 } -> Try({ run : U64, cut : Bool }, [Spent])
 	budget = |facts| {
-		left = if facts.max > facts.started facts.max - facts.started else 0
+		left = if (facts.max > facts.started) facts.max - facts.started else 0
 		if left < facts.fixed {
 			Err(Spent)
 		} else {
 			room = left - facts.fixed
-			if facts.wanted <= room Ok({ run: facts.wanted, cut: Bool.False }) else Ok({ run: room, cut: Bool.True })
+			if (facts.wanted <= room) Ok({ run: facts.wanted, cut: Bool.False }) else Ok({ run: room, cut: Bool.True })
 		}
 	}
 
@@ -164,7 +164,7 @@ fact_of = |facts, node, nightly| match facts.find_first(|fact| fact.hash == node
 
 # `<name> <version>`, or `the platform <name> <version>` (R-LD3).
 label : Units.Node -> Str
-label = |node| if node.is_platform "the platform ${node.name} ${node.version}" else "${node.name} ${node.version}"
+label = |node| if (node.is_platform) "the platform ${node.name} ${node.version}" else "${node.name} ${node.version}"
 
 # R-P6: the modules of a fail fact that the baseline does not explain (an error of the baseline in the same hash and module).
 new_modules : Units.Node, Try(Db.Fact, [None]), List(Probe.Err) -> List(Str)
@@ -185,7 +185,7 @@ blame_of = |node, found, facts| match found {
 			Ok("${label(node)} (no module is named)")
 		} else {
 			hit = new_modules(node, found, facts.baseline).keep_if(|path| path == "main.roc" or facts.used.contains({ hash: node.hash, path }))
-			if hit.is_empty() Err(None) else Ok("${label(node)} (${Str.join_with(hit, ", ")})")
+			if (hit.is_empty()) Err(None) else Ok("${label(node)} (${Str.join_with(hit, ", ")})")
 		}
 	}
 }

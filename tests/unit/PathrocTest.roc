@@ -92,8 +92,8 @@ expect {
 # R-SO9: the walk as command code runs it. Each file is hashed once and `roc version` runs once for each binary, also across 2 commands (the second one reads the rows that the first wrote).
 # `hash_of` and `text_of` stand for `Fx.sha256_file!` and `Fx.spawn_all!`. The log has one word for each effect.
 expect {
-	hash_of = |path| if path == "/t/tln" sha_t else if path == "/a/roc" sha_t else sha_a
-	text_of = |path| if path == "/b/roc" "Roc compiler version ${nightly}\n" else "not a version"
+	hash_of = |path| if (path == "/t/tln") sha_t else if (path == "/a/roc") sha_t else sha_a
+	text_of = |path| if (path == "/b/roc") "Roc compiler version ${nightly}\n" else "not a version"
 	walk = |found, entries0| {
 		var $entries = entries0
 		var $log = []

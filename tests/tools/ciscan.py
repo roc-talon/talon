@@ -403,8 +403,8 @@ def check_pin(root, fails):
     m = re.search(r"^ROC_TAG=\$\{ROC_TAG:-(nightly-\d{4}-\d{2}-\d{2}-[0-9a-f]+)\}$", env_sh, re.M)
     if not m:
         fails.append("scripts/env.sh: no line `ROC_TAG=${ROC_TAG:-nightly-<date>-<sha>}`")
-    elif m.group(1) != "nightly-2026-10-14-38a3029":
-        fails.append("scripts/env.sh: ROC_TAG is %s, the pin is nightly-2026-10-14-38a3029 (docs/slices/PLAN.md)" % m.group(1))
+    elif m.group(1) != "nightly-2026-11-13-03dce41":
+        fails.append("scripts/env.sh: ROC_TAG is %s, the pin is nightly-2026-11-13-03dce41 (docs/slices/PLAN.md)" % m.group(1))
     # Slice 101 (TW28, R-WH13): a second tag, ROC_TAG_WORKER, for worker/ (the nightly of the platform release).
     mw = re.search(r"^ROC_TAG_WORKER=\$\{ROC_TAG_WORKER:-(nightly-\d{4}-\d{2}-\d{2}-[0-9a-f]+)\}$", env_sh, re.M)
     if not mw:

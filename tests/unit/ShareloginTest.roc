@@ -45,8 +45,8 @@ expect {
 expect {
 	ShareLogin.web_of([("HOME", "/h")]) == "https://github.com"
 		and ShareLogin.web_of([("TALON_GITHUB_WEB", gh)]) == gh
-			and ShareLogin.web_of([("TALON_GITHUB_WEB", "")]) == "https://github.com"
-				and ShareLogin.web_of([("TALON_GITHUB_API", gh)]) == "https://github.com"
+		and ShareLogin.web_of([("TALON_GITHUB_WEB", "")]) == "https://github.com"
+		and ShareLogin.web_of([("TALON_GITHUB_API", gh)]) == "https://github.com"
 }
 
 # R-SH12 row 1, Q471: `POST <web>/login/device/code`, `Accept: application/json`, `User-Agent: tln/<version>` (after `Accept`), a form body with `client_id` and no `scope`.
@@ -85,16 +85,16 @@ expect {
 	zero = ShareLogin.code_answer({ reply: reply(200, code_body(",\"interval\":0")), now: 50 })
 	five == Ok({ device_code: "DC1", user_code: "WDJB-MJHT", interval: 7, ends: 1900 })
 		and none == Ok({ device_code: "DC1", user_code: "WDJB-MJHT", interval: 5, ends: 1900 })
-			and zero == Ok({ device_code: "DC1", user_code: "WDJB-MJHT", interval: 0, ends: 950 })
+		and zero == Ok({ device_code: "DC1", user_code: "WDJB-MJHT", interval: 0, ends: 950 })
 }
 
 # R-SH12 row 10, R-SH7: no answer, a 5xx answer, a body that is not JSON: kind `Network` (exit 15).
 expect {
 	kind_of(ShareLogin.code_answer({ reply: Err(Timeout), now: 1 })) == "network"
 		and kind_of(ShareLogin.code_answer({ reply: Err(Failed("refused")), now: 1 })) == "network"
-			and kind_of(ShareLogin.code_answer({ reply: reply(503, code_body(",\"interval\":1")), now: 1 })) == "network"
-				and kind_of(ShareLogin.code_answer({ reply: reply(502, "bad gateway"), now: 1 })) == "network"
-					and kind_of(ShareLogin.code_answer({ reply: reply(200, "<html>login</html>"), now: 1 })) == "network"
+		and kind_of(ShareLogin.code_answer({ reply: reply(503, code_body(",\"interval\":1")), now: 1 })) == "network"
+		and kind_of(ShareLogin.code_answer({ reply: reply(502, "bad gateway"), now: 1 })) == "network"
+		and kind_of(ShareLogin.code_answer({ reply: reply(200, "<html>login</html>"), now: 1 })) == "network"
 }
 
 # R-SH12 row 9: another `error` (the client id or the code of Talon is wrong) is kind `Internal` (exit 1), and the message has the `error` text.
@@ -141,16 +141,16 @@ expect {
 expect {
 	kind_of(ShareLogin.poll_answer({ reply: Err(Timeout), wait: 5 })) == "network"
 		and kind_of(ShareLogin.poll_answer({ reply: Err(Failed("reset")), wait: 5 })) == "network"
-			and kind_of(ShareLogin.poll_answer({ reply: reply(500, "{\"access_token\":\"gho_x\"}"), wait: 5 })) == "network"
-				and kind_of(ShareLogin.poll_answer({ reply: reply(503, "{\"error\":\"authorization_pending\"}"), wait: 5 })) == "network"
-					and kind_of(ShareLogin.poll_answer({ reply: reply(200, "not json"), wait: 5 })) == "network"
+		and kind_of(ShareLogin.poll_answer({ reply: reply(500, "{\"access_token\":\"gho_x\"}"), wait: 5 })) == "network"
+		and kind_of(ShareLogin.poll_answer({ reply: reply(503, "{\"error\":\"authorization_pending\"}"), wait: 5 })) == "network"
+		and kind_of(ShareLogin.poll_answer({ reply: reply(200, "not json"), wait: 5 })) == "network"
 }
 
 # R-SH12 row 7: `expires_in` seconds passed since the answer: `now` is at the end time or after it. One second before, the poll goes.
 expect {
 	!ShareLogin.expired({ now: 1000, ends: 1900 }) and !ShareLogin.expired({ now: 1899, ends: 1900 })
 		and ShareLogin.expired({ now: 1900, ends: 1900 }) and ShareLogin.expired({ now: 5000, ends: 1900 })
-			and ShareLogin.expired({ now: 7, ends: 7 })
+		and ShareLogin.expired({ now: 7, ends: 7 })
 }
 
 # R-SH7, R-AP37, R-SH5, R-CT8: `POST <registry>/v1/tokens` with the User-Agent, the JSON type and the contributor id (no `Authorization`: the GitHub token is in the body). The body is `{"github_token":".."}`.
@@ -179,14 +179,14 @@ expect {
 	run = |r| ShareLogin.token_answer({ origin: registry, version: "0.9.0", reply: r })
 	kind_of(run(reply(401, problem("/errors/unauthenticated", "401")))) == "rejected"
 		and kind_of(run(reply(400, problem("/errors/bad-request", "400")))) == "internal"
-			and kind_of(run(reply(429, problem("/errors/rate-limited", "429")))) == "network"
-				and kind_of(run(reply(502, problem("/errors/upstream", "502")))) == "network"
-					and kind_of(run(reply(503, problem("/errors/busy", "503")))) == "network"
-						and kind_of(run(Err(Timeout))) == "network"
-							and kind_of(run(Err(Failed("refused")))) == "network"
-								and kind_of(run(reply(201, "{\"token\":\"x\"}"))) == "network"
-									and kind_of(run(reply(201, "not json"))) == "network"
-										and kind_of(run(reply(502, "<html>"))) == "network"
+		and kind_of(run(reply(429, problem("/errors/rate-limited", "429")))) == "network"
+		and kind_of(run(reply(502, problem("/errors/upstream", "502")))) == "network"
+		and kind_of(run(reply(503, problem("/errors/busy", "503")))) == "network"
+		and kind_of(run(Err(Timeout))) == "network"
+		and kind_of(run(Err(Failed("refused")))) == "network"
+		and kind_of(run(reply(201, "{\"token\":\"x\"}"))) == "network"
+		and kind_of(run(reply(201, "not json"))) == "network"
+		and kind_of(run(reply(502, "<html>"))) == "network"
 }
 
 # R-SH7, R-TF1, R-TF2, R-SH13: `stored` puts the JWT, its expiry (whole seconds, RFC 3339 UTC) and the account in the file. The id, the totals, the times and the unknown members stay. A login again replaces the token and the account.
@@ -199,7 +199,7 @@ expect {
 	ShareJson.text(ShareLogin.stored({ doc: fresh, granted }))
 		== "{\"format\":1,\"id\":\"0123456789abcdeffedcba9876543210\",\"sent\":0,\"counted\":0,\"first\":0,\"first_sent_at\":null,\"last_sent_at\":null,\"token\":\"eyJ.jwt.sig\",\"token_expires_at\":\"2026-11-14T12:00:00Z\",\"account\":{\"id\":583231,\"login\":\"octocat\"}}\n"
 		and after == { ..doc, token: Ok("eyJ.jwt.sig"), token_expires_at: Ok("2026-11-14T12:00:00Z"), account: Ok({ id: 583231, login: "octocat" }) }
-			and again == { ..doc, token: Ok("new.jwt"), token_expires_at: Ok("2026-11-26T02:10:00Z"), account: Ok({ id: 7, login: "other" }) }
+		and again == { ..doc, token: Ok("new.jwt"), token_expires_at: Ok("2026-11-26T02:10:00Z"), account: Ok({ id: 7, login: "other" }) }
 }
 
 # R-SH10: the text for the registry `direct` (kind `Usage`, exit 2) says that the command needs a registry. R-OUT2: a proposal.

@@ -24,7 +24,7 @@ FakeBase :: [].{
 	keep_empty : Str -> List(Str)
 	keep_empty = |text| {
 		parts = text.split_on("\n")
-		if parts.last() == Ok("") parts.drop_last(1) else parts
+		if (parts.last() == Ok("")) parts.drop_last(1) else parts
 	}
 
 	## The lines of a text, without the empty ones.

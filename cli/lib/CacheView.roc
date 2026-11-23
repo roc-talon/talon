@@ -46,7 +46,7 @@ CacheView :: [].{
 			["nothing to clean\n"]
 		} else {
 			items = listed.paths.map(|path| "${path}${Clean.size_suffix(listed.sizes, path)}\n")
-			if listed.sizes.is_empty() items else items.append("total ${Toolchain.size_text(total(listed.sizes))}\n")
+			if (listed.sizes.is_empty()) items else items.append("total ${Toolchain.size_text(total(listed.sizes))}\n")
 		}
 	}
 

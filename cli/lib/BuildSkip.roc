@@ -79,10 +79,10 @@ BuildSkip :: [].{
 	## A row of another digest never decides: a pass with another digest does not skip, and a fail with another digest does not block. A `Pass` row with no digest never skips. Condition 3 (step 2 passed with no new error) is not here: the command asks only after it.
 	decide : { facts : List(Db.Fact), key : Db.Key, digest : Str } -> [Skip, Build]
 	decide = |facts| {
-		mine = facts.facts.keep_if(|row| row.hash == facts.key.hash and row.nightly == facts.key.nightly and row.target == facts.key.target and row.closure == facts.digest)
-		blocked = mine.any(|row| row.outcome != Pass)
-		passed = mine.any(|row| row.outcome == Pass)
-		if passed and !blocked and !facts.digest.is_empty() Skip else Build
+		mine = facts.facts.keep_if(|fact| fact.hash == facts.key.hash and fact.nightly == facts.key.nightly and fact.target == facts.key.target and fact.closure == facts.digest)
+		blocked = mine.any(|fact| fact.outcome != Pass)
+		passed = mine.any(|fact| fact.outcome == Pass)
+		if (passed and !blocked and !facts.digest.is_empty()) Skip else Build
 	}
 
 	## R-P4, R-P3, R-BS2: the fact of a build, or no fact. The row is `Facts.of_probe` for a build: the key (the target is the host), the outcome of `class` (`Pass`, `Fail`, `Hang`, `Crash`), the digest in `closure` for every outcome, and for a fail the modules of the platform hash that the `errors` name (R-P4).
@@ -100,7 +100,7 @@ BuildSkip :: [].{
 
 	## R-BS1 (slice 032): the `build` state of the outcome of a command. `apps` are the members that have a build, `skipped` are the members that skipped it. No app: `NotRun`. Each app skipped: `Skipped`. Else `Passed`.
 	state : { apps : U64, skipped : U64 } -> [Passed, Skipped, NotRun]
-	state = |counts| if counts.apps == 0 NotRun else if counts.skipped >= counts.apps Skipped else Passed
+	state = |counts| if (counts.apps == 0) NotRun else if (counts.skipped >= counts.apps) Skipped else Passed
 
 	## R-BS2: the line of the summary when step 3 is skipped (a proposal for the text, TW24, but the design gives the words).
 	skipped_line : Str

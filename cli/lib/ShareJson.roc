@@ -150,7 +150,7 @@ hex16 : U64 -> Str
 hex16 = |n| {
 	digit = |i| {
 		d = (n // (16.U64).pow(15 - i)) % 16
-		if d < 10 48 + d.to_u8_wrap() else 87 + d.to_u8_wrap()
+		if (d < 10) 48 + d.to_u8_wrap() else 87 + d.to_u8_wrap()
 	}
 	Str.from_utf8_lossy(U64.to(0, 15).iter().map(digit).collect())
 }

@@ -70,8 +70,8 @@ expect {
 	dbg got
 	got.message == "talon.toml uses compiler channel reify (github.com/Karakatiza666/roc-reify-nightlies)."
 		and got.hint == "Run: tln roc channel add reify"
-			and other.message == "talon.toml uses compiler channel my-fork (github.com/acme/roc-fork)."
-				and other.hint == "Run: tln roc channel add my-fork"
+		and other.message == "talon.toml uses compiler channel my-fork (github.com/acme/roc-fork)."
+		and other.hint == "Run: tln roc channel add my-fork"
 }
 
 # R-CV5 R-CH13: `.talon.json` of a user-channel build holds `channel` and `source`, after `published_at`. A build with no `channel` (a nightly) has the old text, byte for byte (the main guard).
@@ -82,8 +82,8 @@ expect {
 	dbg user
 	user == "{\"format\":1,\"id\":\"reify-2026-11-03-1708298\",\"url\":\"${base.url}\",\"sha256\":\"${base.sha256}\",\"sha256_source\":\"github-digest\",\"typed\":\"reify\",\"compat\":\"1708298\",\"installed_at\":\"2026-11-10T12:00:00Z\",\"published_at\":\"2026-11-03T10:00:00Z\",\"channel\":\"reify\",\"source\":\"Karakatiza666/roc-reify-nightlies\"}\n"
 		and plain == Toolchain.meta(base)
-			and !plain.contains("\"channel\"")
-				and !plain.contains("\"source\"")
+		and !plain.contains("\"channel\"")
+		and !plain.contains("\"source\"")
 }
 
 # R-CH16 R-CV3: a user channel is always listed with `direct`, also when a registry is set. The `nightly` channel keeps the source of the run.

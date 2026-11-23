@@ -72,10 +72,10 @@ Opts := {
 			as_alias: value_of(args, "--as"),
 			strategy,
 			snapshot: value_of(args, "--snapshot"),
-			rename_keys: if given("--rename-keys") Ok(Yes) else Err(NoFlag),
-			allow_moves: if given("--allow-moves") Ok(Yes) else Err(NoFlag),
-			allow_downloads: if given("--allow-downloads") Ok(Yes) else Err(NoFlag),
-			probe_downloads: if given("--probe-downloads") and probe_command(args.command) Ok(Yes) else Err(NoFlag),
+			rename_keys: if (given("--rename-keys")) Ok(Yes) else Err(NoFlag),
+			allow_moves: if (given("--allow-moves")) Ok(Yes) else Err(NoFlag),
+			allow_downloads: if (given("--allow-downloads")) Ok(Yes) else Err(NoFlag),
+			probe_downloads: if (given("--probe-downloads") and probe_command(args.command)) Ok(Yes) else Err(NoFlag),
 			slots,
 		})
 	}

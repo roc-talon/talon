@@ -21,8 +21,8 @@ OwnerNote :: [].{
 		doy = doe - (365 * yoe + yoe // 4 - yoe // 100)
 		mp = (5 * doy + 2) // 153
 		day = doy - (153 * mp + 2) // 5 + 1
-		month = if mp < 10 mp + 3 else mp - 9
-		year = yoe + era * 400 + (if month <= 2 1 else 0)
+		month = if (mp < 10) mp + 3 else mp - 9
+		year = yoe + era * 400 + (if (month <= 2) 1 else 0)
 		"${year.to_str()}-${two(month)}-${two(day)}"
 	}
 
@@ -77,7 +77,7 @@ OwnerNote :: [].{
 	doc = |n| Obj([
 		("alias", Text(n.alias)),
 		("name", Text(n.name)),
-		("action", Text(if n.action == Transfer "transfer" else "recreate")),
+		("action", Text(if (n.action == Transfer) "transfer" else "recreate")),
 		("at", Num(n.at.to_i64_wrap())),
 		(
 			"owner",
@@ -91,4 +91,4 @@ OwnerNote :: [].{
 }
 
 two : U64 -> Str
-two = |n| if n < 10 "0${n.to_str()}" else n.to_str()
+two = |n| if (n < 10) "0${n.to_str()}" else n.to_str()

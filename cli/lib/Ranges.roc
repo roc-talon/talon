@@ -65,7 +65,7 @@ Ranges :: [].{
 
 # The first version of the next series: `2.1.0` gives `3.0.0`, `0.25.0` gives `0.26.0`.
 next_series : Semver -> Str
-next_series = |v| if v.major() >= 1 "${(v.major() + 1).to_str()}.0.0" else "0.${(v.minor() + 1).to_str()}.0"
+next_series = |v| if (v.major() >= 1) "${(v.major() + 1).to_str()}.0.0" else "0.${(v.minor() + 1).to_str()}.0"
 
 # R-UP5: an anchor is an anchor of the new version. Else the prefix, the number of parts and the wildcard end stay, and the parts come from the version.
 moved_form : Str, Semver -> Try(Str, [NoForm])
@@ -74,11 +74,11 @@ moved_form = |range, v| {
 	if range.starts_with("=") {
 		Ok("=${Str.join_with(numbers, ".")}")
 	} else {
-		prefix = if range.starts_with("^") "^" else if range.starts_with("~") "~" else ""
+		prefix = if (range.starts_with("^")) "^" else if (range.starts_with("~")) "~" else ""
 		body = range.drop_prefix(prefix)
 		parts = body.drop_suffix(".*").split_on(".")
 		if parts.len() <= 3 and parts.all(|p| U64.from_str(p).is_ok()) {
-			Ok("${prefix}${Str.join_with(numbers.take_first(parts.len()), ".")}${if body.ends_with(".*") ".*" else ""}")
+			Ok("${prefix}${Str.join_with(numbers.take_first(parts.len()), ".")}${if (body.ends_with(".*")) ".*" else ""}")
 		} else {
 			Err(NoForm)
 		}

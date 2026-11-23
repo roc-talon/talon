@@ -121,7 +121,7 @@ UnknownValues :: [].{
 	largest : List(Str) -> Try(Str, [None])
 	largest = |marks| match marks.first() {
 		Err(_) => Err(None)
-		Ok(head) => Ok(marks.fold(head, |best, m| if bigger(m, best) m else best))
+		Ok(head) => Ok(marks.fold(head, |best, m| if (bigger(m, best)) m else best))
 	}
 
 	## R-AP28 case 2, R-AP43 case 1 and 2, R-AP41 row 5, R-AP45, Design Q422, Q423: the headers of the second closure query: `User-Agent: tln/<version>`, `Content-Type: application/json`, `Cache-Control: no-cache`, and `Talon-Bookmark: <bookmark>` only when `bookmark` is `Ok`.
@@ -152,7 +152,7 @@ UnknownValues :: [].{
 		Indexed => Err(None)
 		Archive | Label(_) => match Ident.of_url(facts.url) {
 			Err(Foreign) => Err(None)
-			Ok(ident) => if facts.releases.any(|r| r.group == ident.group.form) Err(None) else Ok("fixed: not in the registry index")
+			Ok(ident) => if (facts.releases.any(|r| r.group == ident.group.form)) Err(None) else Ok("fixed: not in the registry index")
 		}
 	}
 
@@ -233,7 +233,7 @@ UnknownValues :: [].{
 			Err(NoCompiler) => return Err(Fail.new(NoTuple, "no compiler is left"))
 		}
 		answer = ClosureIndex.send!(fx, { origin: facts.origin, version: facts.version, request, headers: UnknownValues.again_headers({ version: facts.version, bookmark: UnknownValues.largest($marks) }), source: facts.?source ?? "" })?
-		final = ends.map(|e| if e.end == Indexed and answer.unknown.contains(e.hash) { ..e, end: Archive } else e)
+		final = ends.map(|e| if (e.end == Indexed and answer.unknown.contains(e.hash)) { ..e, end: Archive } else e)
 		Ok({ answer, values: final })
 	}
 }
@@ -258,7 +258,7 @@ entry_of : List(Str), Str -> Try({ url : Str, ident : Ident }, [NoEntry])
 entry_of = |urls, hash| {
 	found = urls.keep_oks(
 		|url| match Ident.of_url(url) {
-			Ok(ident) => if ident.hash == hash Ok({ url, ident }) else Err(NoEntry)
+			Ok(ident) => if (ident.hash == hash) Ok({ url, ident }) else Err(NoEntry)
 			Err(Foreign) => Err(NoEntry)
 		},
 	)
@@ -273,7 +273,7 @@ case_of = |facts, entry| {
 	other = facts.releases.find_first(|r| r.group == entry.ident.group.form and r.version == entry.ident.version and r.hash != entry.ident.hash)
 	match other {
 		Ok(r) => Label({ other: Ok(r.hash) })
-		Err(_) => if !facts.snapshot and is_checked_repo(entry.url) Ingest else Archive
+		Err(_) => if (!facts.snapshot and is_checked_repo(entry.url)) Ingest else Archive
 	}
 }
 
@@ -311,6 +311,6 @@ bigger = |a, b| {
 
 bookmark_of : List((Str, Str)) -> Try(Str, [None])
 bookmark_of = |list| match list.find_first(|(name, _)| name.with_ascii_lowercased() == "talon-bookmark") {
-	Ok((_, value)) => if value.trim().is_empty() Err(None) else Ok(value.trim())
+	Ok((_, value)) => if (value.trim().is_empty()) Err(None) else Ok(value.trim())
 	Err(_) => Err(None)
 }

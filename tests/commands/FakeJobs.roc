@@ -87,7 +87,7 @@ FakeJobs :: [].{
 					for item in made.split_on(";").keep_if(|m| m != "-" and !m.is_empty()) {
 						FakeBase.create_item!(item.replace_each("{cwd}", cwd).replace_each("{w}", w).replace_each("{out}", word_after(job.argv, "--output")).replace_each("{dir}", word_after(job.argv, "-C")))
 					}
-					{ ended: ended_of(code), stdout: if out == "-" "" else out, stderr_last: if err == "-" "" else err }
+					{ ended: ended_of(code), stdout: if (out == "-") "" else out, stderr_last: if (err == "-") "" else err }
 				}
 				_ => { ended: Exited(99), stdout: "", stderr_last: "fake spawn_all: no rule for: ${text}" }
 			}
@@ -100,7 +100,7 @@ FakeJobs :: [].{
 	probes! : Str, { pool : U64, specs : List(Probe.Spec) } => List(Probe.Output)
 	probes! = |w, round| {
 		specs = round.specs
-		FakeBase.log!(w, "probes ${specs.len().to_str()}${if round.pool == 12 "" else " pool=${round.pool.to_str()}"}")
+		FakeBase.log!(w, "probes ${specs.len().to_str()}${if (round.pool == 12) "" else " pool=${round.pool.to_str()}"}")
 		rows = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/probes")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
 		units = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/units")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
 		var $results = []
@@ -111,7 +111,7 @@ FakeJobs :: [].{
 				FakeBase.log!(w, "    env ${Str.join_with(spec.env.map(|(name, value)| "${name}=${value}"), " ")}")
 			}
 			describe_copy!(w, spec)
-			text! = |name| if name == "-" "" else FakeBase.read_or_empty!("${w}/fx/${name}")
+			text! = |name| if (name == "-") "" else FakeBase.read_or_empty!("${w}/fx/${name}")
 			is_unit = spec.dir.contains("/packages/") and spec.args.first() == Ok("check")
 			hash = spec.dir.split_on("/").last() ?? ""
 			one = if is_unit and !FakeBase.exists!(spec.dir) {
@@ -183,7 +183,7 @@ FakeJobs :: [].{
 		}
 		rules = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/exec")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
 		match rules.find_first(|row| joined.contains(row.first() ?? "")) {
-			Ok([_, code, ..]) => if code.starts_with("notstarted:") Err(NotStarted(code.drop_prefix("notstarted:"))) else Ok({})
+			Ok([_, code, ..]) => if (code.starts_with("notstarted:")) Err(NotStarted(code.drop_prefix("notstarted:"))) else Ok({})
 			_ => Ok({})
 		}
 	}
@@ -264,7 +264,7 @@ bytes_before = |a, b| match (a, b) {
 	([], []) => Same
 	([], _) => Before
 	(_, []) => After
-	([x, .. as ra], [y, .. as rb]) => if x < y Before else if x > y After else bytes_before(ra, rb)
+	([x, .. as ra], [y, .. as rb]) => if (x < y) Before else if (x > y) After else bytes_before(ra, rb)
 }
 
 ## `hooks`: see the table at the top. `n` is the number of `probes` calls so far.
@@ -378,7 +378,7 @@ route_answer! = |w, method, url, request_headers| {
 		[p, .. as q] => (p, Str.join_with(q, "?"))
 		[] => (rest, "")
 	}
-	suffix = if method == "GET" "" else ".${method}"
+	suffix = if (method == "GET") "" else ".${method}"
 	# Slice 260 (G3): the case-safe name of a route comes first, then the plain name (see `case_safe`).
 	has! = |f| FakeBase.exists!(f) or FakeBase.exists!("${f}.meta")
 	with_query = "${w}/fx/http/${path_part}?${query}${suffix}"
@@ -400,7 +400,7 @@ route_answer! = |w, method, url, request_headers| {
 		|l| (l == "http_get ${url}" and method == "GET") or l.starts_with("http_send ${method} ${url} timeout="),
 	).len()
 	nth = "${route}.${n.to_str()}"
-	file = if n > 1 and (FakeBase.exists!(nth) or FakeBase.exists!("${nth}.meta")) nth else route
+	file = if (n > 1 and (FakeBase.exists!(nth) or FakeBase.exists!("${nth}.meta"))) nth else route
 	if !FakeBase.exists!(file) and !FakeBase.exists!("${file}.meta") {
 		Ok({ status: 404, headers: [], body: "{\"message\":\"Not Found\"}" })
 	} else {
@@ -444,7 +444,7 @@ route_answer! = |w, method, url, request_headers| {
 				Ok(l) => Err(Failed(l.drop_prefix("error failed ")))
 				Err(_) => match (etag, sent) {
 					(Ok((_, tag)), Ok((_, same))) if tag == same => Ok({ status: 304, headers, body: "" })
-					_ => if status == 304 or status == 204 Ok({ status, headers, body: "" }) else Ok({ status, headers, body: route_body!(file) })
+					_ => if (status == 304 or status == 204) Ok({ status, headers, body: "" }) else Ok({ status, headers, body: route_body!(file) })
 				}
 			}
 		}

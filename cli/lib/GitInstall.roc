@@ -78,7 +78,7 @@ flow! = |fx, args, source| {
 		Err(BadTime(text)) => return Err(Fail.new(Usage, "TALON_NOW is not a UTC time: ${text}"))
 	}
 	host = Toolchain.host(fx.platform!())?
-	if args.offline return Err(GitRef.offline_failure(source))
+	if (args.offline) return Err(GitRef.offline_failure(source))
 	sha = commit!(fx, net, source, real)?
 	id = GitRef.sha_id(sha)
 	if has_dir(toolchain_entries!(fx, Text.join(roots.cache, "toolchains")), id) {
@@ -150,7 +150,7 @@ check_curl! = |fx, net| {
 note! : Fx, Args, { net : Net.Settings, roots : Roots, real : U64, host : Nightlies.Host, sha : Str } => {}
 note! = |fx, args, run| match Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.real, offline: Bool.False, host: run.host }) {
 	Ok(found) => match GitRef.nightly_note({ sha: run.sha, releases: found.releases }) {
-		Ok(text) => if !args.quiet fx.err!("${text}\n")
+		Ok(text) => if (!args.quiet) fx.err!("${text}\n")
 		Err(None) => {}
 	}
 	Err(_) => {}
@@ -230,7 +230,7 @@ install! : Fx, Run, { zig : Str, sha256 : Str } => Try({ how : [Installed, Prese
 install! = |fx, run, made| {
 	p = run.p
 	entries = toolchain_entries!(fx, Text.join(run.roots.cache, "toolchains"))
-	if has_dir(entries, run.id) return Ok({ how: Present, compat: Err(Unknown) })
+	if (has_dir(entries, run.id)) return Ok({ how: Present, compat: Err(Unknown) })
 	stale = Temp.of_item({ item: p.item, entries })
 	if !stale.is_empty() {
 		_ = fx.delete!(stale)

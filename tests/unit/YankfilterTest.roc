@@ -34,7 +34,7 @@ rel = |version, hash, yanked| {
 	repo: Ok("someone/roc-json"),
 	published_at: 1790848800000,
 	yanked,
-	yank_reason: if yanked Ok("parse bug") else Err(None),
+	yank_reason: if (yanked) Ok("parse bug") else Err(None),
 	withdrawn: Err(None),
 	provenance: ["webhook"],
 }
@@ -83,7 +83,7 @@ expect XCmd.reuse_note(Registry) == Err(None)
 
 # Design Q630-2 (R-C6, R-IN9 (2), R-AD35 step 5): a version that the user names is not chosen when it is yanked. The one item of the closure query is `NoMatch` (exit 2 with the text of `Add.no_release`), not a fall back to the yanked release.
 body = |yanked_11| {
-	row = |i, version, hash, yanked| "{\"log_index\":${i.to_str()},\"hash\":\"${hash}\",\"group\":\"${g_json}\",\"series\":\"1\",\"version\":\"${version}\",\"url\":\"${json_url(version, hash)}\",\"tag\":\"${version}\",\"roc_version\":null,\"repo\":\"someone/roc-json\",\"published_at\":1790848800000,\"yanked\":${if yanked "true" else "false"},\"yank_reason\":null,\"withdrawn\":null,\"provenance\":[\"webhook\"]}"
+	row = |i, version, hash, yanked| "{\"log_index\":${i.to_str()},\"hash\":\"${hash}\",\"group\":\"${g_json}\",\"series\":\"1\",\"version\":\"${version}\",\"url\":\"${json_url(version, hash)}\",\"tag\":\"${version}\",\"roc_version\":null,\"repo\":\"someone/roc-json\",\"published_at\":1790848800000,\"yanked\":${if (yanked) "true" else "false"},\"yank_reason\":null,\"withdrawn\":null,\"provenance\":[\"webhook\"]}"
 	"{\"releases\":[${row(1.U64, "1.0.0", h_1, Bool.False)},${row(2.U64, "1.1.0", h_2, yanked_11)}],\"checked\":null,\"repos\":[]}"
 }
 

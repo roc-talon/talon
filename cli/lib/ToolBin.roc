@@ -22,7 +22,7 @@ ToolBin :: [].{
 
 	## R-PT17: the name of the release asset of a prebuilt binary: `<hash>-<target>`, and `<hash>-x64win.exe` for `x64win`. `hash` is the text of the bundle name without `.tar.zst`.
 	asset_name : { hash : Str, target : Str } -> Str
-	asset_name = |facts| if facts.target == "x64win" "${facts.hash}-${facts.target}.exe" else "${facts.hash}-${facts.target}"
+	asset_name = |facts| if (facts.target == "x64win") "${facts.hash}-${facts.target}.exe" else "${facts.hash}-${facts.target}"
 
 	## R-PT17: the download URL of that asset: the directory of the release `url` (Design 4.1), and the asset name. `NotRelease` when `url` is not a release URL with a version and a hash (`Ident.of_url`).
 	asset_url : { url : Str, target : Str } -> Try(Str, [NotRelease])
@@ -96,11 +96,11 @@ ToolBin :: [].{
 			} else {
 				old = old_table ?? []
 				merged = ToolBin.merge({ old, found })
-				if merged.len() > old.len() Set(merged) else Keep
+				if (merged.len() > old.len()) Set(merged) else Keep
 			}
 		}
 	}
 }
 
 # Case 3: no check, or not allowed. The old table belongs to the old `url`.
-no_check = |facts, old_table| if facts.url_changed and old_table != Err(NoTable) Drop else Keep
+no_check = |facts, old_table| if (facts.url_changed and old_table != Err(NoTable)) Drop else Keep

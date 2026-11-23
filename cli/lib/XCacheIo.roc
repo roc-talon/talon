@@ -31,7 +31,7 @@ XCacheIo :: [].{
 		x_dir = Text.join(roots.cache, "talon/x")
 		entries = Gc.entries({ dirs: [x_dir], listed: fx.list_dirs!([x_dir]) })
 		dirs = XCache.dirs_of({ roots, entries })
-		if dirs.is_empty() return Ok([])
+		if (dirs.is_empty()) return Ok([])
 		got = XCache.entries_of({ dirs, reads: fx.read_files!(dirs.map(XCache.manifest_of)) })
 		for warning in got.warnings {
 			fx.err!("warning: ${warning}\n")
@@ -39,7 +39,7 @@ XCacheIo :: [].{
 		if !got.delete.is_empty() {
 			_ = fx.delete!(got.delete)
 		}
-		if got.found.is_empty() return Ok([])
+		if (got.found.is_empty()) return Ok([])
 		listings = fx.list_dirs!(got.found.map(|f| f.dir))
 		Ok(got.found.map2(listings, |f, listed| { ..f, has_bin: has_file(listed, file_of({ os, name: f.entry.name })) }))
 	}

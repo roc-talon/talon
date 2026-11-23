@@ -57,16 +57,16 @@ expect {
 	only_old = QueueSend.plan({ rows: items(2, "0.8.0"), talon_version: version })
 	plan.stale == [1, 3, 5] and plan.batches.map(seqs) == [[2, 4]]
 		and many.stale == [1, 2, 3] and many.batches.map(|b| b.len()) == [500, 100]
-			and only_old == { stale: [1, 2], batches: [] }
+		and only_old == { stale: [1, 2], batches: [] }
 }
 
 # R-SH4: the 5 s. The first request gets 5 s. Each next request gets what is left of the 5 s since `started` (whole seconds of `Fx.clock!`, proposal). With no time left there is no request.
 expect {
 	QueueSend.remaining({ started: 100, now: 100 }) == Send(5)
 		and QueueSend.remaining({ started: 100, now: 101 }) == Send(4)
-			and QueueSend.remaining({ started: 100, now: 104 }) == Send(1)
-				and QueueSend.remaining({ started: 100, now: 105 }) == Stop
-					and QueueSend.remaining({ started: 100, now: 900 }) == Stop
+		and QueueSend.remaining({ started: 100, now: 104 }) == Send(1)
+		and QueueSend.remaining({ started: 100, now: 105 }) == Stop
+		and QueueSend.remaining({ started: 100, now: 900 }) == Stop
 }
 
 # R-AP10, R-AP23, R-AP45, R-CT1, R-CT2: the request. A POST to `<origin>/v1/compat`, `User-Agent` and `Content-Type`, then `Talon-Contributor` (the order is a proposal), never `Authorization`.
@@ -82,7 +82,7 @@ expect {
 	body = "{\"rows\":[{\"hash\":\"HA\",\"nightly\":\"nightly-2026-10-14-38a3029\",\"result\":\"pass\",\"target\":\"any\"},{\"hash\":\"HB\",\"nightly\":\"nightly-2026-10-14-38a3029\",\"result\":\"fail\",\"target\":\"linux_x86_64\"},{\"hash\":\"HC\",\"nightly\":\"nightly-2026-10-14-38a3029\",\"result\":\"crash\",\"target\":\"any\"}],\"talon_version\":\"0.9.0\"}"
 	req.method == Post and req.url == "http://127.0.0.1:9/v1/compat" and req.timeout_s == 3 and req.body == body
 		and req.headers == [("User-Agent", "tln/0.9.0"), ("Content-Type", "application/json"), ("Talon-Contributor", id)]
-			and req.headers.all(|(name, _)| name != "Authorization")
+		and req.headers.all(|(name, _)| name != "Authorization")
 }
 
 reply : U16, Str -> QueueSend.Reply
@@ -96,8 +96,8 @@ expect {
 	skips = "{\"row\":1,\"reason\":\"unknown-hash\"},{\"row\":2,\"reason\":\"a-new-reason\"}"
 	QueueSend.settle({ count: 3, reply: reply(201, answer(3, 2, "")) }) == Leave({ sent: 3, counted: 3, first: 2 })
 		and QueueSend.settle({ count: 3, reply: reply(200, answer(0, 0, "")) }) == Leave({ sent: 3, counted: 0, first: 0 })
-			and QueueSend.settle({ count: 3, reply: reply(200, answer(1, 1, skips)) }) == Leave({ sent: 3, counted: 1, first: 1 })
-				and QueueSend.settle({ count: 500, reply: reply(201, answer(400, 120, "")) }) == Leave({ sent: 500, counted: 400, first: 120 })
+		and QueueSend.settle({ count: 3, reply: reply(200, answer(1, 1, skips)) }) == Leave({ sent: 3, counted: 1, first: 1 })
+		and QueueSend.settle({ count: 500, reply: reply(201, answer(400, 120, "")) }) == Leave({ sent: 500, counted: 400, first: 120 })
 }
 
 # R-SH4: "after a 4xx answer other than 429: the registry will not take that row." The rows leave and nothing is counted (R-SH6: `sent` is the rows of requests that got a 200 or a 201).
@@ -153,6 +153,6 @@ expect {
 	three = QueueSend.totals({ doc: rich, add: { sent: 1, counted: 1, first: 0 }, now: "2026-11-03T12:00:00Z" })
 	one == { ..fresh, sent: 3, counted: 3, first: 2, first_sent_at: Ok("2026-11-03T10:05:00Z"), last_sent_at: Ok("2026-11-03T10:05:00Z") }
 		and two == { ..fresh, sent: 503, counted: 403, first: 122, first_sent_at: Ok("2026-11-03T10:05:00Z"), last_sent_at: Ok("2026-11-03T11:00:00Z") }
-			and three == { ..rich, sent: 8, counted: 7, first: 5, last_sent_at: Ok("2026-11-03T12:00:00Z") }
-				and ShareJson.read({ path: "share.json", text: ShareJson.text(two) }) == Ok(two)
+		and three == { ..rich, sent: 8, counted: 7, first: 5, last_sent_at: Ok("2026-11-03T12:00:00Z") }
+		and ShareJson.read({ path: "share.json", text: ShareJson.text(two) }) == Ok(two)
 }

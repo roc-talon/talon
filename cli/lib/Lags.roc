@@ -144,7 +144,7 @@ key_of = |members, file, alias| match members.find_first(|m| m.file == file) {
 # The keys of `[dependencies]` of a member whose `talon.toml` is `path`.
 deps_under : Vars.Member, Str -> List(Intent.Dep)
 deps_under = |m, path| match m.toml {
-	Ok(t) => if t.path == path t.intent.deps else []
+	Ok(t) => if (t.path == path) t.intent.deps else []
 	Err(NoToml) => []
 }
 

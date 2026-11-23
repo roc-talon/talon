@@ -49,7 +49,7 @@ L2NoRank :: [].{
 			}
 			downloads = {
 				auto: Consent.auto_install(env),
-				allow: if given.contains("allow-downloads") Ok(Yes) else Err(NoFlag),
+				allow: if (given.contains("allow-downloads")) Ok(Yes) else Err(NoFlag),
 				yes: given.contains("yes"),
 				mode: Mode.from_env({ env: Dict.from_list(env), json: Bool.False }),
 				quiet: Bool.False,

@@ -192,7 +192,7 @@ sha_source = |text| {
 	parsed = match Ref.parse(text, Scope.Roc, Bool.False) {
 		Ok(found) => found
 		# A name with no `/` before the `@` is a channel name: `RocInstall` words that failure (R-CH8).
-		Err(fail) => return if is_repo_or_short(text) Err(fail) else Ok(Err(NotGit))
+		Err(fail) => return if (is_repo_or_short(text)) Err(fail) else Ok(Err(NotGit))
 	}
 	match (parsed.form, parsed.selector, parsed.name.split_first("/")) {
 		(Full, Ok(GitSha(ref)), Ok({ before, after })) => Ok(Ok({ owner: before, repo: after, ref }))

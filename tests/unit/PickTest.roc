@@ -28,7 +28,7 @@ cand = |url, days| match Ident.of_url(url) {
 	Err(_) => crash "bad test URL"
 }
 
-slot = |id, is_platform, ranges, current, free, candidates| { id, is_platform, ranges, current, hold: if free Free else Held, named: Err(None), candidates, files: [] }
+slot = |id, is_platform, ranges, current, free, candidates| { id, is_platform, ranges, current, hold: if (free) Free else Held, named: Err(None), candidates, files: [] }
 
 package_fact = |url| { url, release: { kind: Package, pf: Err(None), deps: [] } }
 
@@ -70,7 +70,7 @@ expect {
 		Done(chosen) => Ok(chosen.map(|c| c.url))
 		_ => Err(None)
 	}
-	wrong_kind = step([base], facts_of([base]).map(|f| if f.url == json("2.3.0") { url: f.url, release: { kind: Platform, pf: Err(None), deps: [] } } else f), Highest, 2 * day, no_snap)
+	wrong_kind = step([base], facts_of([base]).map(|f| if (f.url == json("2.3.0")) { url: f.url, release: { kind: Platform, pf: Err(None), deps: [] } } else f), Highest, 2 * day, no_snap)
 	rows = [
 		("highest in the range, 2.4.0 is too new, 3.0.0 is outside (R-C1, R-C7)", run(base, Highest, 2 * day, no_snap), moved("2.3.0")),
 		("min-release-age 0d turns the age off (R-C7)", run(base, Highest, 0, no_snap), moved("2.4.0")),
@@ -198,7 +198,7 @@ expect {
 	named = { ..base, ranges: ["=2.4.0"], named: Ok("2.4.0") }
 	gitlab = |version| "https://gitlab.com/someone/roc-json/releases/download/${version}/${h_a}.tar.zst"
 	foreign = { ..base, current: Ok(gitlab("2.1.0")), candidates: [cand(gitlab("2.1.0"), 30), cand(gitlab("2.3.0"), 3), cand(gitlab("2.4.0"), 1)] }
-	wrong_kind = view(step_with([base], facts_of([base]).map(|f| if f.url == json("2.4.0") { url: f.url, release: { kind: Platform, pf: Err(None), deps: [] } } else f), Highest, 2 * day, no_snap, ["someone/*"]))
+	wrong_kind = view(step_with([base], facts_of([base]).map(|f| if (f.url == json("2.4.0")) { url: f.url, release: { kind: Platform, pf: Err(None), deps: [] } } else f), Highest, 2 * day, no_snap, ["someone/*"]))
 	rows = [
 		("no pattern: the young releases are hidden (R-C7)", run(base, [], no_snap), moved_old),
 		("owner/repo: 2.4.0 is chosen, with the note (R-C15, R-C16)", run(base, ["someone/roc-json"], no_snap), chosen_young("someone/roc-json")),

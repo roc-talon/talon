@@ -27,7 +27,7 @@ Channel :: [].{
 		}
 		if first_ok and last_ok and bytes.len() >= 2 and bytes.len() <= 24 and bytes.all(|b| is_lower(b) or is_digit(b) or b == '-') {
 			# Design Q614 item 4: a reserved word, or a reserved word and `-` at the start, is a reserved name.
-			if reserved.contains(name) or reserved.any(|word| name.starts_with("${word}-")) Err(Reserved) else Ok({})
+			if (reserved.contains(name) or reserved.any(|word| name.starts_with("${word}-"))) Err(Reserved) else Ok({})
 		} else {
 			Err(BadName)
 		}
@@ -45,7 +45,7 @@ Channel :: [].{
 	tag_prefix_check = |text| {
 		bytes = text.to_utf8()
 		ok = bytes.len() >= 1 and bytes.len() <= 40 and bytes.last() == Ok('-') and bytes.all(|b| is_lower(b) or is_digit(b) or b == '-' or b == '.' or b == '_')
-		if ok Ok({}) else Err(BadTagPrefix)
+		if (ok) Ok({}) else Err(BadTagPrefix)
 	}
 
 	## R-CH5, Design Q614 item 7: the date and the sha of a build, from the 4 parts of the end of a tag or an id. The year has 4 digits, the month and the day 2 digits,
@@ -102,7 +102,7 @@ Channel :: [].{
 	## The tables decide, not the form of the text: a nightly id, a sha prefix, `@latest` and a release are `NotChannel`.
 	install_ref : { text : Str, config : List({ name : Str, source : Str, tag_prefix : Str }), project : List({ name : Str, source : Str, tag_prefix : Str }) } -> [NotChannel, Latest({ name : Str, source : Str, tag_prefix : Str }), Build({ name : Str, source : Str, tag_prefix : Str }, Str), ProjectOnly({ name : Str, source : Str, tag_prefix : Str })]
 	install_ref = |facts| {
-		bare = if name_check(facts.text).is_ok() Ok(facts.text) else Err(NoName)
+		bare = if (name_check(facts.text).is_ok()) Ok(facts.text) else Err(NoName)
 		built = match parse_id(facts.text) {
 			Ok(id) if id.name != "nightly" => Ok(id.name)
 			_ => Err(NoName)
@@ -140,7 +140,7 @@ Channel :: [].{
 	unknown_text = |text| {
 		name = match parse_id(text) {
 			Ok(id) if id.name != "nightly" => Ok(id.name)
-			_ => if name_check(text).is_ok() and !text.to_utf8().all(is_hex) Ok(text) else Err(NotChannelText)
+			_ => if (name_check(text).is_ok() and !text.to_utf8().all(is_hex)) Ok(text) else Err(NotChannelText)
 		}
 		match name {
 			Ok(n) => Ok(unknown_name_text(n))
@@ -169,7 +169,7 @@ Channel :: [].{
 			} else {
 				match compare_numbers([x.year, x.month, x.day], [y.year, y.month, y.day]) {
 					Same => match (published_in(times, a), published_in(times, b)) {
-						(Ok(p), Ok(q)) if p != q => Ok(if p < q Before else After)
+						(Ok(p), Ok(q)) if p != q => Ok(if (p < q) Before else After)
 						_ => Ok(Text.compare(x.sha, y.sha))
 					}
 					other => Ok(other)
@@ -217,12 +217,12 @@ Channel :: [].{
 					if after.is_empty() {
 						NotNamed
 					} else if name == "nightly" {
-						if valid Builtin("@${after}") else BadSelector(after)
+						if (valid) Builtin("@${after}") else BadSelector(after)
 					} else if name_check(name).is_err() {
 						NotNamed
 					} else {
 						match table_for({ name, config: facts.config, project: facts.project }) {
-							Config(t) => if valid User(t, "@${after}") else BadSelector(after)
+							Config(t) => if (valid) User(t, "@${after}") else BadSelector(after)
 							Project(t) => ProjectOnly(t)
 							Neither => NoTable(name)
 						}
@@ -338,7 +338,7 @@ Channel :: [].{
 		match parts {
 			Ok((owner, repo)) => {
 				source = "${owner}/${repo}"
-				if source_check(source).is_ok() Ok(source) else Err(BadUrl)
+				if (source_check(source).is_ok()) Ok(source) else Err(BadUrl)
 			}
 			Err(_) => Err(BadUrl)
 		}
@@ -353,7 +353,7 @@ Channel :: [].{
 	prefix_of_tags : List(Str) -> Try(Str, [NoPrefix, Prefixes(List(Str))])
 	prefix_of_tags = |tags| {
 		found = tags.keep_oks(|tag| prefix_in_tag(tag))
-		unique = found.fold([], |acc, p| if acc.contains(p) acc else acc.append(p))
+		unique = found.fold([], |acc, p| if (acc.contains(p)) acc else acc.append(p))
 		match Text.sorted(unique) {
 			[] => Err(NoPrefix)
 			[one] => Ok(one)
@@ -379,7 +379,7 @@ Channel :: [].{
 					_ => Bool.False
 				},
 			)
-			if listed Ok(facts.given) else Err(NoTag)
+			if (listed) Ok(facts.given) else Err(NoTag)
 		}
 	}
 
@@ -393,7 +393,7 @@ Channel :: [].{
 	## Slice 242 (Design Q617 item 1): `add <name> <URL>` when `config.toml` has a table of the name. The same source (the text, case kept) is `Same`; another is `Other(<the source in config.toml>)`.
 	exists_check : { name : Str, source : Str, config : List(Channel.Entry) } -> [Absent, Same, Other(Str)]
 	exists_check = |facts| match facts.config.find_first(|t| t.name == facts.name) {
-		Ok(t) => if t.source == facts.source Same else Other(t.source)
+		Ok(t) => if (t.source == facts.source) Same else Other(t.source)
 		Err(_) => Absent
 	}
 
@@ -436,7 +436,7 @@ Channel :: [].{
 		Err(_) => NoTable
 		Ok(p) => match facts.config.find_first(|t| t.name == facts.name) {
 			Err(_) => Copy(p)
-			Ok(c) => if c.source == p.source and c.tag_prefix == p.tag_prefix Equal else Differ
+			Ok(c) => if (c.source == p.source and c.tag_prefix == p.tag_prefix) Equal else Differ
 		}
 	}
 
@@ -467,7 +467,7 @@ Channel :: [].{
 		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
 		Ok(_) => {
 			kept = trim_end_lines(facts.text)
-			if kept.is_empty() Ok(table_text(facts.table)) else Ok("${kept}\n\n${table_text(facts.table)}")
+			if (kept.is_empty()) Ok(table_text(facts.table)) else Ok("${kept}\n\n${table_text(facts.table)}")
 		}
 	}
 
@@ -501,7 +501,7 @@ Channel :: [].{
 		widths = [0, 1, 2].map(|col| table.fold(0, |w, cells| w.max((cells.get(col) ?? "").count_utf8_bytes())))
 		pad = |text, w| "${text}${" ".repeat(w - text.count_utf8_bytes())}"
 		line = |cells| {
-			shown = cells.map_with_index(|text, col| if col == 3 text else pad(text, widths.get(col) ?? 0))
+			shown = cells.map_with_index(|text, col| if (col == 3) text else pad(text, widths.get(col) ?? 0))
 			Str.join_with(shown.map(|cell| cell), "  ")
 		}
 		Str.join_with(table.map(line), "\n")
@@ -524,7 +524,7 @@ Channel :: [].{
 	## Slice 242 (R-CH12, TW24): the print of `add <name> <URL>`. `read` is the number of releases of page 1. No end of line at the end. A newest build with no asset for `target` has no `Install:` part.
 	added_text : { path : Str, table : Channel.Entry, read : U64, newest : { id : Str, has_asset : Bool }, target : Str } -> Str
 	added_text = |facts| {
-		noun = if facts.read == 1 "release" else "releases"
+		noun = if (facts.read == 1) "release" else "releases"
 		last = if facts.newest.has_asset {
 			"newest: ${facts.newest.id} (has ${facts.target}). Install: tln roc install ${facts.table.name}"
 		} else {
@@ -612,7 +612,7 @@ Channel :: [].{
 				Ok(_) => Bool.True
 				Err(NotFound) => Bool.False
 			}
-			if has_table Ok(text) else Ok("${trim_end_lines(text)}\n\n${table_text(facts.table)}")
+			if (has_table) Ok(text) else Ok("${trim_end_lines(text)}\n\n${table_text(facts.table)}")
 		}
 	}
 
@@ -636,7 +636,7 @@ Channel :: [].{
 									Ok(Value.Table(t)) => t.is_empty()
 									_ => Bool.False
 								}
-								if empty Ok(Set(without_table_header(done.to_str(), "toolchain"))) else Ok(Set(done.to_str()))
+								if (empty) Ok(Set(without_table_header(done.to_str(), "toolchain"))) else Ok(Set(done.to_str()))
 							}
 						}
 					}
@@ -658,7 +658,7 @@ Channel :: [].{
 
 	## R-CH2: the built-in tables. Only `nightly` has one. A reserved name with no table (`stable`) gives `NotBuiltIn`.
 	builtin : Str -> Try({ shape : Str, source : Str, tag_prefix : Str }, [NotBuiltIn])
-	builtin = |name| if name == "nightly" Ok({ shape: "github-release", source: "roc-lang/nightlies", tag_prefix: "nightly-" }) else Err(NotBuiltIn)
+	builtin = |name| if (name == "nightly") Ok({ shape: "github-release", source: "roc-lang/nightlies", tag_prefix: "nightly-" }) else Err(NotBuiltIn)
 
 	## The shapes that this tln knows (R-CH10). A word that is not here is a value that a newer tln may know (R-TF8).
 	shapes : List(Str)
@@ -685,7 +685,7 @@ Channel :: [].{
 			theirs = read(b, x.config.text).tables
 			differ = mine.keep_oks(
 				|t| match theirs.find_first(|u| u.name == t.name) {
-					Ok(u) => if same(t, u) Err(Equal) else Ok((t, u))
+					Ok(u) => if (same(t, u)) Err(Equal) else Ok((t, u))
 					Err(_) => Err(Equal)
 				},
 			)
@@ -703,7 +703,7 @@ prefix_in_tag : Str -> Try(Str, [NoPrefix])
 prefix_in_tag = |tag| {
 	parts = tag.split_on("-")
 	cut = parts.len().minus_saturated(4)
-	prefix = if cut == 0 "" else "${Str.join_with(parts.take_first(cut), "-")}-"
+	prefix = if (cut == 0) "" else "${Str.join_with(parts.take_first(cut), "-")}-"
 	match parts.drop_first(cut) {
 		[year, month, day, sha] if parts.len() >= 4 and Channel.date_of({ names: Bool.False }, year, month, day, sha).is_ok() and Channel.tag_prefix_check(prefix).is_ok() => Ok(prefix)
 		_ => Err(NoPrefix)
@@ -727,11 +727,11 @@ trim_count = |bytes, n| match bytes.get(n.minus_saturated(1)) {
 
 # Slice 242: the index `i` moved back over the blank lines, down to `floor`.
 back_over : U64, (U64 -> Bool), U64 -> U64
-back_over = |i, is_blank, floor| if i > floor and is_blank(i - 1) back_over(i - 1, is_blank, floor) else i
+back_over = |i, is_blank, floor| if (i > floor and is_blank(i - 1)) back_over(i - 1, is_blank, floor) else i
 
 # Slice 242: the first index from `i` that is a header, else `end`.
 forward_to : U64, U64, (U64 -> Bool) -> U64
-forward_to = |i, end, is_header| if i >= end or is_header(i) i else forward_to(i + 1, end, is_header)
+forward_to = |i, end, is_header| if (i >= end or is_header(i)) i else forward_to(i + 1, end, is_header)
 
 # Slice 242: the rows of `list`: the built-in table, the tables of `config.toml`, then the tables that only the project has.
 list_rows : { config : List(Channel.Entry), project : List(Channel.Entry) } -> List({ entry : Channel.Entry, from : Str, origin : Str })
@@ -754,7 +754,7 @@ published_in = |times, id| match times.find_first(|row| row.id == id) {
 
 compare_numbers : List(U64), List(U64) -> [Before, Same, After]
 compare_numbers = |a, b| match (a, b) {
-	([x, .. as xs], [y, .. as ys]) => if x < y Before else if x > y After else compare_numbers(xs, ys)
+	([x, .. as xs], [y, .. as ys]) => if (x < y) Before else if (x > y) After else compare_numbers(xs, ys)
 	_ => Same
 }
 
@@ -822,10 +822,10 @@ read_one = |doc, text, name| {
 		Err(Reserved) => { table: Err(Skipped), issues: [{ line, message: "channels.${name}: '${name}' is a reserved channel name" }], warnings: [] }
 		Err(BadName) => { table: Err(Skipped), issues: [{ line, message: "channels.${name}: '${name}' is not a channel name" }], warnings: [] }
 		Ok({}) => {
-			shape = text_key(doc, name, "shape", |word| if Channel.shapes.contains(word) Ok(word) else Err("'${word}' is not a channel shape"))
+			shape = text_key(doc, name, "shape", |word| if (Channel.shapes.contains(word)) Ok(word) else Err("'${word}' is not a channel shape"))
 			# Design Q614 item 3: the shape `github-release` checks the forms of `source` and `tag-prefix`.
-			source = text_key(doc, name, "source", |word| if Channel.source_check(word).is_ok() Ok(word) else Err("'${word}' is not owner/repo"))
-			prefix = text_key(doc, name, "tag-prefix", |word| if Channel.tag_prefix_check(word).is_ok() Ok(word) else Err("'${word}' is not a tag prefix"))
+			source = text_key(doc, name, "source", |word| if (Channel.source_check(word).is_ok()) Ok(word) else Err("'${word}' is not owner/repo"))
+			prefix = text_key(doc, name, "tag-prefix", |word| if (Channel.tag_prefix_check(word).is_ok()) Ok(word) else Err("'${word}' is not a tag prefix"))
 			unknown = match Toml.get(doc, ["channels", name]) {
 				Ok(Value.Table(t)) => t.keys().keep_if(|k| !table_keys.contains(k)).map(|k| { line: TomlKeys.key_line(doc, ["channels", name, k]), message: "unknown key channels.${name}.${k}" })
 				_ => []

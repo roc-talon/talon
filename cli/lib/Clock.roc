@@ -13,11 +13,11 @@ Clock :: [].{
 		# `YYYY-MM-DDTHH:MM:SSZ`: 20 bytes, with the fixed marks at these places.
 		marks_ok = bytes.len() == 20
 			and bytes.sublist({ start: 4, len: 1 }) == [45]
-				and bytes.sublist({ start: 7, len: 1 }) == [45]
-					and bytes.sublist({ start: 10, len: 1 }) == [84]
-						and bytes.sublist({ start: 13, len: 1 }) == [58]
-							and bytes.sublist({ start: 16, len: 1 }) == [58]
-								and bytes.sublist({ start: 19, len: 1 }) == [90]
+			and bytes.sublist({ start: 7, len: 1 }) == [45]
+			and bytes.sublist({ start: 10, len: 1 }) == [84]
+			and bytes.sublist({ start: 13, len: 1 }) == [58]
+			and bytes.sublist({ start: 16, len: 1 }) == [58]
+			and bytes.sublist({ start: 19, len: 1 }) == [90]
 		if marks_ok {
 			field = |start, len| number(bytes.sublist({ start, len }))
 			match (field(0, 4), field(5, 2), field(8, 2), field(11, 2), field(14, 2), field(17, 2)) {
@@ -81,7 +81,7 @@ number = |digits| if digits.all(|b| b >= 48 and b <= 57) {
 
 days_in_month : I64, I64 -> I64
 days_in_month = |year, month| match month {
-	2 => if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) 29 else 28
+	2 => if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) 29 else 28
 	4 | 6 | 9 | 11 => 30
 	_ => 31
 }
@@ -89,10 +89,10 @@ days_in_month = |year, month| match month {
 # Days from 1970-01-01 to a valid date at or after it (the civil-from-days method of H. Hinnant).
 days_since_epoch : I64, I64, I64 -> I64
 days_since_epoch = |year, month, day| {
-	y = if month <= 2 year - 1 else year
+	y = if (month <= 2) year - 1 else year
 	era = y // 400
 	year_of_era = y - era * 400
-	shifted = if month > 2 month - 3 else month + 9
+	shifted = if (month > 2) month - 3 else month + 9
 	day_of_year = (153 * shifted + 2) // 5 + day - 1
 	day_of_era = year_of_era * 365 + year_of_era // 4 - year_of_era // 100 + day_of_year
 	era * 146097 + day_of_era - 719468
@@ -107,9 +107,9 @@ civil_from_days = |days| {
 	year_of_era = (day_of_era - day_of_era // 1460 + day_of_era // 36524 - day_of_era // 146096) // 365
 	day_of_year = day_of_era - (365 * year_of_era + year_of_era // 4 - year_of_era // 100)
 	shifted = (5 * day_of_year + 2) // 153
-	month = if shifted < 10 shifted + 3 else shifted - 9
+	month = if (shifted < 10) shifted + 3 else shifted - 9
 	{
-		year: year_of_era + era * 400 + (if month <= 2 1 else 0),
+		year: year_of_era + era * 400 + (if (month <= 2) 1 else 0),
 		month,
 		day: day_of_year - (153 * shifted + 2) // 5 + 1,
 	}
@@ -120,5 +120,5 @@ pad : I64, U64 -> Str
 pad = |n, width| {
 	text = n.to_str()
 	size = text.to_utf8().len()
-	if size >= width text else "${"0".repeat(width - size)}${text}"
+	if (size >= width) text else "${"0".repeat(width - size)}${text}"
 }

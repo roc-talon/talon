@@ -177,7 +177,7 @@ fresh! = |fx, ctx, run| {
 		built: ensured.built,
 		would_build: ensured.would,
 		bin: ToolsStep.bin_view(locked.bin),
-		binary: if locked.checked.added.is_empty() ensured.binary else Prebuilt,
+		binary: if (locked.checked.added.is_empty()) ensured.binary else Prebuilt,
 		bin_skip: ToolsStep.skip_text(locked.checked.skip),
 		would_check: locked.checked.would_check,
 	}

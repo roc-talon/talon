@@ -124,7 +124,7 @@ NoRank :: [].{
 		for change in found.changed {
 			fx.err!("warning: ${Toolchain.changed_warning(change)}\n")
 		}
-		if found.source == Missing return Err(Toolchain.offline_no_list({}))
+		if (found.source == Missing) return Err(Toolchain.offline_no_list({}))
 		min_age = Setting.pick({ flag: Err(Unset), env: Err(Unset), project: run.toml.min_age, user: config.min_release_age }) ?? 172800
 		# R-C14: the list of the project (`[]` outside a project) and the list of `config.toml`.
 		exclude = Age.join({ project: run.exclude, user: config.min_release_age_exclude })
@@ -137,10 +137,10 @@ NoRank :: [].{
 			Ok(picked) => picked
 			Err(Empty) => return Err(Toolchain.pick_failed({ error: Empty, releases: found.releases, host: system, switch }))
 		}
-		if RocInstall.has_dir(entries, id) return Ok(Present({ id: id }))
+		if (RocInstall.has_dir(entries, id)) return Ok(Present({ id: id }))
 		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
-		if run.offline return Err(Toolchain.offline_missing(id))
+		if (run.offline) return Err(Toolchain.offline_missing(id))
 		# R-C16 (slice 084): the pick of a young compiler that only a pattern kept gets the note, before the download line.
 		RocInstall.print_note!(fx, Bool.False, Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }))
 		item = Roots.item(roots, Item.Toolchain(id))
@@ -176,9 +176,9 @@ NoRank :: [].{
 			Download(download) => {
 				mode = consented!(fx, consent, { id: download.id, size: download.size })?
 				question = NoRank.prompt({ id: download.id, size: download.size })
-				flag = if mode.decided == Install Ok(Yes) else Err(NoFlag)
+				flag = if (mode.decided == Install) Ok(Yes) else Err(NoFlag)
 				asked = Prompt.ask!(fx, question, { mode: mode.mode, yes: consent.yes, quiet: consent.quiet, flag })?
-				if asked.answer != Yes return Err(Consent.command_declined(download.id))
+				if (asked.answer != Yes) return Err(Consent.command_declined(download.id))
 				done = RocInstall.install_offer!(fx, download)?
 				Ok({ id: done.id, installed: facts.listed.append(done.id) })
 			}
@@ -199,8 +199,8 @@ NoRank :: [].{
 consented! : Fx, Start.Downloads, { id : Str, size : U64 } => Try({ decided : [Refuse, AutoNo, NeedsConsent, Install, Ask, NeedTty], mode : Mode }, Fail)
 consented! = |fx, consent, offer| {
 	want = |mode| Consent.required_want({ id: offer.id, auto: consent.auto, mode, yes: consent.yes, flag: consent.allow })
-	mode = if want(consent.mode) == NeedTty Mode.with_tty(consent.mode, fx.tty!()) else consent.mode
+	mode = if (want(consent.mode) == NeedTty) Mode.with_tty(consent.mode, fx.tty!()) else consent.mode
 	decided = want(mode)
-	if decided == NeedsConsent return Err(Consent.download_stop({ count: 1, size: offer.size }))
+	if (decided == NeedsConsent) return Err(Consent.download_stop({ count: 1, size: offer.size }))
 	Ok({ decided, mode })
 }

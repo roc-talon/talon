@@ -92,7 +92,7 @@ string_end = |bytes, start| {
 	n = bytes.len()
 	var $j = start + 1
 	while $j < n and at(bytes, $j) != '"' {
-		$j = if at(bytes, $j) == '\\' $j + 2 else $j + 1
+		$j = if (at(bytes, $j) == '\\') $j + 2 else $j + 1
 	}
 	$j + 1
 }
@@ -104,7 +104,7 @@ word_end = |bytes, start| {
 	while is_word_byte(at(bytes, $j)) {
 		$j = $j + 1
 	}
-	if at(bytes, $j) == '!' $j + 1 else $j
+	if (at(bytes, $j) == '!') $j + 1 else $j
 }
 
 tok_of : List(U8), U64, U64, [Word, Open, Close, Colon, Comma, Arrow, Other] -> Tok
@@ -172,7 +172,7 @@ join_text = |toks| {
 	var $prev = 0
 	var $first = Bool.True
 	for t in toks {
-		gap = if !$first and t.start > $prev " " else ""
+		gap = if (!$first and t.start > $prev) " " else ""
 		$out = Str.concat($out, Str.concat(gap, t.text))
 		$prev = t.end
 		$first = Bool.False
@@ -281,7 +281,7 @@ split_entries = |toks, with_alias| {
 }
 
 drop_last_comma : List(Tok) -> List(Tok)
-drop_last_comma = |part| if !part.is_empty() and tok_at(part, part.len() - 1).kind == Comma part.drop_last(1) else part
+drop_last_comma = |part| if (!part.is_empty() and tok_at(part, part.len() - 1).kind == Comma) part.drop_last(1) else part
 
 # The alias names of `[Alias : var, ...]`: the words that a colon follows, at depth 0 of the brackets.
 alias_names : List(Tok) -> List(Str)
@@ -399,11 +399,11 @@ arg_count = |args| {
 			_ => {}
 		}
 	}
-	if args.len() == 2 and is_open(tok_at(args, 0)) and tok_at(args, 0).text == "(" and tok_at(args, 1).kind == Close 0 else $commas + 1
+	if (args.len() == 2 and is_open(tok_at(args, 0)) and tok_at(args, 0).text == "(" and tok_at(args, 1).kind == Close) 0 else $commas + 1
 }
 
 lambda : U64 -> Str
-lambda = |n| if n == 0 "|| ${crash_text}" else "|${Str.join_with(List.repeat("_", n), ", ")}| ${crash_text}"
+lambda = |n| if (n == 0) "|| ${crash_text}" else "|${Str.join_with(List.repeat("_", n), ", ")}| ${crash_text}"
 
 tabs : U64 -> Str
 tabs = |n| Str.join_with(List.repeat("\t", n), "")
@@ -412,7 +412,7 @@ tabs = |n| Str.join_with(List.repeat("\t", n), "")
 stub_of : List(Tok), U64 -> Try(Str, Str)
 stub_of = |toks, level| match arrow_at(toks) {
 	Ok(at_arrow) => Ok(lambda(arg_count(toks.take_first(at_arrow))))
-	Err(NoArrow) => if is_record(toks) record_stub(split_entries(toks.sublist({ start: 1, len: toks.len() - 2 }), Bool.False), level) else Err(join_text(toks))
+	Err(NoArrow) => if (is_record(toks)) record_stub(split_entries(toks.sublist({ start: 1, len: toks.len() - 2 }), Bool.False), level) else Err(join_text(toks))
 }
 
 # The whole type is one record `{ ... }`.

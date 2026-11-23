@@ -85,7 +85,7 @@ RocInstall :: [].{
 		exclude = config.min_release_age_exclude
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: config.nightly })
 		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
-		if RocInstall.has_dir(entries, run.id) return Ok({ offer: Present({ id: run.id }), note: Err(None) })
+		if (RocInstall.has_dir(entries, run.id)) return Ok({ offer: Present({ id: run.id }), note: Err(None) })
 		# Slice 241 (R-CH8, Design Q616 items 2 to 4): `<name>@<selector>` and the bare word `nightly`.
 		named = RocInstall.named_ref!(fx, { text: run.id, config: config.channels, env: run.env })?
 		# Slice 240 (R-CH11, R-CH5, R-CH8): a user channel. An installed id (a unique prefix) comes first (R-SC10), then the tables.
@@ -148,7 +148,7 @@ RocInstall :: [].{
 			Ok(table) => Nightlies.list_of!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system, source: list, channel: table })?
 			Err(_) => Nightlies.list_of!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system, source: list })?
 		}
-		if found.source == Missing return Err(Toolchain.offline_no_list({}))
+		if (found.source == Missing) return Err(Toolchain.offline_no_list({}))
 		lists = match user {
 			Ok(table) => RocInstall.channel_domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude, table })
 			Err(_) => Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude })
@@ -178,11 +178,11 @@ RocInstall :: [].{
 				return Err(RocInstall.pick_failed_in({ error, releases: found.releases, host: system, switch, user }))
 			}
 		}
-		note = if pick_text == "@latest" or Toolchain.needs_base(pick_text) Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) else Err(None)
-		if RocInstall.has_dir(entries, id) return Ok({ offer: Present({ id: id }), note })
+		note = if (pick_text == "@latest" or Toolchain.needs_base(pick_text)) Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) else Err(None)
+		if (RocInstall.has_dir(entries, id)) return Ok({ offer: Present({ id: id }), note })
 		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
-		if run.offline return Err(Toolchain.offline_missing(id))
+		if (run.offline) return Err(Toolchain.offline_missing(id))
 		item = Roots.item(roots, Item.Toolchain(id))
 		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system, source: RocInstall.source_of(found.via, user) }
 		Ok({ offer: Download({ id, size: asset.size, ctx }), note })
@@ -213,7 +213,7 @@ RocInstall :: [].{
 		if user_table.is_ok() {
 			table = user_table ?? { name: "", source: "", tag_prefix: "" }
 			listed = Nightlies.list_channel!(fx, { net: run.net, roots: run.roots, now: run.?real ?? run.now, offline: run.offline, host: system, channel: table })?
-			if listed.source == Missing return Err(Toolchain.offline_no_list({}))
+			if (listed.source == Missing) return Err(Toolchain.offline_no_list({}))
 			return match Toolchain.range_pick({ releases: listed.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {
 				Ok(id) => Ok({ id, note: Err(None) })
 				Err(_) => Err(Toolchain.range_failed({ req_text: run.req_text, switch: run.switch }))
@@ -231,14 +231,14 @@ RocInstall :: [].{
 			Ok(r) => {
 				listed = Nightlies.list_registry!(fx, { roots: run.roots, origin: r.origin, version: r.version, offline: run.offline, host: system, log: r.log, source: r.source })?
 				# Design Q489 (changes Q467): offline with no kept rows (`Missing`) the list cannot be read: the failure of `direct` (`Toolchain.offline_no_list`, exit 15).
-				if listed.source == Missing return Err(Toolchain.offline_no_list({}))
+				if (listed.source == Missing) return Err(Toolchain.offline_no_list({}))
 				# R-AP74 row 4: a list that was read and has no row is empty: the first cause of `ClosureRequest.no_compiler` (exit 10).
-				if listed.releases.is_empty() return Err(ClosureRequest.no_compiler({ rows: [], nightly: run.switch.nightly, nightly_from: run.switch.source, req: Ok(run.req_text), now: run.now, min_age: run.min_age, exclude: run.exclude, snapshot: None }))
+				if (listed.releases.is_empty()) return Err(ClosureRequest.no_compiler({ rows: [], nightly: run.switch.nightly, nightly_from: run.switch.source, req: Ok(run.req_text), now: run.now, min_age: run.min_age, exclude: run.exclude, snapshot: None }))
 				listed
 			}
 			Err(None) => Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.?real ?? run.now, offline: run.offline, host: system })?
 		}
-		if found.source == Missing return Err(Toolchain.offline_no_list({}))
+		if (found.source == Missing) return Err(Toolchain.offline_no_list({}))
 		match Toolchain.range_pick({ releases: found.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {
 			Ok(id) => Ok({ id, note: Toolchain.kept_note({ id, releases: found.releases, now: run.now, min_age: run.min_age, exclude: run.exclude }) })
 			Err(_) => Err(Toolchain.range_failed({ req_text: run.req_text, switch: run.switch }))
@@ -434,7 +434,7 @@ RocInstall :: [].{
 	channel_domain = |facts| {
 		found = Nightlies.candidates(facts.releases)
 		shown = Nightlies.visible({ list: found, now: facts.now, min_age: facts.min_age, snapshot: Err(None), keep: [], exclude: facts.exclude, channels: [facts.table] })
-		{ named: found.map(|r| r.id), auto: if facts.nightly shown.map(|r| r.id) else [] }
+		{ named: found.map(|r| r.id), auto: if (facts.nightly) shown.map(|r| r.id) else [] }
 	}
 
 	## Slice 240 (Design Q615 item 5, TW24): `Toolchain.pick_failed`, and for a user channel with the switch off, the text of R-NS2 with the channel name.
@@ -522,7 +522,7 @@ RocInstall :: [].{
 	ask_download! = |fx, args, env, facts| {
 		mode = Mode.from_env({ env: Dict.from_list(env), json: args.json })
 		asked = Prompt.ask!(fx, Consent.roc_install(facts), { mode, yes: args.yes, quiet: args.quiet, flag: Err(NoFlag) })?
-		if asked.answer == Yes Ok({}) else Err(Consent.roc_install_declined(facts.id))
+		if (asked.answer == Yes) Ok({}) else Err(Consent.roc_install_declined(facts.id))
 	}
 
 	run! : Fx, Args => I32
@@ -557,7 +557,7 @@ flow! = |fx, args, typed| {
 	match noted.offer {
 		Present(found) => {
 			roots = Roots.of_run!(fx, env)?
-			default = if Channel.parse_id(found.id).map_ok(|parts| parts.name != "nightly") == Ok(Bool.True) Kept else set_default!(fx, roots, found.id)?
+			default = if (Channel.parse_id(found.id).map_ok(|parts| parts.name != "nightly") == Ok(Bool.True)) Kept else set_default!(fx, roots, found.id)?
 			Ok({ ..present(roots, found.id), default })
 		}
 		Download(offer) => {
@@ -581,7 +581,7 @@ warn_changed! = |fx, changed| for change in changed {
 install! : Fx, Ctx, Str => Try({ how : [Installed, Present], compat : Compat, default : [Set, Kept] }, Fail)
 install! = |fx, ctx, dir| {
 	entries = RocInstall.toolchain_entries!(fx, dir)
-	if RocInstall.has_dir(entries, ctx.id) return Ok({ how: Present, compat: Err(Unknown), default: Kept })
+	if (RocInstall.has_dir(entries, ctx.id)) return Ok({ how: Present, compat: Err(Unknown), default: Kept })
 	stale = Temp.of_item({ item: ctx.item, entries })
 	if !stale.is_empty() {
 		_ = fx.delete!(stale)
@@ -716,7 +716,7 @@ edit_config! = |fx, path, id| {
 		Keep => Ok(Kept)
 		Set(edited) => {
 			second = RocInstall.read_text!(fx, path)?
-			again = if second == first Ok(Set(edited)) else Toolchain.default_edit({ path, text: second, id })
+			again = if (second == first) Ok(Set(edited)) else Toolchain.default_edit({ path, text: second, id })
 			match again? {
 				Keep => Ok(Kept)
 				Set(content) => match fx.write_atomic!([{ path, content }]) {

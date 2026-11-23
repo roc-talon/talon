@@ -107,7 +107,7 @@ ToolsStep :: [].{
 	## The tools step of `install`, `update` and `upgrade` (R-PT5, R-PT6): `phase` and the `keys` (`[]` is each entry). Prints the lines. `changed` is true when a line was printed (D16 of the review: `InstallFlow` prints `nothing to change` only when the header and the tools both stay as they are).
 	after! : Fx, Args, { request : ResolveBase.Request, loaded : ResolveBase.Loaded, phase : ToolsPlan.Phase, keys : List(Str) } => Try({ changed : Bool, rows : List(ToolsStep.JsonRow) }, Fail)
 	after! = |fx, args, run| {
-		if run.loaded.intent.tools.is_empty() return Ok({ changed: Bool.False, rows: [] })
+		if (run.loaded.intent.tools.is_empty()) return Ok({ changed: Bool.False, rows: [] })
 		ctx = ToolsStep.ctx_of(args, run.request, run.loaded)?
 		done = ToolsStep.run!(fx, ctx, { phase: run.phase, keys: run.keys })?
 		ToolsStep.write!(fx, ctx, done.changes)?
@@ -118,8 +118,8 @@ ToolsStep :: [].{
 	## Steps 1 to 4: the entries `keys` of `ctx.tools` (`[]` is all) in the phase. Nothing is written for `--dry-run`.
 	run! : Fx, ToolsStep.Ctx, { phase : ToolsPlan.Phase, keys : List(Str) } => Try(ToolsStep.Done, Fail)
 	run! = |fx, ctx, run| {
-		chosen = if run.keys.is_empty() ctx.tools else ctx.tools.keep_if(|e| run.keys.contains(e.key))
-		if chosen.is_empty() return Ok({ rows: [], changes: [] })
+		chosen = if (run.keys.is_empty()) ctx.tools else ctx.tools.keep_if(|e| run.keys.contains(e.key))
+		if (chosen.is_empty()) return Ok({ rows: [], changes: [] })
 		machine = ToolsStep.machine!(fx)?
 		var $found = XCacheIo.entries!(fx, ctx.roots, machine.os)?
 		var $gate = Err(NotAsked)
@@ -141,7 +141,7 @@ ToolsStep :: [].{
 	## Step 4 (R-CC7, R-CC1, R-PT5): the changes in one write. The file is read again, the spans of the changed keys are compared with the first read, the new text is made from the text that was read again. No change, or `--dry-run`: no call.
 	write! : Fx, ToolsStep.Ctx, List(ToolsStep.Change) => Try({}, Fail)
 	write! = |fx, ctx, changes| {
-		if changes.is_empty() or ctx.dry_run return Ok({})
+		if (changes.is_empty() or ctx.dry_run) return Ok({})
 		keys = changes.map(change_key)
 		now = RocInstall.read_text!(fx, ctx.home)?
 		new = changes.fold_try(now, |text, change| apply(ctx.home, text, change))?
@@ -246,7 +246,7 @@ ToolsStep :: [].{
 	locks! = |fx, ctx, state, run| {
 		old = ToolsStep.bin_of(ctx, run.key)
 		allowed = ToolBin.allowed({ machine: ctx.machine_bins, bin: old })
-		want = if run.url_changed ToolBin.all_targets else ToolBin.to_check(old)
+		want = if (run.url_changed) ToolBin.all_targets else ToolBin.to_check(old)
 		checked = ToolBinFlow.check!(fx, ToolsStep.env_of(ctx, state.machine), state.gate, { key: run.key, name: run.name, version: run.rel.version, url: run.rel.url, hash: run.rel.hash, pages: run.pages, want, allowed })?
 		write = ToolBin.write({ command: run.command, url_changed: run.url_changed, allowed, old, ran: checked.ran })
 		bin = match write {
@@ -336,7 +336,7 @@ ToolsStep :: [].{
 		if ToolBinFlow.hit({ found: run.found, bundle: run.rel.hash, target: facts.target, bin: run.bin, machine: ctx.machine_bins }).is_ok() {
 			return Ok(none)
 		}
-		if ctx.dry_run return Ok({ ..none, would: Bool.True })
+		if (ctx.dry_run) return Ok({ ..none, would: Bool.True })
 		match ToolBinUse.use({ machine: ctx.machine_bins, bin: run.bin, target: facts.target, offline: ctx.args.offline }) {
 			Download(sha256) => match ToolBinFlow.use!(fx, ToolsStep.env_of(ctx, { os: facts.os, target: facts.target }), { key: run.key, name: facts.name, version: run.rel.version, url: run.rel.url, hash: run.rel.hash, sha256 })? {
 				Ok(made) => return Ok({ ..none, added: [made], binary: Prebuilt })
@@ -514,7 +514,7 @@ moved! = |fx, ctx, state, run| {
 		built: ensured.built,
 		would_build: ensured.would,
 		bin: ToolsStep.bin_view(locked.bin),
-		binary: if locked.checked.added.is_empty() ensured.binary else Prebuilt,
+		binary: if (locked.checked.added.is_empty()) ensured.binary else Prebuilt,
 		bin_skip: ToolsStep.skip_text(locked.checked.skip),
 		would_check: locked.checked.would_check,
 	}
@@ -543,7 +543,7 @@ stays! = |fx, ctx, state, run| {
 		Set(list) => Ok(Bin({ key: entry.key, ref: entry.ref, url, bin: list }))
 		_ => Err(None)
 	}
-	row = { ..kept, bin: ToolsStep.bin_view(locked.bin), binary: if locked.checked.added.is_empty() NoBinary else Prebuilt, bin_skip: ToolsStep.skip_text(locked.checked.skip), would_check: locked.checked.would_check }
+	row = { ..kept, bin: ToolsStep.bin_view(locked.bin), binary: if (locked.checked.added.is_empty()) NoBinary else Prebuilt, bin_skip: ToolsStep.skip_text(locked.checked.skip), would_check: locked.checked.would_check }
 	Ok({ row, change, added: locked.checked.added, gate: locked.checked.gate })
 }
 
@@ -565,7 +565,7 @@ locked! = |fx, ctx, state, entry| {
 	row = {
 		key: entry.key,
 		name,
-		action: if ensured.built Built else Kept,
+		action: if (ensured.built) Built else Kept,
 		ref: Ok(entry.ref),
 		url: Ok(url),
 		version: Ok(ident.version),

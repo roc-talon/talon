@@ -5,6 +5,7 @@ import lib.Selector
 AddTest :: [].{}
 
 # A release URL of a GitHub repo at a version. The hash text is not checked here.
+url : Str, Str -> Str
 url = |repo, ver| "https://github.com/${repo}/releases/download/${ver}/Hhash.tar.zst"
 
 pf_old = { alias: "pf", url: url("roc-lang/basic-cli", "0.25.0"), is_platform: Bool.True }
@@ -14,8 +15,6 @@ json_old = { alias: "json", url: url("someone/roc-json", "2.1.0"), is_platform: 
 util_path = { alias: "util", url: "../util/main.roc", is_platform: Bool.False }
 
 header = [pf_old, json_old, util_path]
-
-none = Err(None)
 
 no_as = Err(Unset)
 
@@ -57,22 +56,22 @@ expect {
 	uni = url("roc-lang/unicode", "4.2.0")
 	set = |key, value| Ok({ key, value })
 	rows = [
-		(new("roc-lang/unicode", "4.2.0", none, Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, none))),
-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Latest), Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, none))),
-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "=4.2.0"), none))),
-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.True, no_as), Ok(("unicode", Insert, uni, nothing, none))),
-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^1.2")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^1.2"), none))),
-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^4")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^4"), none))),
+		(new("roc-lang/unicode", "4.2.0", Err(None), Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, Err(None)))),
+		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Latest), Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, Err(None)))),
+		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "=4.2.0"), Err(None)))),
+		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.True, no_as), Ok(("unicode", Insert, uni, nothing, Err(None)))),
+		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^1.2")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^1.2"), Err(None)))),
+		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^4")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^4"), Err(None)))),
 		(
 			new("lukewilliamboswell/roc-parser", "2.0.0", Ok(Selector.Exact("2.0.0")), Bool.False, no_as),
-			Ok(("parser", Insert, url("lukewilliamboswell/roc-parser", "2.0.0"), set("parser", "=2.0.0"), none)),
+			Ok(("parser", Insert, url("lukewilliamboswell/roc-parser", "2.0.0"), set("parser", "=2.0.0"), Err(None))),
 		),
 		(
 			new("someone/roc-yaml", "1.0.0", Ok(Selector.Exact("1.0.0")), Bool.False, Ok("yml")),
-			Ok(("yml", Insert, url("someone/roc-yaml", "1.0.0"), set("yml", "=1.0.0"), none)),
+			Ok(("yml", Insert, url("someone/roc-yaml", "1.0.0"), set("yml", "=1.0.0"), Err(None))),
 		),
 		(
-			new("owner/9lives", "1.0.0", none, Bool.False, no_as),
+			new("owner/9lives", "1.0.0", Err(None), Bool.False, no_as),
 			Err("tln: error[usage]: the default alias '9lives' for 'owner/9lives' is not a valid name. Use --as <alias>."),
 		),
 	]
@@ -112,20 +111,20 @@ expect {
 		}),
 	)
 	rows = [
-		(alias(none, Bool.False), Ok(("json", Keep, json_url, nothing, keep_note))),
-		(alias(Ok(Selector.Range("^3")), Bool.False), Ok(("json", Update, json_url, set("^3"), none))),
-		(alias(Ok(Selector.Exact("2.2.0")), Bool.False), Ok(("json", Update, json_url, set("=2.2.0"), none))),
-		(alias(Ok(Selector.Exact("2.2.0")), Bool.True), Ok(("json", Update, json_url, nothing, none))),
-		(by_name("2.2.0", none, header), Ok(("json", Keep, json_url, nothing, keep_note))),
-		(by_name("2.2.0", Ok(Selector.Range("^2")), header), Ok(("json", Update, json_url, set("^2"), none))),
+		(alias(Err(None), Bool.False), Ok(("json", Keep, json_url, nothing, keep_note))),
+		(alias(Ok(Selector.Range("^3")), Bool.False), Ok(("json", Update, json_url, set("^3"), Err(None)))),
+		(alias(Ok(Selector.Exact("2.2.0")), Bool.False), Ok(("json", Update, json_url, set("=2.2.0"), Err(None)))),
+		(alias(Ok(Selector.Exact("2.2.0")), Bool.True), Ok(("json", Update, json_url, nothing, Err(None)))),
+		(by_name("2.2.0", Err(None), header), Ok(("json", Keep, json_url, nothing, keep_note))),
+		(by_name("2.2.0", Ok(Selector.Range("^2")), header), Ok(("json", Update, json_url, set("^2"), Err(None)))),
 		(
-			by_name("2.2.0", none, [pf_old, js_old]),
+			by_name("2.2.0", Err(None), [pf_old, js_old]),
 			Ok(("js", Keep, json_url, nothing, Ok("js: someone/roc-json 2.1.0 is in the header\nRun tln update js to move it."))),
 		),
 		# Q11 R-AD22: the header has the repo once (series 1). `add roc-lang/http@2` moves that entry to series 2.
-		(http_2(no_as), Ok(("http", Update, url("roc-lang/http", "1.9.0"), Ok({ key: "http", value: "^2" }), none))),
+		(http_2(no_as), Ok(("http", Update, url("roc-lang/http", "1.9.0"), Ok({ key: "http", value: "^2" }), Err(None)))),
 		# Q11: `--as` keeps both series, so the new series is a new entry.
-		(http_2(Ok("http2")), Ok(("http2", Insert, url("roc-lang/http", "2.0.0"), Ok({ key: "http2", value: "^2" }), none))),
+		(http_2(Ok("http2")), Ok(("http2", Insert, url("roc-lang/http", "2.0.0"), Ok({ key: "http2", value: "^2" }), Err(None)))),
 	]
 	bad = rows.keep_if(|(got, want)| got != want)
 	dbg bad
@@ -133,7 +132,7 @@ expect {
 }
 
 # R-AD29 R-AD30 R-AD31 R-AD32 R-AD33 R-AD25 R-AD26 R-SE7: `tln add --platform`. A header has one platform.
-# With none: a new entry `pf` (or `--as`). With one: it is replaced under the same alias, also for another repo, and the
+# With Err(None): a new entry `pf` (or `--as`). With one: it is replaced under the same alias, also for another repo, and the
 # `talon.toml` key of the old platform gets the value of the table. A release that is no platform is a usage failure.
 # `tln add X` where X is a platform is a usage failure that names `--platform`. A replaced platform gets a notice.
 expect {
@@ -151,12 +150,12 @@ expect {
 			Ok(("pf", Replace, cli_new, set("^0.26"), Ok("platform changes: roc-lang/basic-cli 0.25.0 -> roc-lang/basic-cli 0.26.1"))),
 		),
 		(
-			plat("roc-lang/basic-cli", "0.26.1", Platform, none, no_as, no_plat),
-			Ok(("pf", Insert, cli_new, nothing, none)),
+			plat("roc-lang/basic-cli", "0.26.1", Platform, Err(None), no_as, no_plat),
+			Ok(("pf", Insert, cli_new, nothing, Err(None))),
 		),
 		(
 			plat("roc-lang/basic-cli", "0.26.1", Platform, Ok(Selector.Exact("0.26.1")), Ok("cli"), no_plat),
-			Ok(("cli", Insert, cli_new, Ok({ key: "cli", value: "=0.26.1" }), none)),
+			Ok(("cli", Insert, cli_new, Ok({ key: "cli", value: "=0.26.1" }), Err(None))),
 		),
 		(
 			# R-AD31: the platform is the entry with `is_platform`, not the entry that has the alias `pf` (a package can have it).
@@ -164,7 +163,7 @@ expect {
 				"roc-lang/basic-webserver",
 				"0.13.0",
 				Platform,
-				none,
+				Err(None),
 				no_as,
 				[
 					{ alias: "pf", url: url("someone/pf-tools", "1.0.0"), is_platform: Bool.False },
@@ -175,13 +174,13 @@ expect {
 			Ok(("shell", Replace, web, nothing, Ok("platform changes: roc-lang/basic-cli 0.25.0 -> roc-lang/basic-webserver 0.13.0"))),
 		),
 		(
-			plat("roc-lang/unicode", "4.2.0", Package, none, no_as, header),
+			plat("roc-lang/unicode", "4.2.0", Package, Err(None), no_as, header),
 			Err("tln: error[usage]: 'roc-lang/unicode' is not a platform"),
 		),
 		(
 			view(
 				Add.decide({
-					selector: none,
+					selector: Err(None),
 					chosen: { name: "roc-lang/basic-cli", url: cli_new, kind: Platform },
 					platform_flag: Bool.False,
 					no_pin: Bool.False,
@@ -289,24 +288,24 @@ expect {
 	note_util = Ok("entry changes: ../util/main.roc -> acme/util 1.1.0")
 	set = |key, value| Ok({ key, value })
 	rows = [
-		("a path entry, no selector", as_("acme/util", "1.1.0", none, Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
+		("a path entry, no selector", as_("acme/util", "1.1.0", Err(None), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
 		("a path entry, latest is no selector", as_("acme/util", "1.1.0", Ok(Selector.Latest), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
 		("a path entry, an exact version", as_("acme/util", "1.1.0", Ok(Selector.Exact("1.1.0")), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, set("util", "=1.1.0"), note_util))),
 		("a path entry, an exact version, --no-pin", as_("acme/util", "1.1.0", Ok(Selector.Exact("1.1.0")), Bool.True, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
 		("a path entry, a range", as_("acme/util", "1.1.0", Ok(Selector.Range("^1")), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, set("util", "^1"), note_util))),
 		(
 			"a foreign URL",
-			as_("acme/odd", "1.0.0", none, Bool.False, "odd", Package, with_pf),
+			as_("acme/odd", "1.0.0", Err(None), Bool.False, "odd", Package, with_pf),
 			Ok(("odd", Replace, url("acme/odd", "1.0.0"), nothing, Ok("entry changes: ${odd_url} -> acme/odd 1.0.0"))),
 		),
-		("the platform entry is a path entry: a package is no platform (R-AD32)", as_("acme/util", "1.1.0", none, Bool.False, "pf", Package, with_path_pf), Err("tln: error[usage]: 'acme/util' is not a platform")),
-		("a package entry: a platform release needs --platform (R-AD33)", as_("acme/pf", "0.1.0", none, Bool.False, "util", Platform, with_pf), Err("tln: error[usage]: 'acme/pf' is a platform. Use tln add --platform acme/pf.")),
+		("the platform entry is a path entry: a package is no platform (R-AD32)", as_("acme/util", "1.1.0", Err(None), Bool.False, "pf", Package, with_path_pf), Err("tln: error[usage]: 'acme/util' is not a platform")),
+		("a package entry: a platform release needs --platform (R-AD33)", as_("acme/pf", "0.1.0", Err(None), Bool.False, "util", Platform, with_pf), Err("tln: error[usage]: 'acme/pf' is a platform. Use tln add --platform acme/pf.")),
 		(
 			"the default alias is the path entry: it stops and names --as",
-			new("owner/util", "1.0.0", none, Bool.False, no_as),
+			new("owner/util", "1.0.0", Err(None), Bool.False, no_as),
 			Err("tln: error[usage]: the default alias 'util' for 'owner/util' is used by a path entry in the header. Use --as <alias>, or --as util to replace that entry."),
 		),
-		("--platform replaces a path platform under its alias", plat("acme/pf", "0.1.0", Platform, none, no_as, with_path_pf), Ok(("pf", Replace, url("acme/pf", "0.1.0"), nothing, Ok("platform changes: ../platform/main.roc -> acme/pf 0.1.0")))),
+		("--platform replaces a path platform under its alias", plat("acme/pf", "0.1.0", Platform, Err(None), no_as, with_path_pf), Ok(("pf", Replace, url("acme/pf", "0.1.0"), nothing, Ok("platform changes: ../platform/main.roc -> acme/pf 0.1.0")))),
 		(
 			"--platform replaces a path platform, an exact version",
 			plat("acme/pf", "0.1.0", Platform, Ok(Selector.Exact("0.1.0")), no_as, with_path_pf),
@@ -328,13 +327,13 @@ expect {
 	path_text = "tln: error[usage]: util is a path entry: Talon never changes it. To replace it, run tln add <name> --as util."
 	odd_text = "tln: error[usage]: odd is a foreign URL: Talon never changes it. To replace it, run tln add <name> --as odd."
 	rows = [
-		("a path entry, no selector", alias("util", none), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
-		("a foreign URL, no selector", alias("odd", none), Ok(("odd", Keep, odd_url, nothing, Ok("odd: ${odd_url} is in the header")))),
+		("a path entry, no selector", alias("util", Err(None)), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
+		("a foreign URL, no selector", alias("odd", Err(None)), Ok(("odd", Keep, odd_url, nothing, Ok("odd: ${odd_url} is in the header")))),
 		("a path entry, latest", alias("util", Ok(Selector.Latest)), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
 		("a path entry, a range", alias("util", Ok(Selector.Range("^3"))), Err(path_text)),
 		("a path entry, an exact version", alias("util", Ok(Selector.Exact("1.0.0"))), Err(path_text)),
 		("a foreign URL, a range", alias("odd", Ok(Selector.Range("^1"))), Err(odd_text)),
-		("a release stays as before", alias("json", Ok(Selector.Range("^3"))), Ok(("json", Update, url("someone/roc-json", "2.1.0"), Ok({ key: "json", value: "^3" }), none))),
+		("a release stays as before", alias("json", Ok(Selector.Range("^3"))), Ok(("json", Update, url("someone/roc-json", "2.1.0"), Ok({ key: "json", value: "^3" }), Err(None)))),
 	]
 	failures = [
 		("never_changes, a path entry", Fail.line(Add.never_changes({ alias: "util", value: "../util/main.roc" })), path_text),

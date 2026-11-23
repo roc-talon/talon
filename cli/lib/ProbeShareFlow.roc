@@ -53,7 +53,7 @@ ProbeShareFlow :: [].{
 		config = Share.setting({ path: config_path, text: RocInstall.read_text!(fx, config_path)? })?
 		match Net.registry({ flag: args.registry, env: Net.from_env(env).registry, config: config.registry }) {
 			Direct => Err(ProbeShare.direct({}))
-			Url(origin) => if args.offline Err(ProbeShare.offline({})) else Ok({ origin, setting: IndexQuery.source({ flag: args.registry, env: Net.from_env(env).registry, config: config.registry }) })
+			Url(origin) => if (args.offline) Err(ProbeShare.offline({})) else Ok({ origin, setting: IndexQuery.source({ flag: args.registry, env: Net.from_env(env).registry, config: config.registry }) })
 		}
 	}
 
@@ -103,7 +103,7 @@ ProbeShareFlow :: [].{
 		}
 		stop = match sent.stop {
 			Ok(fail) => Ok(fail)
-			Err(None) => if unsent.is_empty() Err(None) else Ok(ProbeShare.unfinished({ requests: sent.shared.requests, count: unsent.len() }))
+			Err(None) => if (unsent.is_empty()) Err(None) else Ok(ProbeShare.unfinished({ requests: sent.shared.requests, count: unsent.len() }))
 		}
 		Ok({ shared: sent.shared, kept_back: plan.kept_back, unsent, stop })
 	}
@@ -124,7 +124,7 @@ guard! = |fx, input| if input.source.is_empty() {
 recorded! : Fx, Db.Open, { stored : List(Db.Fact), host : Nightlies.Host } => Try(List(Str), Fail)
 recorded! = |fx, open, facts| {
 	target = Nightlies.target(facts.host)
-	tags = facts.stored.map(|f| f.nightly).keep_if(|id| Compiler.kind(id) == Nightly).fold([], |found, id| if found.contains(id) found else found.append(id))
+	tags = facts.stored.map(|f| f.nightly).keep_if(|id| Compiler.kind(id) == Nightly).fold([], |found, id| if (found.contains(id)) found else found.append(id))
 	match fx.db_query!(open, Pinned(tags.map(|tag| { tag, target }))) {
 		Ok(Pinned(rows)) => Ok(rows.keep_if(|r| r.target == target).map(|r| r.tag))
 		Ok(_) => Ok([])

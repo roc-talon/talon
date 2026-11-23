@@ -23,7 +23,7 @@ AuditDirect :: [].{
 	repos_of : List(AuditTypes.Entry) -> List({ owner : Str, repo : Str })
 	repos_of = |entries| entries
 		.keep_oks(|e| AuditDirect.repo_of(e.url))
-		.fold([], |acc, r| if acc.contains(r) acc else acc.append(r))
+		.fold([], |acc, r| if (acc.contains(r)) acc else acc.append(r))
 
 	## R-AU2, R-AU13, R-DI3, R-DI4, R-DI15 (Q-244b-1, Q-244b-2): the finding of one entry from the list of its repository. The release is the one whose `tag_name` is the tag of the URL. Order: `asset-replaced`, `release-missing`, `prerelease`, `moved`.
 	## A draft is not the release. `BadPage(n)` is a page (1-based) that is not a list of releases.
@@ -37,14 +37,14 @@ AuditDirect :: [].{
 				releases = read_pages(pages)?
 				tag = Github.hint_ref(e.url).map_ok(|r| r.tag) ?? ""
 				found = releases.find_first(|r| r.tag == tag and !r.draft)
-				successor = if redirected moved_to(releases, e.name) else Err(None)
+				successor = if (redirected) moved_to(releases, e.name) else Err(None)
 				found_as = |reason, new_hash| Ok({ ..base, reason, new_hash, successor })
 				match found {
 					Err(_) => found_as(ReleaseMissing, Err(None))
 					Ok(r) => {
 						others = r.assets.keep_if(|h| h != e.hash)
 						if !r.assets.contains(e.hash) {
-							found_as(AssetReplaced, if others.len() == 1 others.first().map_err(|_| None) else Err(None))
+							found_as(AssetReplaced, if (others.len() == 1) others.first().map_err(|_| None) else Err(None))
 						} else if r.prerelease {
 							found_as(Prerelease, Err(None))
 						} else if redirected {
@@ -118,7 +118,7 @@ read_release = |doc| match doc {
 moved_to : List(Release), Str -> Try(Str, [None])
 moved_to = |releases, old| match releases.first() {
 	Ok(r) => match html_repo(r.html_url) {
-		Ok(name) => if name.with_ascii_lowercased() == old.with_ascii_lowercased() Err(None) else Ok(name)
+		Ok(name) => if (name.with_ascii_lowercased() == old.with_ascii_lowercased()) Err(None) else Ok(name)
 		Err(None) => Err(None)
 	}
 	Err(_) => Err(None)

@@ -64,7 +64,7 @@ finished! = |fx, args, command, done| match done {
 stopped! : Fx, Args, Str, Fail => I32
 stopped! = |fx, args, command, fail| {
 	shown = Out.fail({ command, json: args.json, fail })
-	if !shown.stdout.is_empty() fx.out!(shown.stdout)
+	if (!shown.stdout.is_empty()) fx.out!(shown.stdout)
 	fx.err!(shown.stderr)
 	Exit.choose({ failures: [fail], child: Err(NoChild) })
 }
@@ -212,13 +212,13 @@ add_url_flow! = |fx, args, op| {
 	# R-CH12 exit 19: an installed build of the name records another source.
 	entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
 	ids = Compiler.installed_users(entries).keep_if(|id| Channel.user_parts(id).map_ok(|p| p.name == op.name) == Ok(Bool.True))
-	reads = if ids.is_empty() [] else fx.read_files!(ids.map(|id| Roots.item(roots, Item.ToolchainMeta(id))))
+	reads = if (ids.is_empty()) [] else fx.read_files!(ids.map(|id| Roots.item(roots, Item.ToolchainMeta(id))))
 	installed = ids.map2(reads, |id, read| { id, source: recorded_source(read) })
 	match Channel.source_conflict({ name: op.name, source: op.source, installed }) {
 		Err(Conflict(recorded)) => return Err(Fail.new(Input, with_hint(Channel.conflict_text({ name: op.name, source: op.source, recorded }))))
 		Ok({}) => {}
 	}
-	if args.offline return Err(Fail.new(Network, "--offline is set and tln roc channel add needs the release list of github.com/${op.source}"))
+	if (args.offline) return Err(Fail.new(Network, "--offline is set and tln roc channel add needs the release list of github.com/${op.source}"))
 	listed = list_page!(fx, { env, roots, real, source: op.source })?
 	prefix = match op.given {
 		Ok(given) => match Channel.prefix_given({ given, tags: listed.tags }) {
@@ -378,7 +378,7 @@ rm_flow! = |fx, args, rest| {
 list_flow! : Fx, Args, List(Str) => Try({}, Fail)
 list_flow! = |fx, args, rest| {
 	no_prefix_flag(args, "list")?
-	if !rest.is_empty() return Err(Fail.new(Usage, "tln roc channel list takes no operand, got ${rest.len().to_str()}"))
+	if (!rest.is_empty()) return Err(Fail.new(Usage, "tln roc channel list takes no operand, got ${rest.len().to_str()}"))
 	env = fx.env_all!()
 	roots = Roots.of_run!(fx, env)?
 	cfg = read_config!(fx, roots)?

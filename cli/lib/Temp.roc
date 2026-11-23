@@ -55,7 +55,7 @@ Temp :: [].{
 }
 
 hex_digit : U64 -> Str
-hex_digit = |digit| match Str.from_utf8([if digit < 10 48 + digit.to_u8_wrap() else 87 + digit.to_u8_wrap()]) {
+hex_digit = |digit| match Str.from_utf8([if (digit < 10) 48 + digit.to_u8_wrap() else 87 + digit.to_u8_wrap()]) {
 	Ok(char) => char
 	Err(_) => "0"
 }

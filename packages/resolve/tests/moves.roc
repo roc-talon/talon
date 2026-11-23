@@ -25,7 +25,7 @@ known = |slots| slots.join_map(|s| s.candidates.map(|c| { id: c.id, kind: Packag
 
 # The fact of release `id` gets these deps (a dep is a `group` and the lowest version).
 needs : List(Solver.Fact), Str, List((Str, Str)) -> List(Solver.Fact)
-needs = |facts, id, deps| facts.map(|f| if f.id == id { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
+needs = |facts, id, deps| facts.map(|f| if (f.id == id) { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
 
 req : List(Solver.Slot), List(Solver.Fact) -> Solver.Request
 req = |slots, facts| { slots, rules: { now: 1000, min_age: 100, snapshot: Err(None), strategy: Highest }, facts, conflicts: [], compat: { domain: [], checks: [], used: [], probes: Allowed } }
@@ -47,7 +47,7 @@ ask_id = |a| match a {
 show : [Need(List(Solver.Ask)), Done(List(Solver.Chosen)), Fail(Solver.Why)] -> Str
 show = |r| match r {
 	Need(asks) => "need ${Str.join_with(asks.map(ask_id), " ")}"
-	Done(chosen) => "done ${Str.join_with(chosen.map(|c| if c.id == "${c.name}-${c.version}" "${c.name}=${c.version}" else "${c.name}=${c.version}(${c.id})"), " ")}"
+	Done(chosen) => "done ${Str.join_with(chosen.map(|c| if (c.id == "${c.name}-${c.version}") "${c.name}=${c.version}" else "${c.name}=${c.version}(${c.id})"), " ")}"
 	Fail(_) => "fail"
 }
 
@@ -118,9 +118,9 @@ expect {
 	x = held({ ..slot("x", versions), ranges: ["^1"] }, "1.2.0")
 	base = |s| req([s], known([s]))
 	out = |r, vs| without(r, vs.map(|v| [("x", v)]))
-	young = { ..x, candidates: x.candidates.map(|c| if c.id == "x-1.3.0" { ..c, published_at: 950 } else c) }
-	yanked = { ..x, candidates: x.candidates.map(|c| if c.id == "x-1.3.0" { ..c, yanked: Bool.True } else c) }
-	app_kind = known([x]).map(|f| if f.id == "x-1.3.0" { ..f, kind: App } else f)
+	young = { ..x, candidates: x.candidates.map(|c| if (c.id == "x-1.3.0") { ..c, published_at: 950 } else c) }
+	yanked = { ..x, candidates: x.candidates.map(|c| if (c.id == "x-1.3.0") { ..c, yanked: Bool.True } else c) }
+	app_kind = known([x]).map(|f| if (f.id == "x-1.3.0") { ..f, kind: App } else f)
 	no_list = held({ ..slot("x", ["1.0.0", "1.3.0"]), ranges: ["^1"] }, "1.2.0")
 	no_list_facts = known([no_list]).append({ id: "x-1.2.0", kind: Package, pf: Err(None), deps: [] })
 	roc = { name: "roc", group: "roc", kind: Compiler, candidates: [cand("n", "1"), cand("m", "2")], ranges: [], current: Ok({ id: "n-1", version: "1" }), named: Err(None) }
@@ -201,9 +201,9 @@ expect {
 			higher = minors.keep_if(|m| m > at)
 			lower = minors.keep_if(|m| m < at).rev()
 			own = minors.keep_if(|m| m == at)
-			if up own.concat(higher).concat(lower) else own.concat(lower).concat(higher)
+			if (up) own.concat(higher).concat(lower) else own.concat(lower).concat(higher)
 		} else {
-			if up minors.rev() else minors
+			if (up) minors.rev() else minors
 		}
 	}
 	# All tuples in lexicographic order. A tuple is a list of (name, minor) in the order of the search.
@@ -247,7 +247,7 @@ expect {
 			|moved| [Bool.True, Bool.False].map(
 				|up| {
 					r = without(start, conflicts_of(seed).map(|terms| terms.map(|(n, m)| (n, "1.${m.to_str()}.0"))))
-					((if up r else low(r)), moved, oracle(seed, moved, up), "seed ${seed.to_str()}, movable ${Str.join_with(moved, ",")}, ${if up "Highest" else "Lowest"}")
+					((if (up) r else low(r)), moved, oracle(seed, moved, up), "seed ${seed.to_str()}, movable ${Str.join_with(moved, ",")}, ${if (up) "Highest" else "Lowest"}")
 				},
 			),
 		),

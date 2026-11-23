@@ -289,14 +289,14 @@ expect {
 	back = |text| Db.queue_of(text)
 	Db.queue_cap == 10000
 		and Db.queue_line({ seq: 7, row: r }) == line
-			and back(line) == Ok({ seq: 7, row: r })
-				and back(Db.queue_line({ seq: 12345, row: { ..r, result: Pass } })) == Ok({ seq: 12345, row: { ..r, result: Pass } })
-					and back(Db.queue_line({ seq: 1, row: { ..r, result: Crash } })) == Ok({ seq: 1, row: { ..r, result: Crash } })
-						and back("7\tH1\t${c2}\tany\tfail\t${version}") == Err(BadLine)
-							and back("7\tH1\t${c2}\tany\tfail\t${version}\t${at}\textra") == Err(BadLine)
-								and back("x\tH1\t${c2}\tany\tfail\t${version}\t${at}") == Err(BadLine)
-									and back("7\tH1\t${c2}\tany\tmaybe\t${version}\t${at}") == Err(BadLine)
-										and back("") == Err(BadLine)
+		and back(line) == Ok({ seq: 7, row: r })
+		and back(Db.queue_line({ seq: 12345, row: { ..r, result: Pass } })) == Ok({ seq: 12345, row: { ..r, result: Pass } })
+		and back(Db.queue_line({ seq: 1, row: { ..r, result: Crash } })) == Ok({ seq: 1, row: { ..r, result: Crash } })
+		and back("7\tH1\t${c2}\tany\tfail\t${version}") == Err(BadLine)
+		and back("7\tH1\t${c2}\tany\tfail\t${version}\t${at}\textra") == Err(BadLine)
+		and back("x\tH1\t${c2}\tany\tfail\t${version}\t${at}") == Err(BadLine)
+		and back("7\tH1\t${c2}\tany\tmaybe\t${version}\t${at}") == Err(BadLine)
+		and back("") == Err(BadLine)
 }
 
 # R-SH4, R-CC8, R-TF3 (proposal, TW24, as `Share.clear_err`): the failure of the `Queue` write. A busy file and any other failure are a warning (the queue never changes the exit code, R-SH4). A newer file is `Db.on_err` for a write (exit 19).

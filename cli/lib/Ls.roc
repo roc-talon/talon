@@ -45,7 +45,7 @@ Ls :: [].{
 					fx.out!(Out.json_ok({ command: args.typed, data: Listing.data(closures) }))
 				} else {
 					for c in closures {
-						fx.out!(if opts.tree Listing.tree(c) else Listing.text(c))
+						fx.out!(if (opts.tree) Listing.tree(c) else Listing.text(c))
 					}
 				}
 				0
@@ -88,7 +88,7 @@ Ls :: [].{
 		}
 		current = read.project.file ?? ""
 		named = loaded.members.keep_if(|m| m.file == current)
-		members = if named.is_empty() loaded.members else named
+		members = if (named.is_empty()) loaded.members else named
 		closures = ResolveBase.closure!(fx, request, { members: members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, []) }), known: [] })?
 		if notes {
 			ResolveBase.closure_notes!(fx, request, closures)

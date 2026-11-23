@@ -39,7 +39,7 @@ TalonUpdate :: [].{
 
 	## R-IS2: the name of the release asset for this machine: `tln-<target>`, with `.exe` on Windows. `target` is `BuildSkip.target` (`x64musl`, `arm64musl`, `x64mac`, `arm64mac`, `x64win`). Windows on ARM64 runs the x64 binary, so `platform!` says `X64` there.
 	asset_name : { os : Setup.Os, target : Str } -> Str
-	asset_name = |facts| if facts.os == Windows "tln-${facts.target}.exe" else "tln-${facts.target}"
+	asset_name = |facts| if (facts.os == Windows) "tln-${facts.target}.exe" else "tln-${facts.target}"
 
 	## R-DI3, R-DI10, R-IS2: the releases of the pages of the GitHub list, in the order of the pages. `asset` is `asset_name`. A release is left out when it is a draft or a prerelease, or when its tag is not `v` and 3 numbers (`v0.3.2`; `nightly`, `v0.3.2-rc1`, `0.3.2`).
 	## A page that is not a JSON array of objects, a release with no text `tag_name`, and a release that is not left out and has no `published_at` that `Clock.parse_utc` reads, is `Err(BadPage(n))` (`n` is 1-based). `bin` and `sums` are the assets with exactly those names (a release with no such asset is still in the list: `pick` decides).
@@ -70,8 +70,8 @@ TalonUpdate :: [].{
 		match old_enough.first() {
 			Err(_) => Err(Fail.new(Usage, "no release of ${TalonUpdate.name} is old enough for min-release-age"))
 			Ok(first) => {
-				best = old_enough.fold(first, |top, r| if compare_versions(numbers(r.version), numbers(top.version)) == After r else top)
-				if compare_versions(numbers(best.version), numbers(facts.current)) == After Ok(Newer(best)) else Ok(Current(best))
+				best = old_enough.fold(first, |top, r| if (compare_versions(numbers(r.version), numbers(top.version)) == After) r else top)
+				if (compare_versions(numbers(best.version), numbers(facts.current)) == After) Ok(Newer(best)) else Ok(Current(best))
 			}
 		}
 	}
@@ -159,7 +159,7 @@ TalonUpdate :: [].{
 				Signaled(n) => "signal ${n.to_str()}"
 				NotStarted(text) => "not started: ${text}"
 			}
-			last = if facts.last_line.is_empty() "" else ": ${facts.last_line}"
+			last = if (facts.last_line.is_empty()) "" else ": ${facts.last_line}"
 			Err(Fail.new(Integrity, "attestation check failed for ${facts.asset} of ${TalonUpdate.name} ${facts.tag}: gh ${why}${last}. tln is not changed."))
 		}
 	}
@@ -174,7 +174,7 @@ TalonUpdate :: [].{
 
 	## R-HF2: the command line that sets the executable bit of the temp file: `chmod 0755 <file>`. Windows needs none: `Err(NotNeeded)`.
 	chmod_command : { os : Setup.Os, file : Str } -> Try(List(Str), [NotNeeded])
-	chmod_command = |facts| if facts.os == Windows Err(NotNeeded) else Ok(["chmod", "0755", facts.file])
+	chmod_command = |facts| if (facts.os == Windows) Err(NotNeeded) else Ok(["chmod", "0755", facts.file])
 
 	## R-ST9, R-ST6, R-ST11: which bin dir entries the update makes again. `tln` and `roc` are 2 names for one file (R-ST13, R-ST14). `tln` and `roc` are the verdicts of `ToolInstall.verdict` for the entry (`Make`: no entry, or an entry with the sha256 of the file that is replaced; `Foreign`: any other file). `bin` is the bin dir.
 	##
@@ -185,7 +185,7 @@ TalonUpdate :: [].{
 	## | `Make` | `Foreign` | `make` is `tln`. `roc` is kept (R-ST6) with the warning of `kept_warning` (question Q-E1) |
 	entries : { os : Setup.Os, bin : Str, tln : [Make, Foreign], roc : [Make, Foreign] } -> Try({ make : List(Str), warnings : List(Str) }, Fail)
 	entries = |facts| {
-		suffix = if facts.os == Windows ".exe" else ""
+		suffix = if (facts.os == Windows) ".exe" else ""
 		tln = "tln${suffix}"
 		roc = "roc${suffix}"
 		if facts.tln == Foreign {
@@ -207,7 +207,7 @@ TalonUpdate :: [].{
 
 	## R-ST10, R-S3: the renames before the new file goes in. `files` are the paths of the files that exist and are replaced (the data file, and each bin dir entry that `entries` makes). Windows: one rename of each file to its `del_name`, in the order of `files`. Linux and macOS: none (a `rename` over a running binary works).
 	del_moves : { os : Setup.Os, hex : Str, files : List(Str) } -> List({ from : Str, to : Str })
-	del_moves = |facts| if facts.os == Windows facts.files.map(|path| { from: path, to: TalonUpdate.del_name({ path, hex: facts.hex }) }) else []
+	del_moves = |facts| if (facts.os == Windows) facts.files.map(|path| { from: path, to: TalonUpdate.del_name({ path, hex: facts.hex }) }) else []
 
 	## R-ST10: is the name of a file that of a `.del` file: `<name>.<16 lower case hex digits>.del`, with a name that is not empty.
 	is_del : Str -> Bool
@@ -308,7 +308,7 @@ three_numbers : Str -> Try(List(U64), [NotVersion])
 three_numbers = |text| match text.split_on(".") {
 	[a, b, c] => {
 		parts = [a, b, c]
-		if parts.all(|part| !part.is_empty() and part.to_utf8().all(|byte| byte >= 48 and byte <= 57)) Ok(parts.map(|part| U64.from_str(part) ?? 0)) else Err(NotVersion)
+		if (parts.all(|part| !part.is_empty() and part.to_utf8().all(|byte| byte >= 48 and byte <= 57))) Ok(parts.map(|part| U64.from_str(part) ?? 0)) else Err(NotVersion)
 	}
 	_ => Err(NotVersion)
 }
@@ -330,7 +330,7 @@ numbers = |version| version.split_on(".").map(|part| U64.from_str(part) ?? 0)
 
 compare_versions : List(U64), List(U64) -> [Before, Same, After]
 compare_versions = |a, b| match (a, b) {
-	([x, .. as xs], [y, .. as ys]) => if x < y Before else if x > y After else compare_versions(xs, ys)
+	([x, .. as xs], [y, .. as ys]) => if (x < y) Before else if (x > y) After else compare_versions(xs, ys)
 	([], []) => Same
 	([], _) => Before
 	(_, []) => After
@@ -397,7 +397,7 @@ asset_of = |doc| match doc {
 			name,
 			url,
 			size: match field(pairs, "size") {
-				Ok(Num(n)) => if n < 0 0 else n.to_u64_wrap()
+				Ok(Num(n)) => if (n < 0) 0 else n.to_u64_wrap()
 				_ => 0
 			},
 		})

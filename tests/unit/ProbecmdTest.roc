@@ -58,9 +58,9 @@ expect {
 					Ok(n) => [" slots ${n.to_str()}"]
 					Err(Unset) => []
 				}
-				probe = if plan.opts.probe_downloads.is_ok() [" probe-downloads"] else []
-				allow = if plan.opts.allow_downloads.is_ok() [" allow-downloads"] else []
-				"${target}${if plan.range " range" else ""}${if plan.share " share" else ""}${Str.join_with(slots.concat(probe).concat(allow), "")}"
+				probe = if (plan.opts.probe_downloads.is_ok()) [" probe-downloads"] else []
+				allow = if (plan.opts.allow_downloads.is_ok()) [" allow-downloads"] else []
+				"${target}${if (plan.range) " range" else ""}${if (plan.share) " share" else ""}${Str.join_with(slots.concat(probe).concat(allow), "")}"
 			}
 		}
 	}
@@ -99,7 +99,7 @@ expect {
 # The names are read as `why` and `update` read them (alias, full name, short name, `@sel`: the version of the entry is in `sel`). Only the header entries are names: a package of the closure that no header names is not found (R-SC1).
 expect {
 	show = |found| match found {
-		Ok(node) => "${node.hash} ${node.name} ${node.version}${if node.is_platform " (platform)" else ""}"
+		Ok(node) => "${node.hash} ${node.name} ${node.version}${if (node.is_platform) " (platform)" else ""}"
 		Err(e) => "${Fail.line(e.fail)}|${e.block}"
 	}
 	find = |text, rows| show(ProbeCmd.entry({ text, rows }))
@@ -126,7 +126,7 @@ expect {
 		(
 			"2 entries with one alias and 2 series (R-WS8): a tie, with the list on stderr",
 			match tie {
-				Err(e) => "${Fail.line(e.fail)}|${if e.block.starts_with("\"json\" matches 2 packages:") "list" else "no list"}"
+				Err(e) => "${Fail.line(e.fail)}|${if (e.block.starts_with("\"json\" matches 2 packages:")) "list" else "no list"}"
 				Ok(_) => "no tie"
 			},
 			"tln: error[usage]: \"json\" matches 2 packages. Use a name from the list.|list",

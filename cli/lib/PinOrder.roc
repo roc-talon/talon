@@ -51,7 +51,7 @@ PinOrder :: [].{
 	}
 
 	id_kind : Str -> [Nightly, Release, Other]
-	id_kind = |id| if is_nightly(id) Nightly else if is_release(id) Release else Other
+	id_kind = |id| if (is_nightly(id)) Nightly else if (is_release(id)) Release else Other
 
 	# The day as `[year, month, day]`: the date of a tag, or the UTC day of the `published_at` of a release.
 	day_of : Str, List({ id : Str, published_at : U64 }) -> Try(List(U64), [NoDay])
@@ -82,7 +82,7 @@ PinOrder :: [].{
 		(Release, Nightly) => After
 		(Release, _) => by_version(a, b)
 		_ => match (published(a, times), published(b, times)) {
-			(Ok(x), Ok(y)) if x != y => if x < y Before else After
+			(Ok(x), Ok(y)) if x != y => if (x < y) Before else After
 			_ => match (nightly_key(a), nightly_key(b)) {
 				(Ok(x), Ok(y)) => Text.compare(x.sha, y.sha)
 				_ => Same
@@ -100,7 +100,7 @@ PinOrder :: [].{
 
 	compare_dates : List(U64), List(U64) -> [Before, Same, After]
 	compare_dates = |a, b| match (a, b) {
-		([x, .. as xs], [y, .. as ys]) => if x < y Before else if x > y After else compare_dates(xs, ys)
+		([x, .. as xs], [y, .. as ys]) => if (x < y) Before else if (x > y) After else compare_dates(xs, ys)
 		_ => Same
 	}
 

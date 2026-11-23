@@ -19,7 +19,7 @@ OracleSearch :: [].{
 				}
 			)
 			kind = match req.slots.find_first(holds) {
-				Ok(slot) => if slot.kind == Platform Platform else Package
+				Ok(slot) => if (slot.kind == Platform) Platform else Package
 				Err(_) => Package
 			}
 			Ok({ id, kind, pf: Err(None), deps: [] })
@@ -46,7 +46,7 @@ OracleSearch :: [].{
 	# `hint_of` is `OracleHint.hint`: a function, so that this module does not import `OracleHint` (no cycle). It runs only for a failure with a probe cause and `assume` on.
 	search : OracleBase.Input, OracleBase.Compat, Bool, Solver.Request, List(Str), List(List(Solver.Term)), (OracleBase.Input, OracleBase.Compat -> Try(Str, [None])) -> OracleBase.Free
 	search = |input, compat, assume, req, movable, tried, hint_of| match Solver.step_moves({ ..req, conflicts: req.conflicts.concat(tried) }, movable) {
-		Fail(why) => if wants_domain(compat) and has_probe(why) Wide else Fail(OracleCause.failure(input, compat, assume, why, if assume and has_probe(why) hint_of(input, compat) else Err(None)))
+		Fail(why) => if (wants_domain(compat) and has_probe(why)) Wide else Fail(OracleCause.failure(input, compat, assume, why, if (assume and has_probe(why)) hint_of(input, compat) else Err(None)))
 		Need(asks) => if asks.any(is_header) {
 			search(input, compat, assume, { ..req, facts: req.facts.concat(asks.keep_oks(|ask| optimistic(req, ask))) }, movable, tried, hint_of)
 		} else {
@@ -67,7 +67,7 @@ OracleSearch :: [].{
 	walked = |input, compat, assume, run, chosen| {
 		on = { ..compat, compiler: run.nightly }
 		verdict = Pick.closure_verdict({
-			members: if input.unmanaged.is_empty() [{ file: "", entries: [] }] else input.unmanaged,
+			members: if (input.unmanaged.is_empty()) [{ file: "", entries: [] }] else input.unmanaged,
 			nodes: input.facts.map(|f| Pick.node_of(f)).concat(input.paths),
 			picked: input.slots.map2(chosen, |slot, c| { files: slot.files, is_platform: slot.is_platform, url: c.id }),
 		})
@@ -75,7 +75,7 @@ OracleSearch :: [].{
 			Problem => search(input, compat, assume, run.req, run.movable, run.tried.append(chosen.map(|c| { name: c.name, ids: [c.id], sign: In })), run.hint_of)
 			Fine([]) => match lookups(input, on, chosen) {
 				[] => scanned(input, on, chosen)
-				pairs => if wants_domain(compat) Wide else Pairs(pairs)
+				pairs => if (wants_domain(compat)) Wide else Pairs(pairs)
 			}
 			Fine(ids) => Need(ids)
 		}
@@ -88,11 +88,11 @@ OracleSearch :: [].{
 		ids = match compat.compiler {
 			Ok(nightly) => chosen
 				.map(|c| c.id)
-				.fold([], |found, id| if found.contains(id) found else found.append(id))
+				.fold([], |found, id| if (found.contains(id)) found else found.append(id))
 				.keep_if(|id| needs_scan(compat, nightly, id))
 			Err(None) => []
 		}
-		if ids.is_empty() Done({ chosen: picked, nightly: compat.compiler }) else Scan({ ids, chosen: picked })
+		if (ids.is_empty()) Done({ chosen: picked, nightly: compat.compiler }) else Scan({ ids, chosen: picked })
 	}
 
 	needs_scan : OracleBase.Compat, Str, Str -> Bool
@@ -109,7 +109,7 @@ OracleSearch :: [].{
 				|(slot, url)| !OracleBase.is_current(slot, url) and OracleDomain.row_of(compat.checks, nightly, url).is_err() and !compat.looked.any(|k| k.hash == OracleDomain.hash_of(url) and k.nightly == nightly and k.target == "any"),
 			)
 			wanted
-				.fold([], |found, (_, url)| if found.contains(url) found else found.append(url))
+				.fold([], |found, (_, url)| if (found.contains(url)) found else found.append(url))
 				.map(|url| { id: url, nightly, is_platform: OracleBase.platform_of(input, url) })
 		}
 		_ => []

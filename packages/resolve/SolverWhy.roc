@@ -24,7 +24,7 @@ SolverWhy :: [].{
 }
 
 cone : List(Search.Row), U64 -> List(U64)
-cone = |rows, last| List.repeat(0, last + 1).map_with_index(|_, k| last - k).fold([], |acc, i| if i == last or acc.any(|j| refers(rows, j, i)) acc.append(i) else acc).rev()
+cone = |rows, last| List.repeat(0, last + 1).map_with_index(|_, k| last - k).fold([], |acc, i| if (i == last or acc.any(|j| refers(rows, j, i))) acc.append(i) else acc).rev()
 
 refers : List(Search.Row), U64, U64 -> Bool
 refers = |rows, j, i| match rows.get(j) {

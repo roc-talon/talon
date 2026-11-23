@@ -63,7 +63,7 @@ expect {
 	dbg got
 	got == a_keys.concat(b_keys)
 		and NoRank.keys({ hashes: [], auto: [n1, n2] }) == []
-			and NoRank.keys({ hashes: ["a"], auto: [] }) == []
+		and NoRank.keys({ hashes: ["a"], auto: [] }) == []
 }
 
 # R-SO14, R-DL5, R-DL10, R-EC13: the refusals that need no list. `--offline` is exit code 13 (kind Consent) also with an answer (no download can start). `TALON_AUTO_INSTALL=no` is exit code 13 when no answer is given; an answer on the command line wins over

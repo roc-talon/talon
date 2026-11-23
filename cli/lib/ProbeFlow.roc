@@ -142,7 +142,7 @@ Finished : { shown : ProbeCmd.Shown, stop : Try(Fail, [None]), share : Try({ roo
 
 # Slice 217, R-PB6: the registry of `--share`, read before any other work (`Err(None)`: no `--share`).
 share_origin! : Fx, Args, ProbeCmd.Plan => Try(Try({ origin : Str, setting : Str }, [None]), Fail)
-share_origin! = |fx, args, plan| if plan.share Ok(Ok(ProbeShareFlow.check!(fx, args)?)) else Ok(Err(None))
+share_origin! = |fx, args, plan| if (plan.share) Ok(Ok(ProbeShareFlow.check!(fx, args)?)) else Ok(Err(None))
 
 Begun : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, project : Project }
 
@@ -150,7 +150,7 @@ Begun : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, 
 finish! : Fx, Args, Finished, Try({ origin : Str, setting : Str }, [None]) => I32
 finish! = |fx, args, done, origin| {
 	answer = ProbeCmd.text(done.shown)
-	if args.json fx.err!(answer) else fx.out!(answer)
+	if (args.json) fx.err!(answer) else fx.out!(answer)
 	doc = ProbeCmd.data(done.shown)
 	# Q506: the send runs after a probe of exit 0 or of exit 12 (budget). The non-zero code of the probe stays.
 	runs = match done.stop {
@@ -181,7 +181,7 @@ shared! = |fx, args, run| match ProbeShareFlow.send!(fx, { roots: run.share.root
 	Ok(sent) => {
 		label = ProbeShow.label_of(run.share.node)
 		for line in ProbeShare.lines({ label, shared: sent.shared, kept_back: sent.kept_back, unsent: sent.unsent }) {
-			if args.json fx.err!(line) else fx.out!(line)
+			if (args.json) fx.err!(line) else fx.out!(line)
 		}
 		extra = match ProbeShare.data({ shared: sent.shared, kept_back: sent.kept_back, unsent: sent.unsent }) {
 			Obj(pairs) => pairs
@@ -229,7 +229,7 @@ flow! = |fx, args, plan| match plan.target {
 project_flow! : Fx, Args, ProbeCmd.Plan => Try(Finished, Fail)
 project_flow! = |fx, args, plan| {
 	request = ProbeFlow.begin!(fx, args, plan.opts, is_project(plan.target))?
-	if plan.range ranged!(fx, request, plan.target) else single!(fx, request, plan.target)
+	if (plan.range) ranged!(fx, request, plan.target) else single!(fx, request, plan.target)
 }
 
 # Slice 226 (Design Q566 (b)): a bundle operand searches for the project once. A project is found: the path of `project_flow!`. None is found (and no `--range`): the no-project path.
@@ -239,9 +239,9 @@ bundle_flow! = |fx, args, plan, path| {
 	match got.found {
 		Ok(found) => {
 			request = ProbeFlow.begun!(fx, args, plan.opts, Bool.False, { env: got.env, roots: got.roots, net: got.net, now: got.now, real: got.real, project: found.project })?
-			if plan.range ranged!(fx, request, plan.target) else single!(fx, request, plan.target)
+			if (plan.range) ranged!(fx, request, plan.target) else single!(fx, request, plan.target)
 		}
-		Err(fail) => if plan.range or !fail.no_project Err(fail) else bare_bundle!(fx, args, plan, { path, env: got.env, roots: got.roots, net: got.net, now: got.now })
+		Err(fail) => if (plan.range or !fail.no_project) Err(fail) else bare_bundle!(fx, args, plan, { path, env: got.env, roots: got.roots, net: got.net, now: got.now })
 	}
 }
 
@@ -272,7 +272,7 @@ is_project = |target| match target {
 rows_of : ResolveBase.Loaded, Project -> List(Locked.Row)
 rows_of = |loaded, project| {
 	named = loaded.members.keep_if(|m| m.file == (project.file ?? ""))
-	(if named.is_empty() loaded.members else named).join_map(|m| m.locked.rows)
+	(if (named.is_empty()) loaded.members else named).join_map(|m| m.locked.rows)
 }
 
 # No `--range` (R-PB2): the compiler that `verify` selects, then one unit check or the project probes.

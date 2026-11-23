@@ -14,7 +14,7 @@ PublishCheck :: [].{
 		Ok(target) => {
 			fits = facts.rows.keep_oks(
 				|row| {
-					if row.yanked or row.withdrawn.is_ok() or is_pre(row.version) return Err(NoPrevious)
+					if (row.yanked or row.withdrawn.is_ok() or is_pre(row.version)) return Err(NoPrevious)
 					match Semver.parse(row.version) {
 						Ok(found) if found.order_relative_to(target) == Before => Ok((row, found))
 						_ => Err(NoPrevious)
@@ -113,7 +113,7 @@ last_headline = |stderr| {
 			if text.starts_with("── ✗ ") {
 				inner = text.drop_prefix("── ✗ ")
 				name = (inner.split_on(" ─").first() ?? inner).trim()
-				if name.is_empty() Err(None) else Ok(name)
+				if (name.is_empty()) Err(None) else Ok(name)
 			} else {
 				Err(None)
 			}
@@ -130,7 +130,7 @@ stdout_level = |stdout| {
 			text = line.trim()
 			if text.starts_with("This is a ") and text.ends_with(" change.") {
 				level = text.drop_prefix("This is a ").drop_suffix(" change.")
-				if level == "PATCH" or level == "MINOR" or level == "MAJOR" Ok(level) else Err(None)
+				if (level == "PATCH" or level == "MINOR" or level == "MAJOR") Ok(level) else Err(None)
 			} else {
 				Err(None)
 			}

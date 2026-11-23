@@ -103,7 +103,7 @@ Proxy :: [].{
 		}
 		match own.find_first(is_source_file) {
 			Ok(file) => File(file)
-			Err(_) => if no_file_command(own) NoFile else Main
+			Err(_) => if (no_file_command(own)) NoFile else Main
 		}
 	}
 
@@ -213,14 +213,14 @@ go! = |fx| {
 	split = Proxy.split(words)
 	off = Proxy.opted_out(env)
 	early = split.argument.is_ok() or toolchain.is_ok()
-	now = if off 0 else Clock.now!(fx, env)?
+	now = if (off) 0 else Clock.now!(fx, env)?
 	cwd = fx.cwd!()
 	found = Base.find!(fx, { target: Proxy.target(split.rest), skip: off and early, cwd, env })
 	if !off {
 		Known.record_recent!(fx, { roots, files: Base.project_files(found), now })?
 	}
 	# R-PX5: an early run (`roc +<id>`, `ROC_TOOLCHAIN`) reads the patches only, and an opted out run reads nothing.
-	read = if early (if off Ok(Base.no_facts) else Base.load!(fx, roots, found, Patches)) else Base.load!(fx, roots, found, Read)
+	read = if (early) (if (off) Ok(Base.no_facts) else Base.load!(fx, roots, found, Patches)) else Base.load!(fx, roots, found, Read)
 	loaded = read?
 	# R-PA6, R-PX5, R-PX7: a stale patch stops the proxy before the compiler is selected. `TALON_PROXY=0` does no extra work (no check, no flag).
 	if !off and !loaded.patch.stale.is_empty() {
@@ -228,8 +228,8 @@ go! = |fx| {
 	}
 	# R-SO24 case 3: the list is always read, as rank 6 can take the newest installed compiler.
 	# Slice 241 (R-CH7, R-CH13): a pin `=<user id>` or `>=<user id>` sees the installed user builds.
-	installed = if Channel.user_range(loaded.req_text).is_ok() Launch.toolchains_all!(fx, roots) else Launch.toolchains!(fx, roots)
-	times = if loaded.req.is_ok() and !installed.is_empty() Base.times!(fx, roots, installed) else []
+	installed = if (Channel.user_range(loaded.req_text).is_ok()) Launch.toolchains_all!(fx, roots) else Launch.toolchains!(fx, roots)
+	times = if (loaded.req.is_ok() and !installed.is_empty()) Base.times!(fx, roots, installed) else []
 	# Slice 241 (R-CH6, R-CH11, Design Q615 item 2): the trust of the pin, before any request and before the consent. Not for `roc +<id>` or `ROC_TOOLCHAIN` (they select before the range).
 	if !early {
 		Base.pin_trust!(fx, { text: loaded.req_text, installed, times, config: loaded.channels, project: loaded.project_channels })?
@@ -249,15 +249,15 @@ go! = |fx| {
 		fx.err!("note: ${Compiler.newest_note(chosen.id)}\n")
 	}
 	missing = chosen.state == Missing
-	id = if missing install_missing!(fx, { id: chosen.id, rank: chosen.rank, env })? else chosen.id
-	have = if missing known.append(id) else known
+	id = if (missing) install_missing!(fx, { id: chosen.id, rank: chosen.rank, env })? else chosen.id
+	have = if (missing) known.append(id) else known
 	program = Launch.program!(fx, { roots, id, installed: have, path: on_path })?
 	if !off and have.contains(id) {
 		Launch.touch!(fx, roots, { id, now })
 	}
 	child_env = Launch.child_env!(fx, roots, { opted_out: off })
 	# R-PX5, R-PA10: `--replace-dep <header URL> <copy>` for each `[patch]` entry of the header of the target file.
-	args = Patched.proxy_args({ args: split.rest, target: Proxy.target(split.rest), replace: if off [] else loaded.patch.replace })
+	args = Patched.proxy_args({ args: split.rest, target: Proxy.target(split.rest), replace: if (off) [] else loaded.patch.replace })
 	match fx.exec!({ argv: [program].concat(args), env: child_env }) {
 		Ok(ended) => Ok(ended)
 		Err(NotStarted(text)) => Err(Proxy.start_failed({ program, text }))
@@ -270,7 +270,7 @@ install_missing! = |fx, run| {
 	auto = Consent.auto_install(run.env)
 	mode = Mode.from_env({ env: Dict.from_list(run.env), json: Bool.False })
 	first = Proxy.want({ id: run.id, auto, mode })
-	known = if first == NeedTty Mode.with_tty(mode, fx.tty!()) else mode
+	known = if (first == NeedTty) Mode.with_tty(mode, fx.tty!()) else mode
 	match Proxy.want({ id: run.id, auto, mode: known }) {
 		Install => offer_and_install!(fx, run, { mode: known, flag: Ok(Yes) })
 		Ask => offer_and_install!(fx, run, { mode: known, flag: Err(NoFlag) })
@@ -280,7 +280,7 @@ install_missing! = |fx, run| {
 
 # Steps 9c to 9f. The prompt comes after the offer (it needs the size) and before the lock (R-CC3 point 5).
 offer_and_install! : Fx, { id : Str, rank : Proxy.Rank, env : List((Str, Str)) }, { mode : Mode, flag : Try(Answer, [NoFlag]) } => Try(Str, Fail)
-offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, env: run.env, offline: Bool.False, registry: if run.rank == Range or run.rank == Picked Later(Err(Unset)) else First(Err(Unset)) })? {
+offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, env: run.env, offline: Bool.False, registry: if (run.rank == Range or run.rank == Picked) Later(Err(Unset)) else First(Err(Unset)) })? {
 	Present(found) => Ok(found.id)
 	Download(offer) => {
 		prompt = Consent.proxy_download({ id: offer.id, source: source_text({ id: run.id, rank: run.rank }), size: offer.size })
@@ -301,7 +301,7 @@ picked! = |fx, run| {
 	# Slice 206g (R-CV1, Design Q561): the registry form is checked here, when the list is needed.
 	list = IndexQuery.list_source({ flag: Err(Unset), env: Net.from_env(run.env).registry, config: run.loaded.config_registry, offline: Bool.False, kept: Bool.False })?
 	id = NoRank.pick_id!(fx, { list, roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), exclude: run.loaded.exclude, toml: { min_age: Ok(run.loaded.min_age), nightly: run.loaded.toml_nightly }, listed: run.known })?
-	Ok({ id, rank: Picked, state: if run.known.contains(id) Installed else Missing })
+	Ok({ id, rank: Picked, state: if (run.known.contains(id)) Installed else Missing })
 }
 
 # R-SO13, R-DL5, R-DL8 (slice 025b): no installed compiler is in the range. `TALON_AUTO_INSTALL=no` refuses (the proxy has no flag). Else the newest compiler that the range allows is the missing compiler of rank 4.
@@ -316,7 +316,7 @@ ranged! = |fx, run| {
 		Ok(found) => found
 		Err(Unset) => Any
 	}
-	now = if run.off Clock.now!(fx, run.env)? else run.now
+	now = if (run.off) Clock.now!(fx, run.env)? else run.now
 	switch = Pin.switch({ env: Common.nightly_of(run.env), toml: loaded.toml_nightly, config: loaded.config_nightly })
 	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, exclude: loaded.exclude, snapshot: Err(None), switch, registry: Err(None), channels: loaded.channels, config: loaded.config_registry })?.id
 	Ok({ id, rank: Range, state: Missing })

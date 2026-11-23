@@ -1,5 +1,5 @@
 app [target] {
-	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.4.3/41NK5FShyGC9Z8HNpUdUeXMWwLmLNfFxsfmLvdPL4Fxb.tar.zst",
+	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.7.0/HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br.tar.zst",
 	lib: "../../cli/lib/main.roc",
 }
 
@@ -39,7 +39,7 @@ generator = {
 Cell : { h : U64, at : U64, kind : U8, mods : List(Str) }
 
 mods_of : U8 -> List(Str)
-mods_of = |bits| (if bits % 2 == 1 ["A.roc"] else []).concat(if bits // 2 == 1 ["B.roc"] else [])
+mods_of = |bits| (if (bits % 2 == 1) ["A.roc"] else []).concat(if (bits // 2 == 1) ["B.roc"] else [])
 
 is_check : U8 -> Bool
 is_check = |kind| kind < 4
@@ -47,10 +47,10 @@ is_check = |kind| kind < 4
 # The first cell of a key (hash, place, unit or build) stays: the caller of `Epochs` applies R-EF3, so there is one row for each key.
 cells_of : Raw -> List(Cell)
 cells_of = |raw| raw.cells
-	.map(|c| { h: c.hash.to_u64(), at: c.at.to_u64() % raw.size.to_u64(), kind: c.kind, mods: if c.kind == 1 mods_of(c.mods) else [] })
+	.map(|c| { h: c.hash.to_u64(), at: c.at.to_u64() % raw.size.to_u64(), kind: c.kind, mods: if (c.kind == 1) mods_of(c.mods) else [] })
 	.fold(
 		[],
-		|kept, c| if kept.any(|k| k.h == c.h and k.at == c.at and is_check(k.kind) == is_check(c.kind)) kept else kept.append(c),
+		|kept, c| if (kept.any(|k| k.h == c.h and k.at == c.at and is_check(k.kind) == is_check(c.kind))) kept else kept.append(c),
 	)
 
 ids_of : U64 -> List(Str)
@@ -68,7 +68,7 @@ groups_of = |run| {
 			Err(_) => 0
 		}
 		if cut > 0 or i + 1 == run.n {
-			kind = if cut == 2 Missing else if cut == 3 Mixed else Held
+			kind = if (cut == 2) Missing else if (cut == 3) Mixed else Held
 			$out = $out.append({ from: $start, to: i, kind })
 			$start = i + 1
 		}
@@ -100,7 +100,7 @@ brief = |x| { hash: x.hash, nightly: x.nightly, outcome: x.outcome, from: x.from
 # The oracle (R-EP6, from the rule text): for each hash and each place with no real unit fact, the set of the code results of case (a) and case (b).
 code_of : List(Cell), U64, U64 -> Try([Pass, Fail], [None])
 code_of = |checks, h, at| match checks.find_first(|c| c.h == h and c.at == at and c.kind < 2) {
-	Ok(c) => if c.kind == 0 Ok(Pass) else Ok(Fail)
+	Ok(c) => if (c.kind == 0) Ok(Pass) else Ok(Fail)
 	Err(_) => Err(None)
 }
 
@@ -119,7 +119,7 @@ oracle = |run| {
 				after = seen(idx.keep_if(|j| j > at)).first()
 				between = match before {
 					Ok((jb, xb)) => match after {
-						Ok((ja, xa)) => if xb == xa [(jb, xb), (ja, xa)] else []
+						Ok((ja, xa)) => if (xb == xa) [(jb, xb), (ja, xa)] else []
 						Err(_) => []
 					}
 					Err(_) => []
@@ -128,7 +128,7 @@ oracle = |run| {
 				has_pass = all.any(|(_, x)| x == Pass)
 				has_fail = all.any(|(_, x)| x == Fail)
 				if has_pass != has_fail {
-					x = if has_pass Pass else Fail
+					x = if (has_pass) Pass else Fail
 					from = idx.keep_if(|j| all.any(|(jj, xx)| jj == j and xx == x)).map(|j| run.ids.get(j) ?? "")
 					$out = $out.append({ hash: hashes.get(h) ?? "", nightly: run.ids.get(at) ?? "", outcome: x, from })
 				}
@@ -162,7 +162,7 @@ test = |raw| {
 		|g| match g.kind {
 			Held => Ok({ from: ids.get(g.from) ?? "", to: ids.get(g.to) ?? "" })
 			Missing => Err(NoInterval)
-			Mixed => if g.to % 2 == 0 Ok({ from: ids.get(g.from) ?? "", to: "zz" }) else Ok({ from: "zz", to: ids.get(g.to) ?? "" })
+			Mixed => if (g.to % 2 == 0) Ok({ from: ids.get(g.from) ?? "", to: "zz" }) else Ok({ from: "zz", to: ids.get(g.to) ?? "" })
 		},
 	)
 	singles = ids.map(|id| { from: id, to: id })
@@ -193,6 +193,7 @@ test = |raw| {
 }
 
 target = Fuzz.target_with({
+	examples: [],
 	name: "epochs",
 	generator,
 	test,

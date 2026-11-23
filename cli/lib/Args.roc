@@ -111,7 +111,7 @@ usage_stop = |typed, message| { fail: Fail.new(Usage, message), typed: Str.join_
 json_before_dashes : List(Str) -> Bool
 json_before_dashes = |words| words.fold_until(
 	Bool.False,
-	|found, word| if word == "--" Break(found) else Continue(found or word == "--json"),
+	|found, word| if (word == "--") Break(found) else Continue(found or word == "--json"),
 )
 
 is_flag : Str -> Bool
@@ -212,7 +212,7 @@ suggest = |typed| match typed.last() {
 	Ok(word) => {
 		prefix = typed.drop_last(1)
 		level = candidates(prefix)
-		path = |long| if prefix.is_empty() long else "${Str.join_with(prefix, " ")} ${long}"
+		path = |long| if (prefix.is_empty()) long else "${Str.join_with(prefix, " ")} ${long}"
 		if prefix.is_empty() and word == "self" {
 			Ok("tool update talon")
 		} else {
@@ -220,7 +220,7 @@ suggest = |typed| match typed.last() {
 			match table {
 				Ok((_, to)) => Ok(path(to))
 				Err(_) => {
-					limit = if word.count_utf8_bytes() <= 4 1 else 2
+					limit = if (word.count_utf8_bytes() <= 4) 1 else 2
 					bytes = word.to_utf8()
 					best = level.fold(
 						Err(NoHint),
@@ -229,7 +229,7 @@ suggest = |typed| match typed.last() {
 							d = others.fold(osa(bytes, near), |m, other| least(m, osa(bytes, other.to_utf8())))
 							match so_far {
 								Ok((_, kept)) if kept <= d => so_far
-								_ => if d <= limit Ok((long, d)) else so_far
+								_ => if (d <= limit) Ok((long, d)) else so_far
 							}
 						},
 					)
@@ -244,7 +244,7 @@ suggest = |typed| match typed.last() {
 }
 
 least : U64, U64 -> U64
-least = |x, y| if x < y x else y
+least = |x, y| if (x < y) x else y
 
 # The optimal string alignment distance: insert, delete, replace and the swap of 2 next letters each count 1.
 osa : List(U8), List(U8) -> U64
@@ -261,7 +261,7 @@ osa = |a, b| {
 		var $cur = [i]
 		for j in 1.U64..=n {
 			bj = b.get(j - 1) ?? 0
-			cost = if ai == bj 0 else 1
+			cost = if (ai == bj) 0 else 1
 			plain = least(least(cell($prev, j) + 1, cell($cur, j - 1) + 1), cell($prev, j - 1) + cost)
 			swapped = if i > 1 and j > 1 and ai == (b.get(j - 2) ?? 0) and bj == (a.get(i - 2) ?? 0) {
 				least(plain, cell($older, j - 2) + 1)
@@ -411,7 +411,7 @@ top_level : Str -> Try(Str, [NotCommand])
 top_level = |word| {
 	long = long_form(word)
 	known = ["init", "install", "remove", "update", "upgrade", "outdated", "why", "probe", "list", "patch", "verify", "path", "run", "x", "publish", "audit", "roc", "tool", "cache", "setup", "yank", "move", "share"]
-	if known.contains(long) Ok(long) else Err(NotCommand)
+	if (known.contains(long)) Ok(long) else Err(NotCommand)
 }
 
 # The second word of a command (R-CM15 to R-CM17, R-CM23).

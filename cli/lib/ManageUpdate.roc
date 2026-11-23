@@ -27,7 +27,7 @@ ManageUpdate :: [].{
 				Ok({}) => Ok(Ok(one))
 				Err(BadName) => Err(Fail.new(Usage, not_a_name(one)))
 				# A build id (`nightly-2026-10-14-38a3029`) is no name at all, so it has the text of a bad name.
-				Err(Reserved) => if Channel.parse_id(one).is_ok() Err(Fail.new(Usage, not_a_name(one))) else Err(Fail.new(Usage, "${one} is a reserved channel name"))
+				Err(Reserved) => if (Channel.parse_id(one).is_ok()) Err(Fail.new(Usage, not_a_name(one))) else Err(Fail.new(Usage, "${one} is a reserved channel name"))
 			}
 		}
 		many => Err(Fail.new(Usage, "tln roc update takes at most one channel name, got ${many.len().to_str()}"))
@@ -49,7 +49,7 @@ ManageUpdate :: [].{
 	## `note: no default compiler is set, and <id> is a build of the channel <name>, so it is not made the default. To use it, run: tln roc default <id>`.
 	update_report : { id : Str, installed : Bool, default : [Set, Moved(Str), Stay(Str), Same, NoDefault], compat : Try(Str, [Unknown, Several(List(Str))]) } -> { stdout : List(Str), stderr : List(Str) }
 	update_report = |facts| {
-		first = if facts.installed "installed ${facts.id}\n" else "${facts.id} is the newest\n"
+		first = if (facts.installed) "installed ${facts.id}\n" else "${facts.id} is the newest\n"
 		after = match facts.default {
 			Set => ["${facts.id} is now the default compiler\n"]
 			Moved(old) => ["the default compiler moved from ${old} to ${facts.id}\n"]
@@ -57,7 +57,7 @@ ManageUpdate :: [].{
 			NoDefault => ["note: no default compiler is set, and ${facts.id} is a build of the channel ${channel_of(facts.id)}, so it is not made the default. To use it, run: tln roc default ${facts.id}\n"]
 			Same => []
 		}
-		warnings = if facts.installed Toolchain.report({ id: facts.id, how: Installed, default: Kept, compat: facts.compat }).stderr else []
+		warnings = if (facts.installed) Toolchain.report({ id: facts.id, how: Installed, default: Kept, compat: facts.compat }).stderr else []
 		{ stdout: [first].concat(after), stderr: warnings }
 	}
 

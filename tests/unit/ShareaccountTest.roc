@@ -65,13 +65,13 @@ expect {
 	bad = run(reply(200, "{\"account\":{\"id\":1,\"login\":\"a\"}}"))
 	run(reply(200, tracker_body)) == Ok(Tracker(tracker))
 		and run(reply(401, problem("/errors/unauthenticated", "401"))) == Ok(Stopped)
-			and kind_of(bad) == "network" and (
-				match bad {
-					Err(fail) => fail.message.contains("tracker")
-					Ok(_) => Bool.False
-				}
-			)
-				and kind_of(run(Err(Timeout))) == "network"
+		and kind_of(bad) == "network" and (
+			match bad {
+				Err(fail) => fail.message.contains("tracker")
+				Ok(_) => Bool.False
+			}
+		)
+		and kind_of(run(Err(Timeout))) == "network"
 }
 
 # R-SH9, R-AP36, R-AP38, R-E6: the answer of a `DELETE`. 204 (any 2xx): `Done`. 401: `Stopped`. 400: kind `internal` (1). 429 and 503: `network` (15). No answer: `network` (15).
@@ -79,10 +79,10 @@ expect {
 	run = |r| ShareAccount.delete_answer({ origin: registry, version: "0.9.0", reply: r })
 	run(reply(204, "")) == Ok(Done)
 		and run(reply(401, problem("/errors/unauthenticated", "401"))) == Ok(Stopped)
-			and kind_of(run(reply(400, problem("/errors/bad-request", "400")))) == "internal"
-				and kind_of(run(reply(429, problem("/errors/rate-limited", "429")))) == "network"
-					and kind_of(run(reply(503, problem("/errors/busy", "503")))) == "network"
-						and kind_of(run(Err(Failed("connection reset")))) == "network"
+		and kind_of(run(reply(400, problem("/errors/bad-request", "400")))) == "internal"
+		and kind_of(run(reply(429, problem("/errors/rate-limited", "429")))) == "network"
+		and kind_of(run(reply(503, problem("/errors/busy", "503")))) == "network"
+		and kind_of(run(Err(Failed("connection reset")))) == "network"
 }
 
 # R-SH13, R-SH8, Q488: the JWT of the file. No `token`: `None`. A `token` whose `token_expires_at` is after the clock: `Live`. One second before the time it is `Live`; at the time (equal) and after it, `Expired`.
@@ -91,8 +91,8 @@ expect {
 	with_token = { ..fresh, token: Ok("eyJ.jwt.sig"), token_expires_at: Ok("2026-11-14T12:00:00Z"), account: Ok({ id: 1, login: "a" }) }
 	ShareAccount.jwt({ doc: fresh, now: 1792065600 }) == None
 		and ShareAccount.jwt({ doc: with_token, now: 1794657599 }) == Live("eyJ.jwt.sig")
-			and ShareAccount.jwt({ doc: with_token, now: 1794657600 }) == Expired
-				and ShareAccount.jwt({ doc: with_token, now: 1794657601 }) == Expired
+		and ShareAccount.jwt({ doc: with_token, now: 1794657600 }) == Expired
+		and ShareAccount.jwt({ doc: with_token, now: 1794657601 }) == Expired
 }
 
 # R-SH9, R-SH13: `logged_out` writes `null` to `token`, `token_expires_at` and `account`. The id, the totals, the times and the unknown members stay.
@@ -134,7 +134,7 @@ expect {
 expect {
 	ShareAccount.direct_text({ command: "logout" }) == "tln share logout needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml."
 		and ShareAccount.direct_text({ command: "forget" }) == "tln share forget needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml."
-			and ShareAccount.direct_text({ command: "login" }) == ShareLogin.login_direct({})
+		and ShareAccount.direct_text({ command: "login" }) == ShareLogin.login_direct({})
 }
 
 # R-SH8, R-AP35, R-OUT2: the lines and the `data` of the account part. The 2 times are in whole seconds (ms rounded down) and are left out when they are null.
@@ -153,9 +153,9 @@ expect {
 			"account last sent: 2026-10-16T12:00:00Z\n",
 		]
 		and ShareAccount.account_lines(none).len() == 7
-			and JsonDoc.render(ShareAccount.account_data(tracker))
-				== "{\"id\":583231,\"login\":\"octocat\",\"machines\":2,\"counted\":9,\"first\":4,\"agreed\":3,\"disagreed\":1,\"unconfirmed\":5,\"first_sent_at\":\"2026-10-10T00:00:00Z\",\"last_sent_at\":\"2026-10-16T12:00:00Z\"}"
-				and JsonDoc.render(ShareAccount.account_data(none)).contains("\"first_sent_at\":null,\"last_sent_at\":null")
+		and JsonDoc.render(ShareAccount.account_data(tracker))
+			== "{\"id\":583231,\"login\":\"octocat\",\"machines\":2,\"counted\":9,\"first\":4,\"agreed\":3,\"disagreed\":1,\"unconfirmed\":5,\"first_sent_at\":\"2026-10-10T00:00:00Z\",\"last_sent_at\":\"2026-10-16T12:00:00Z\"}"
+		and JsonDoc.render(ShareAccount.account_data(none)).contains("\"first_sent_at\":null,\"last_sent_at\":null")
 }
 
 # R-SH8: after a 401 or a JWT past its time, the line is `run tln share login`.
@@ -177,8 +177,8 @@ expect {
 	text = |lines| Str.join_with(lines, "")
 	text(account).contains("removed the account") and text(machine).contains("sent before a login") and !text(machine).contains("removed the account")
 		and [account, machine].all(|l| text(l).contains("compat_hints") and text(l).contains("new id") and text(l).contains("0") and text(l).contains("hold no id"))
-			and JsonDoc.render(ShareAccount.forget_data({ proof: Account })) == "{\"removed\":\"account\"}"
-				and JsonDoc.render(ShareAccount.forget_data({ proof: Machine })) == "{\"removed\":\"machine\"}"
+		and JsonDoc.render(ShareAccount.forget_data({ proof: Account })) == "{\"removed\":\"account\"}"
+		and JsonDoc.render(ShareAccount.forget_data({ proof: Machine })) == "{\"removed\":\"machine\"}"
 }
 
 # Q479, Q424, R-SH8: a 429 of the tracker read gives the wait time of `Retry-After` in the message (the warning of the status shows it).
@@ -197,8 +197,8 @@ expect {
 	expired = ShareAccount.forget_expired({})
 	stopped.kind.name() == "rejected"
 		and stopped.message == "the registry ${registry} refused the account delete (/errors/unauthenticated): D. Run tln share login, and then tln share forget."
-			and plain.kind.name() == "rejected" and plain.message == "the registry ${registry} refused the account delete (401). Run tln share login, and then tln share forget."
-				and expired.kind.name() == "usage" and expired.message == "the login has expired, so the registry cannot delete the account. Run tln share login, and then tln share forget."
+		and plain.kind.name() == "rejected" and plain.message == "the registry ${registry} refused the account delete (401). Run tln share login, and then tln share forget."
+		and expired.kind.name() == "usage" and expired.message == "the login has expired, so the registry cannot delete the account. Run tln share login, and then tln share forget."
 }
 
 # Q485, R-SH9: the text of `--offline` for `logout` and `forget` (kind `network`, exit 15, as `login`, Q476).
@@ -211,8 +211,8 @@ expect {
 expect {
 	ShareAccount.no_login_lines({}) == ["There is no login on this machine.\n"]
 		and JsonDoc.render(ShareAccount.no_login_data({})) == "{\"logged_out\":false}"
-			and ShareAccount.nothing_to_forget_lines({}) == ["There is nothing to forget on this machine.\n"]
-				and JsonDoc.render(ShareAccount.nothing_to_forget_data({})) == "{\"removed\":null}"
+		and ShareAccount.nothing_to_forget_lines({}) == ["There is nothing to forget on this machine.\n"]
+		and JsonDoc.render(ShareAccount.nothing_to_forget_data({})) == "{\"removed\":null}"
 }
 
 # Q477, Q488, R-SH8, R-OUT4: the members that the status `data` gets. Always `account` (`null` with no tracker). `login_needed` only when true, after `account`.
@@ -220,5 +220,5 @@ expect {
 	with_tracker = ShareAccount.status_members(Tracker(tracker))
 	ShareAccount.status_members(None) == [("account", JsonDoc.Null)]
 		and ShareAccount.status_members(LoginNeeded) == [("account", JsonDoc.Null), ("login_needed", JsonDoc.Flag(Bool.True))]
-			and with_tracker == [("account", ShareAccount.account_data(tracker))]
+		and with_tracker == [("account", ShareAccount.account_data(tracker))]
 }

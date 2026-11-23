@@ -39,8 +39,8 @@ expect {
 	})
 	Out.schema == 1
 		and ok == "{\"schema\":1,\"command\":\"list\",\"ok\":true,\"data\":{\"count\":2},\"error\":null}\n"
-			and usage == "{\"schema\":1,\"command\":\"frobnicate\",\"ok\":false,\"data\":null,\"error\":{\"kind\":\"usage\",\"code\":2,\"message\":\"unknown command 'frobnicate'\"}}\n"
-				and net == "{\"schema\":1,\"command\":\"update\",\"ok\":false,\"data\":null,\"error\":{\"kind\":\"network\",\"code\":15,\"message\":\"registry answered 502\",\"details\":{\"status\":502}}}\n"
+		and usage == "{\"schema\":1,\"command\":\"frobnicate\",\"ok\":false,\"data\":null,\"error\":{\"kind\":\"usage\",\"code\":2,\"message\":\"unknown command 'frobnicate'\"}}\n"
+		and net == "{\"schema\":1,\"command\":\"update\",\"ok\":false,\"data\":null,\"error\":{\"kind\":\"network\",\"code\":15,\"message\":\"registry answered 502\",\"details\":{\"status\":502}}}\n"
 }
 
 # R-J1 R-J2 R-E4 R-OUT4: a failure without --json prints the error line on stderr and nothing on stdout.

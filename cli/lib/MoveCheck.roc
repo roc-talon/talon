@@ -67,12 +67,12 @@ MoveCheck :: [].{
 	## R-MV1, R-MV2: the job repository from `GITHUB_REPOSITORY` (R-YK3 form, in lower case). Kind `Usage`: `GITHUB_REPOSITORY is not set or is empty. tln move runs in a GitHub Actions job.` and `GITHUB_REPOSITORY is <value>, not of the form owner/repo.`
 	job : List((Str, Str)) -> Try(MoveCheck.Name, Fail)
 	job = |env| {
-		text = match Publish.env_var(env, "GITHUB_REPOSITORY") {
+		repo_text = match Publish.env_var(env, "GITHUB_REPOSITORY") {
 			Ok(value) => value
 			Err(Unset) => return Err(Fail.new(Usage, "GITHUB_REPOSITORY is not set or is empty. tln move runs in a GitHub Actions job."))
 		}
-		bad = Fail.new(Usage, "GITHUB_REPOSITORY is ${text}, not of the form owner/repo.")
-		match text.split_on("/") {
+		bad = Fail.new(Usage, "GITHUB_REPOSITORY is ${repo_text}, not of the form owner/repo.")
+		match repo_text.split_on("/") {
 			[owner, repo] => if Publish.safe_name(owner, "._-") and Publish.safe_name(repo, "._-") {
 				Ok({ owner: owner.with_ascii_lowercased(), repo: repo.with_ascii_lowercased() })
 			} else {
@@ -140,11 +140,11 @@ MoveCheck :: [].{
 	oidc : List((Str, Str)) -> Try(Publish.Oidc, Fail)
 	oidc = |env| {
 		url = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_URL") {
-			Ok(text) => text
+			Ok(value) => value
 			Err(Unset) => return Err(MoveCheck.no_oidc("ACTIONS_ID_TOKEN_REQUEST_URL"))
 		}
 		token = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_TOKEN") {
-			Ok(text) => text
+			Ok(value) => value
 			Err(Unset) => return Err(MoveCheck.no_oidc("ACTIONS_ID_TOKEN_REQUEST_TOKEN"))
 		}
 		Ok({ url, token })
@@ -247,15 +247,15 @@ MoveCheck :: [].{
 		match input.reply {
 			Err(Timeout) => Publish.no_reply(common, "no answer in 20 s", done)
 			Err(Failed(why)) => Publish.no_reply(common, why, done)
-			Ok(answer) => {
-				retry_after = Registry.retry_after_of(answer.headers)
-				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: answer.status, body: answer.body }, retry_after, source, needs: Bool.True })
-				match Registry.problem({ status: answer.status, body: answer.body }) {
+			Ok(got) => {
+				retry_after = Registry.retry_after_of(got.headers)
+				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: got.status, body: got.body }, retry_after, source, needs: Bool.True })
+				match Registry.problem({ status: got.status, body: got.body }) {
 					Err(NotProblem) => refused
-					Ok(body) => match Publish.retry_text(common, { status: answer.status, retry_after, body }) {
+					Ok(body) => match Publish.retry_text(common, { status: got.status, retry_after, body }) {
 						Ok(message) => { ..refused, message }
 						Err(None) => {
-							what = if body.detail.is_empty() body.title else body.detail
+							what = if (body.detail.is_empty()) body.title else body.detail
 							if refused.kind.code() != 20 {
 								refused
 							} else {
@@ -286,11 +286,11 @@ MoveCheck :: [].{
 			result = match input.plan {
 				Offer(_) => Offered
 				Remove => match input.before {
-					NoSuccessor => if input.status == 200 Unchanged else Removed
+					NoSuccessor => if (input.status == 200) Unchanged else Removed
 					_ => Removed
 				}
 				Set(_) => match input.before {
-					Successor(s) => if input.status == 200 and item.successor == Ok(s) Unchanged else Moved
+					Successor(s) => if (input.status == 200 and item.successor == Ok(s)) Unchanged else Moved
 					_ => Moved
 				}
 			}

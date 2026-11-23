@@ -199,7 +199,7 @@ print_lines! = |fx, done| {
 	var $notes = no_lines
 	for member in done {
 		for line in member.lines {
-			prefix = if done.len() >= 2 "${member.file}: " else ""
+			prefix = if (done.len() >= 2) "${member.file}: " else ""
 			fx.out!("${prefix}${line}\n")
 			if line.starts_with("note: ") {
 				$notes = $notes.append("${prefix}${line.drop_prefix("note: ")}")
@@ -259,10 +259,10 @@ probe_in_copy! = |fx, request, pair, member, copy| {
 	}
 	# Slice 026b: the baseline check runs on its own compiler. For `run!` it is the compiler of the candidate (`base` is `started`).
 	other = base.id != started.id
-	first_spec = if other { ..baseline_spec, compiler: base.id, program: base.program, env: base.env } else baseline_spec
+	first_spec = if (other) { ..baseline_spec, compiler: base.id, program: base.program, env: base.env } else baseline_spec
 	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures, share: request.loop.share }, pair, { file: member.file, kind: member.kind, text: member.text, target: member.target })
 	round = UnitFlow.first!(fx, ctx, { baseline: first_spec, count: pair.count })?
-	baseline = LadderJudge.baseline({ output: round.baseline, dir, pkgs, compiler: if other base.id else compiler, timeout })?
+	baseline = LadderJudge.baseline({ output: round.baseline, dir, pkgs, compiler: if (other) base.id else compiler, timeout })?
 	verdict = UnitFlow.verdict!(fx, ctx, { first: round, baseline }).map_err(|fail| fail.with_probes(round.count))?
 	notes = note_lines(verdict.ignored, compiler)
 	second = UnitFlow.step!(fx, ctx, { spec: candidate_spec, count: round.count })?
@@ -367,7 +367,7 @@ smoke_stop = |ctx, run, plan| match (plan.id, run.answer) {
 		match Matrix.smoke_fail({ rows, hash: id.key.hash, nightly: id.key.nightly, target: id.key.target }) {
 			Ok(row) => {
 				fail = LadderJudge.smoke_build({ owners: run.owners, target: plan.target, digest: row.error_digest }).with_probes(run.count)
-				Err(if plan.url.is_empty() fail else fail.with_smoke({ id: plan.url, hash: id.key.hash, nightly: id.key.nightly, target: id.key.target }))
+				Err(if (plan.url.is_empty()) fail else fail.with_smoke({ id: plan.url, hash: id.key.hash, nightly: id.key.nightly, target: id.key.target }))
 			}
 			Err(None) => Ok({})
 		}
@@ -378,7 +378,7 @@ smoke_stop = |ctx, run, plan| match (plan.id, run.answer) {
 # Slice 218 (R-SM1, R-SM3 row 1): the build of step 3 for the smoke build after the work: the key of the build id (the target is the target of the build) and what the smoke build needs. No id (no key): no smoke build.
 built_of : UnitFlow.Ctx, BuildFlow.Plan -> List(Fail.Built)
 built_of = |ctx, plan| match plan.id {
-	Ok(id) => if plan.header.is_empty() or plan.url.is_empty() [] else [{ key: id.key, url: plan.url, text: plan.header, program: ctx.started.program, env: ctx.started.env, slots: ctx.probe.slots, timeout: ctx.probe.timeout }]
+	Ok(id) => if (plan.header.is_empty() or plan.url.is_empty()) [] else [{ key: id.key, url: plan.url, text: plan.header, program: ctx.started.program, env: ctx.started.env, slots: ctx.probe.slots, timeout: ctx.probe.timeout }]
 	Err(NoId) => []
 }
 
@@ -395,7 +395,7 @@ rebased_files! : Fx, Ladder.Member, { dir : Str, file : Str, copy : Str } => Try
 rebased_files! = |fx, member, place| {
 	edited = Locked.edit({ path: member.file, text: member.text, ops: member.ops })?
 	others = roc_files_of!(fx, place.copy)?.keep_if(|path| path != place.file)
-	texts = if others.is_empty() [] else fx.read_files!(others.map(|path| Text.join(place.copy, path)))
+	texts = if (others.is_empty()) [] else fx.read_files!(others.map(|path| Text.join(place.copy, path)))
 	files = others.map2(texts, |path, read| (path, read)).fold_try(
 		[],
 		|acc, (path, read)| match read {
@@ -419,19 +419,19 @@ roc_files_of! = |fx, copy| {
 	var $level = [""]
 	var $found = no_lines
 	while !$level.is_empty() {
-		results = fx.list_dirs!($level.map(|rel| if rel == "" copy else Text.join(copy, rel)))
+		results = fx.list_dirs!($level.map(|rel| if (rel == "") copy else Text.join(copy, rel)))
 		var $next = no_lines
 		for (rel, result) in $level.map2(results, |rel, result| (rel, result)) {
 			match result {
 				Ok(entries) => for entry in entries {
-					path = if rel == "" entry.name else "${rel}/${entry.name}"
+					path = if (rel == "") entry.name else "${rel}/${entry.name}"
 					if entry.is_dir {
 						$next = $next.append(path)
 					} else if entry.name.ends_with(".roc") {
 						$found = $found.append(path)
 					}
 				}
-				Err(_) => return Err(Fail.new(Environment, "cannot list ${if rel == "" copy else Text.join(copy, rel)}"))
+				Err(_) => return Err(Fail.new(Environment, "cannot list ${if (rel == "") copy else Text.join(copy, rel)}"))
 			}
 		}
 		$level = Text.sorted($next)

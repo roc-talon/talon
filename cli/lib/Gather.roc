@@ -65,7 +65,7 @@ Gather :: [].{
 						Err(NotInAnswer) => Ok(id)
 					},
 				)
-				got = if rest.is_empty() no_got else Gather.get!(fx, settings, rest)?
+				got = if (rest.is_empty()) no_got else Gather.get!(fx, settings, rest)?
 				var $facts = no_facts
 				var $at = 0
 				for (id, header) in found {

@@ -99,11 +99,11 @@ ToolManageFlow :: [].{
 			Ok(known) => known
 			Err(Unknown) => return Err(Fail.new(Environment, "tln has no build target for this machine"))
 		}
-		tools_file = Roots.item(roots, Item.ToolsJson)
-		tools_text = SetupIo.read_text!(fx, tools_file)?
-		tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
-		items = ToolsJson.items({ path: tools_file, text: tools_text })?
-		talon = ToolsJson.talon({ path: tools_file, text: tools_text })?
+		tools_path = Roots.item(roots, Item.ToolsJson)
+		tools_text = SetupIo.read_text!(fx, tools_path)?
+		tools = ToolsJson.manifest({ path: tools_path, text: tools_text })?
+		items = ToolsJson.items({ path: tools_path, text: tools_text })?
+		talon = ToolsJson.talon({ path: tools_path, text: tools_text })?
 		config = match reading {
 			Strict => RocInstall.read_config!(fx, roots)?
 			Lenient => RocInstall.read_config_lenient!(fx, roots)?
@@ -142,7 +142,7 @@ ToolManageFlow :: [].{
 	find! = |fx, run| match Lookup.find(Scope.Tool, run.ref, ToolsJson.entities(run.tools.map(entry_of))) {
 		Ok(found) => ToolManage.pick({ tools: run.tools, found })
 		Err({ fail, block }) => {
-			if !block.is_empty() fx.err!(block)
+			if (!block.is_empty()) fx.err!(block)
 			Err(fail)
 		}
 	}

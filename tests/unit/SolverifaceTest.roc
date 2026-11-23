@@ -33,13 +33,13 @@ d4 = ["n1", "n2", "n3", "n4"]
 
 # The header facts of all releases of the slots (no compiler): the kind of the slot, no platform, no dep.
 known : List(Solver.Slot) -> List(Solver.Fact)
-known = |slots| slots.keep_if(|s| s.kind != Compiler).join_map(|s| s.candidates.map(|c| { id: c.id, kind: if s.kind == Platform Platform else Package, pf: Err(None), deps: [] }))
+known = |slots| slots.keep_if(|s| s.kind != Compiler).join_map(|s| s.candidates.map(|c| { id: c.id, kind: if (s.kind == Platform) Platform else Package, pf: Err(None), deps: [] }))
 
 needs : List(Solver.Fact), Str, List((Str, Str)) -> List(Solver.Fact)
-needs = |facts, id, deps| facts.map(|f| if f.id == id { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
+needs = |facts, id, deps| facts.map(|f| if (f.id == id) { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
 
 on_pf : List(Solver.Fact), Str, Str -> List(Solver.Fact)
-on_pf = |facts, id, url| facts.map(|f| if f.id == id { ..f, pf: Ok(url) } else f)
+on_pf = |facts, id, url| facts.map(|f| if (f.id == id) { ..f, pf: Ok(url) } else f)
 
 req : List(Solver.Slot), List(Solver.Fact) -> Solver.Request
 req = |slots, facts| { slots, rules: { now: 1000, min_age: 100, snapshot: Err(None), strategy: Highest }, facts, conflicts: [], compat: { domain: d4, checks: [], used: [], probes: Allowed } }
@@ -69,12 +69,12 @@ ask_text = |a| match a {
 }
 
 term_text : Solver.Term -> Str
-term_text = |t| "${t.name}:${if t.sign == In "" else "!"}{${Str.join_with(t.ids, ",")}}"
+term_text = |t| "${t.name}:${if (t.sign == In) "" else "!"}{${Str.join_with(t.ids, ",")}}"
 
 cause_text : Solver.Cause -> Str
 cause_text = |c| match c {
 	Probe(p) => {
-		kind = if p.kind == Fail "fail" else "fault"
+		kind = if (p.kind == Fail) "fail" else "fault"
 		"probe ${p.id} ${kind} ${p.from}..${p.to} [${Str.join_with(p.modules, ",")}] inferred [${Str.join_with(p.inferred, ",")}]"
 	}
 	Dep(d) => "dep ${d.id} ${d.group}>=${d.version}"
@@ -86,7 +86,7 @@ cause_text = |c| match c {
 
 step_text : Solver.Step -> Str
 step_text = |s| {
-	terms = if s.terms.is_empty() "true" else Str.join_with(s.terms.map(term_text), " & ")
+	terms = if (s.terms.is_empty()) "true" else Str.join_with(s.terms.map(term_text), " & ")
 	"${terms} <- ${cause_text(s.cause)}"
 }
 
@@ -202,7 +202,7 @@ expect {
 		("all headers, no check: the probes of the best tuple, in the order of the slots", step(req(slots, all)), "need probe a-2.0.0@n3, probe b-2.0.0@n3"),
 		("all facts: done", step(checked(req(slots, all), pass_all)), "done a=a-2.0.0 b=b-2.0.0 roc=n3"),
 		("a release with no header is fit: a-2.0.0 is asked, not passed over", step(req([a], all.keep_if(|f| f.id != "a-2.0.0"))), "need header a-2.0.0"),
-		("the header shows a wrong kind: the next value", step(req([a], all.map(|f| if f.id == "a-2.0.0" { ..f, kind: Platform } else f))), "done a=a-1.0.0"),
+		("the header shows a wrong kind: the next value", step(req([a], all.map(|f| if (f.id == "a-2.0.0") { ..f, kind: Platform } else f))), "done a=a-1.0.0"),
 		("no tuple: fail", step(conflicting(req([a], all), [[inn("a", ["a-1.0.0", "a-2.0.0"])]])), "fail"),
 	])
 }
@@ -278,9 +278,9 @@ expect {
 		("Dep: the release, the group and the version; the term of c holds all values: left out", Str.join_with(leaves(why(Solver.step(dep_req))), "\n"), "x:{x-2.0.0} <- dep x-2.0.0 c>=3.0.0\nx:{x-1.0.0} <- given"),
 		("Pf: the release and the URL that it names", Str.join_with(leaves(why(Solver.step(pf_req))), "\n"), "x:{x-2.0.0} <- pf x-2.0.0 p-9.0.0\nx:{x-1.0.0} <- given"),
 		("Probe: the run n1 .. n3 (the maximal fail run of D)", Str.join_with(leaves(why(Solver.step(probe_req))), "\n"), "true <- probe x-1.0.0 fail n1..n3 [] inferred []"),
-		("the last step has no term (dep)", if last_empty(dep_req) "yes" else "no", "yes"),
-		("the last step has no term (probe)", if last_empty(probe_req) "yes" else "no", "yes"),
-		("a Derived step names 2 earlier steps", if derived_back(dep_req) and derived_back(pf_req) "yes" else "no", "yes"),
+		("the last step has no term (dep)", if (last_empty(dep_req)) "yes" else "no", "yes"),
+		("the last step has no term (probe)", if (last_empty(probe_req)) "yes" else "no", "yes"),
+		("a Derived step names 2 earlier steps", if (derived_back(dep_req) and derived_back(pf_req)) "yes" else "no", "yes"),
 	])
 }
 
@@ -301,8 +301,8 @@ expect {
 	report([
 		("the plain step: a fail", step(r), "fail"),
 		("the second search: a fail", show(Solver.step_moves(r, ["b"])), "fail"),
-		("the second search: some step has terms of a and b", if steps.any(|s| s.terms.len() == 2) "yes" else "no", "yes"),
-		("the second search: the terms are in the order of the slots", if order(steps) "yes" else Str.join_with(steps.map(step_text), "\n"), "yes"),
+		("the second search: some step has terms of a and b", if (steps.any(|s| s.terms.len() == 2)) "yes" else "no", "yes"),
+		("the second search: the terms are in the order of the slots", if (order(steps)) "yes" else Str.join_with(steps.map(step_text), "\n"), "yes"),
 	])
 }
 
@@ -405,8 +405,8 @@ expect {
 		("a hard fail (no module)", first_line(probed([json_slot], [row(json, n3, Fail, [])], [])), "${head}acme/json 1.0.0 (no module is named)"),
 		("a fail in a used module", first_line(probed([json_slot], [row(json, n3, Fail, ["Yaml.roc"])], yaml)), "${head}acme/json 1.0.0 (Yaml.roc)"),
 		("a platform fail", first_line(probed([pf_slot], [row(pfu, n3, Fail, [])], [])), "${head}the platform acme/pf 0.1.0 (no module is named)"),
-		("2 blamed releases: the head", if first_line(two).starts_with(head) "yes" else first_line(two), "yes"),
-		("2 blamed releases, joined with '; '", Str.join_with(blames.sort_with(|p, q| if p == q Same else if p.starts_with("acme/json") Before else After), " | "), "acme/json 1.0.0 (no module is named) | acme/lib 1.0.0 (no module is named)"),
+		("2 blamed releases: the head", if (first_line(two).starts_with(head)) "yes" else first_line(two), "yes"),
+		("2 blamed releases, joined with '; '", Str.join_with(blames.sort_with(|p, q| if (p == q) Same else if (p.starts_with("acme/json")) Before else After), " | "), "acme/json 1.0.0 (no module is named) | acme/lib 1.0.0 (no module is named)"),
 	])
 }
 
@@ -433,11 +433,11 @@ expect {
 	failed = upgraded([json_slot, lib_slot], world(Fail))
 	hung = upgraded([json_slot, lib_slot], world(Hang))
 	report([
-		("upgrade roc, no tuple: a Fail", if failed.starts_with("no tuple works") "yes" else failed, "yes"),
-		("the run of json around H", if cause_lines(failed).contains("  acme/json 1.0.0 fails on ${n3} .. ${n4}") "yes" else failed, "yes"),
-		("a run of one compiler that is not H has a line", if cause_lines(failed).contains("  acme/lib 1.0.0 fails on ${n5}") "yes" else failed, "yes"),
-		("a hang on one compiler that is not H: the word hangs", if cause_lines(hung).contains("  acme/lib 1.0.0 hangs on ${n5}") "yes" else hung, "yes"),
-		("a hang is not a crash", if hung.contains("crashes") hung else "no crash", "no crash"),
+		("upgrade roc, no tuple: a Fail", if (failed.starts_with("no tuple works")) "yes" else failed, "yes"),
+		("the run of json around H", if (cause_lines(failed).contains("  acme/json 1.0.0 fails on ${n3} .. ${n4}")) "yes" else failed, "yes"),
+		("a run of one compiler that is not H has a line", if (cause_lines(failed).contains("  acme/lib 1.0.0 fails on ${n5}")) "yes" else failed, "yes"),
+		("a hang on one compiler that is not H: the word hangs", if (cause_lines(hung).contains("  acme/lib 1.0.0 hangs on ${n5}")) "yes" else hung, "yes"),
+		("a hang is not a crash", if (hung.contains("crashes")) hung else "no crash", "no crash"),
 	])
 }
 

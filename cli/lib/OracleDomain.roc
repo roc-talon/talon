@@ -30,7 +30,7 @@ OracleDomain :: [].{
 	## Else the inferred fact of `inferred` (source `Inferred`, R-EP14: it never decides with `Allowed`, R-EP8).
 	checks : { urls : List(Str), current : List(Str), rows : List(Db.Fact), inferred : List(Epochs.Inferred), domain : List(Str), assumed : Try(Str, [None]) } -> List(Solver.Check)
 	checks = |x| x.urls
-		.fold([], |found, url| if found.contains(url) found else found.append(url))
+		.fold([], |found, url| if (found.contains(url)) found else found.append(url))
 		.join_map(|url| x.domain.keep_oks(|nightly| check_at(x, url, nightly)))
 }
 
@@ -42,7 +42,7 @@ check_at = |x, url, nightly| match OracleDomain.row_of(x.rows, nightly, url) {
 	} else {
 		hash = OracleDomain.hash_of(url)
 		match x.inferred.find_first(|i| i.hash == hash and i.nightly == nightly) {
-			Ok(i) => Ok({ id: url, nightly, outcome: if i.outcome == Pass Pass else Fail, modules: i.modules, source: Inferred })
+			Ok(i) => Ok({ id: url, nightly, outcome: if (i.outcome == Pass) Pass else Fail, modules: i.modules, source: Inferred })
 			Err(_) => Err(Unknown)
 		}
 	}

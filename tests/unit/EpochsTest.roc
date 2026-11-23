@@ -25,7 +25,7 @@ no_asset = |id| { id, published_at: 0, asset: Err(NoAsset) }
 
 # The releases at the even places (the first, the third, ...) have an asset for the host, the others have none.
 domain_of : List(Str) -> List(Nightlies.Release)
-domain_of = |ids| ids.map_with_index(|id, i| if i % 2 == 0 has_asset(id) else no_asset(id))
+domain_of = |ids| ids.map_with_index(|id, i| if (i % 2 == 0) has_asset(id) else no_asset(id))
 
 d6 = domain_of(["n1", "n2", "n3", "n4", "n5", "n6"])
 

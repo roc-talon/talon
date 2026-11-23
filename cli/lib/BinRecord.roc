@@ -43,11 +43,11 @@ BinRecord :: [].{
 			match tools_of(facts.path, fields)? {
 				Err(NoTools) => Ok(text)
 				Ok(tools) => {
-					changed = tools.map(|(name, doc)| if name == facts.key (name, with_bin(doc, facts.bin)) else (name, doc))
+					changed = tools.map(|(name, doc)| if (name == facts.key) (name, with_bin(doc, facts.bin)) else (name, doc))
 					if changed == tools {
 						Ok(text)
 					} else {
-						Ok(TalonFile.render({ format: ToolsJson.format, fields: fields.map(|(name, doc)| if name == "tools" (name, Obj(changed)) else (name, doc)) }))
+						Ok(TalonFile.render({ format: ToolsJson.format, fields: fields.map(|(name, doc)| if (name == "tools") (name, Obj(changed)) else (name, doc)) }))
 					}
 				}
 			}
@@ -60,7 +60,7 @@ BinRecord :: [].{
 	record_all = |facts| match facts.text {
 		Err(NotFound) => Ok("")
 		Ok(text) => {
-			keys = facts.made.map(|m| key_of(m.entry)).fold([], |seen, key| if seen.contains(key) seen else seen.append(key))
+			keys = facts.made.map(|m| key_of(m.entry)).fold([], |seen, key| if (seen.contains(key)) seen else seen.append(key))
 			keys.fold_try(
 				text,
 				|current, key| {
@@ -106,7 +106,7 @@ bin_pairs = |doc| match doc {
 with_bin : JsonDoc, List((Str, Str)) -> JsonDoc
 with_bin = |doc, bin| match doc {
 	Obj(fields) if !bin.is_empty() => if fields.any(|(name, _)| name == "bin") {
-		Obj(fields.map(|(name, old)| if name == "bin" (name, set_names(old, bin)) else (name, old)))
+		Obj(fields.map(|(name, old)| if (name == "bin") (name, set_names(old, bin)) else (name, old)))
 	} else {
 		Obj(fields.append(("bin", set_names(Null, bin))))
 	}

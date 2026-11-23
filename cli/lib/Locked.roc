@@ -51,7 +51,7 @@ Locked := {
 				roc = match entries.find_first(|e| e.name == "roc") {
 					Ok(e) => {
 						# R-SC12, R-EC19: a pin is a full compiler id, not a prefix.
-						if !Pin.is_id(e.value) return Err(Fail.new(Input, "${facts.path}:${line_of(facts.text, e.span.start).to_str()}: the roc pin ${e.value} is not a full compiler id"))
+						if (!Pin.is_id(e.value)) return Err(Fail.new(Input, "${facts.path}:${line_of(facts.text, e.span.start).to_str()}: the roc pin ${e.value} is not a full compiler id"))
 						Ok(e.value)
 					}
 					Err(_) => Err(NoPin)
@@ -65,7 +65,7 @@ Locked := {
 	## The path entries of the header: the `value` of each `Path` row, in source order. The command reads the header of each of these files
 	## (relative to the project file) and adds its URL entries to the closure (R-H7). The closure walk is slice 007.
 	paths : Locked -> List(Str)
-	paths = |locked| locked.rows.keep_oks(|r| if r.what == Path Ok(r.value) else Err(NotPath))
+	paths = |locked| locked.rows.keep_oks(|r| if (r.what == Path) Ok(r.value) else Err(NotPath))
 
 	## Applies the ops in order. The result is the new text. Each failure is of kind `Internal` (exit 1): a command must never ask for it, so it is
 	## a Talon fault, and nothing is written (the texts are a proposal, TW24):
@@ -95,7 +95,7 @@ row_of : { name : Str, value : Str, is_platform : Bool, span : { start : U64, en
 row_of = |e| {
 	what = match Ident.of_url(e.value) {
 		Ok(ident) => Release(ident)
-		Err(Foreign) => if e.value.contains("://") Foreign else Path
+		Err(Foreign) => if (e.value.contains("://")) Foreign else Path
 	}
 	{ alias: e.name, value: e.value, is_platform: e.is_platform, what }
 }
@@ -155,19 +155,19 @@ apply_op = |path, text, op| {
 			written(url, Header.set_value(text, alias, url))
 		}
 		Add({ alias, url, is_platform }) => {
-			if present(alias) return Err(internal("${alias} is already in the header"))
+			if (present(alias)) return Err(internal("${alias} is already in the header"))
 			check_url(url)?
 			written(url, Header.add_entry(text, { name: alias, value: url, is_platform }))
 		}
 		Replace({ alias, url }) => {
 			# R-H9: the whole-entry replace takes any row, so `check_row` is not used.
-			if !locked.rows.any(|r| r.alias == alias) return Err(internal("${alias} is not in the header"))
+			if (!locked.rows.any(|r| r.alias == alias)) return Err(internal("${alias} is not in the header"))
 			check_url(url)?
 			written(url, Header.set_value(text, alias, url))
 		}
 		Remove(alias) => {
 			# R-RV5: a path row and a foreign row go too (`check_row` refuses them for `Set` only).
-			if !locked.rows.any(|r| r.alias == alias) return Err(internal("${alias} is not in the header"))
+			if (!locked.rows.any(|r| r.alias == alias)) return Err(internal("${alias} is not in the header"))
 			written(alias, Header.remove_entry(text, alias))
 		}
 		Unpin => match locked.roc {
@@ -183,4 +183,4 @@ apply_op = |path, text, op| {
 
 # The 1-based line of the byte offset.
 line_of : Str, U64 -> U64
-line_of = |text, offset| text.to_utf8().take_first(offset).fold(1, |n, b| if b == '\n' n + 1 else n)
+line_of = |text, offset| text.to_utf8().take_first(offset).fold(1, |n, b| if (b == '\n') n + 1 else n)

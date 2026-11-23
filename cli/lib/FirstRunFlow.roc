@@ -62,7 +62,7 @@ after_gate! = |fx, args, env| {
 	fixed = { ..fx, tty!: || tty }
 	mode = Mode.with_tty(Mode.from_env({ env: Dict.from_list(env), json: args.json }), tty)
 	if mode == Interactive {
-		if ask_once!(fixed, args, env)? Ok(marked(fixed)) else Ok(fixed)
+		if (ask_once!(fixed, args, env)?) Ok(marked(fixed)) else Ok(fixed)
 	} else {
 		Ok(fixed)
 	}

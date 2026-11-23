@@ -117,8 +117,8 @@ expect {
 	dbg (https_run, http_run, direct_run)
 	https_run == ["${index}/http_127.0.0.1_8787", "${index}/https_old.example.org"]
 		and http_run == ["${index}/https_current.example.org", "${index}/https_old.example.org"]
-			and direct_run == ["${index}/http_127.0.0.1_8787", "${index}/https_current.example.org", "${index}/https_old.example.org"]
-				and empty == []
+		and direct_run == ["${index}/http_127.0.0.1_8787", "${index}/https_current.example.org", "${index}/https_old.example.org"]
+		and empty == []
 }
 
 # R-GC15, R-GC9, R-IX5: a dir of another registry goes when no file in it changed in the GC age (`newest` is the newest file time: `Gc.expired`, exactly the age stays). One new file keeps the whole dir.

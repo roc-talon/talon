@@ -136,7 +136,7 @@ print_user! = |fx, shown, args, now, done| match done {
 			shown.out!("dry run: nothing was written\n")
 		}
 		if args.json {
-			files = if moved.written [{ file: moved.file, previous: Ok(moved.old) }] else []
+			files = if (moved.written) [{ file: moved.file, previous: Ok(moved.old) }] else []
 			fx.out!(Out.json_ok({ command: args.typed, data: ManageUse.use_data({ id: moved.id, files, probes: moved.probes, downloads: moved.downloads, built: moved.built, notes: moved.notes }) }))
 		}
 	}

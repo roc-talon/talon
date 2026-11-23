@@ -66,8 +66,8 @@ Run :: [].{
 	run! : Fx => I32
 	run! = |fx| {
 		# Slice 050c (R-ST10): each start of `tln` first tries to delete the `.del` files of Windows. `Fx.windows!` is not in `calls.log`, so Linux and macOS start as before.
-		if fx.windows!() DelFlow.sweep!(fx)
-		if Proxy.is_proxy(fx.program_name!()) Proxy.run!(fx) else Run.tln!(fx)
+		if (fx.windows!()) DelFlow.sweep!(fx)
+		if (Proxy.is_proxy(fx.program_name!())) Proxy.run!(fx) else Run.tln!(fx)
 	}
 
 	## The commands of `tln` (the program name is not `roc`, R-ST8).
@@ -76,7 +76,7 @@ Run :: [].{
 		words = fx.args!()
 		# Slice 262a (R-CM26, R-CM27, Q262-7): `--help`, `-h` and `help <command>` print the text of the command; an unknown word is exit 2 with the hint.
 		asked = Help.topic(words)
-		route = if asked == NoHelp Help.route(words) else Help
+		route = if (asked == NoHelp) Help.route(words) else Help
 		match route {
 			Help => match asked {
 				Unknown(typed) => {
@@ -202,9 +202,9 @@ dispatch! = |fx, args| if args.options.any(|(name, _)| name == "--tool") {
 } else if args.command == ["tool", "list"] {
 	ToolManageFlow.list!(fx, args)
 } else if args.command == ["tool", "remove"] {
-	if TalonRemove.is_target(args) TalonRemoveFlow.remove!(fx, args) else ToolManageFlow.remove!(fx, args)
+	if (TalonRemove.is_target(args)) TalonRemoveFlow.remove!(fx, args) else ToolManageFlow.remove!(fx, args)
 } else if args.command == ["tool", "update"] {
-	if TalonUpdate.is_target(args) TalonUpdateFlow.update!(fx, args) else ToolUpdateFlow.update!(fx, args)
+	if (TalonUpdate.is_target(args)) TalonUpdateFlow.update!(fx, args) else ToolUpdateFlow.update!(fx, args)
 } else if args.command == ["tool", "rebuild"] {
 	ToolUpdateFlow.rebuild!(fx, args)
 } else {
@@ -243,7 +243,7 @@ option_value = |args, name| match args.options.find_first(|(flag, _)| flag == na
 fail! : Fx, { command : Str, json : Bool, fail : Fail } => I32
 fail! = |fx, run| {
 	shown = Out.fail(run)
-	if !shown.stdout.is_empty() fx.out!(shown.stdout)
+	if (!shown.stdout.is_empty()) fx.out!(shown.stdout)
 	fx.err!(shown.stderr)
 	Exit.choose({ failures: [run.fail], child: Err(NoChild) })
 }

@@ -41,7 +41,7 @@ CacheClean :: [].{
 	## Steps 3 and 4: the items that exist and their sizes. With `all`: one `list_dirs!` of `roots.build` first (R-GC13). One `tree_info!` for all paths (R-GC12, R-GC14). `CacheShow.list!` calls it too.
 	measure! : Fx, Roots, Bool => { paths : List(Str), sizes : List(Gc.Sized) }
 	measure! = |fx, roots, all| {
-		builds = if all Gc.entries({ dirs: [roots.build], listed: fx.list_dirs!([roots.build]) }) else []
+		builds = if (all) Gc.entries({ dirs: [roots.build], listed: fx.list_dirs!([roots.build]) }) else []
 		asks = Clean.asks({ roots, all, builds })
 		infos = fx.tree_info!(asks.map(|ask| ask.path))
 		Clean.found(asks.map2(infos, |ask, info| { item: ask.item, path: ask.path, info }))

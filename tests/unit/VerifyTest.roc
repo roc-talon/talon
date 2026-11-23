@@ -36,7 +36,7 @@ expect {
 	tmp = "/c/talon/tmp/0123456789abcdef"
 	program = "/h/.cache/roc/toolchains/${id}/roc"
 	env = [("XDG_CACHE_HOME", "/h/.cache"), ("ROC_CACHE_DIR", "/h/.cache/roc"), ("TALON_IN_PROXY", "1")]
-	spec = |dir, args| { compiler: id, program, args, dir, env, timeout: 30, weight: if args.first() == Ok("build") 4 else 1 }
+	spec = |dir, args| { compiler: id, program, args, dir, env, timeout: 30, weight: if (args.first() == Ok("build")) 4 else 1 }
 	json = { old: old_json, new: new_json }
 	pf = { old: old_pf, new: new_pf }
 	plan = |kind, replace| Ladder.plan_replace({ compiler: id, program, env, kind, dir: "/p/app", file: "main.roc", tmp, replace, timeout: 30 })
@@ -62,6 +62,6 @@ expect {
 	dbg bad
 	slow = Ladder.plan_replace({ compiler: "0.1.0", program: "/usr/bin/roc", env: [], kind: App, dir: "/q", file: "x.roc", tmp, replace: [json], timeout: 7 })
 	only_check_and_build = for_app.first.concat([for_app.build.ok_or(spec("/", []))]).all(|s| s.args.first() == Ok("check") or s.args.first() == Ok("build"))
-	slow_spec = |args| { compiler: "0.1.0", program: "/usr/bin/roc", args, dir: "/q", env: [], timeout: 7, weight: if args.first() == Ok("build") 4 else 1 }
+	slow_spec = |args| { compiler: "0.1.0", program: "/usr/bin/roc", args, dir: "/q", env: [], timeout: 7, weight: if (args.first() == Ok("build")) 4 else 1 }
 	slow.first == [slow_spec(["check", "x.roc"]), slow_spec(["check", "x.roc", "--replace-dep", old_json, new_json])] and slow.build == Ok(slow_spec(["build", "x.roc", "--output=${tmp}/tln-probe.out", "--no-cache", "--replace-dep", old_json, new_json])) and bad == [] and only_check_and_build
 }

@@ -112,7 +112,7 @@ listed! = |fx, request, loaded| {
 	# Slice 241 (R-CH7, R-CH13): a pin `=<user id>` or `>=<user id>` sees the installed user builds. Any other run does not.
 	pins_user = Channel.user_range(loaded.intent.toolchain.roc_text ?? "").is_ok()
 	installed = match fx.list_dirs!([dir]) {
-		[Ok(found)] => if pins_user Text.sorted(Compiler.installed(found).concat(Compiler.installed_users(found))) else Compiler.installed(found)
+		[Ok(found)] => if (pins_user) Text.sorted(Compiler.installed(found).concat(Compiler.installed_users(found))) else Compiler.installed(found)
 		_ => []
 	}
 	times = if req.is_ok() and !installed.is_empty() {
@@ -143,7 +143,7 @@ ranged! : Fx, ResolveBase.Request, ResolveBase.Loaded, ResolveBase.Settings => T
 ranged! = |fx, request, loaded, settings| {
 	text = loaded.intent.toolchain.roc_text ?? ""
 	refused = Consent.auto_refuses({ auto: request.downloads.auto, yes: request.prompt.yes, flag: request.downloads.allow })
-	if refused and !request.no_check return Err(Consent.range_refused(text))
+	if (refused and !request.no_check) return Err(Consent.range_refused(text))
 	# Slice 206d2 (R-CV1, R-AP19, R-DT3, R-RG1): with a registry (the setting of `update`, read as in `InstallFlow.with_setting`), the list is the registry list. `log:N` hides the toolchain rows above N; a time keeps the time filter of `range_pick`.
 	(snapshot, registry) = match registry_of(request, loaded)? {
 		Ok(r) => match r.snapshot {

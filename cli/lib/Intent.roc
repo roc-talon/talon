@@ -105,13 +105,13 @@ Intent := {
 		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
 		Ok(doc) => {
 			# R-TF10: the gate of the root file comes first. A member file has no `[toolchain]` (R-WS5).
-			if facts.role != Member TlnGate.gate({ path: facts.path, doc })?
+			if (facts.role != Member) TlnGate.gate({ path: facts.path, doc })?
 			scan = read_tables(doc, facts.role, facts.text)
 			match scan.issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
 				[first, ..] => {
 					fail = Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}")
 					# R-TF8: a table that the role does not allow is no value of a known key.
-					if first.message.starts_with("the table [") or Channel.hintless(first.message) Err(fail) else Err(Fail.with_hint(fail))
+					if (first.message.starts_with("the table [") or Channel.hintless(first.message)) Err(fail) else Err(Fail.with_hint(fail))
 				}
 				[] => Ok({ intent: scan.intent, warnings: by_line(scan.warnings).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
 			}
@@ -152,7 +152,7 @@ Intent := {
 	paths : { member : Str, root : Str } -> List(Str)
 	paths = |facts| {
 		dir = Text.dir_of(facts.member)
-		prefix = if facts.root.ends_with("/") facts.root else "${facts.root}/"
+		prefix = if (facts.root.ends_with("/")) facts.root else "${facts.root}/"
 		if dir == facts.root or dir.starts_with(prefix) {
 			climb(dir, facts.root, [])
 		} else {
@@ -169,7 +169,7 @@ Scan : { intent : Intent, issues : List(Note), warnings : List(Note) }
 climb : Str, Str, List(Str) -> List(Str)
 climb = |dir, root, found| {
 	next = found.append(Text.join(dir, "talon.toml"))
-	if dir == root or dir.is_empty() next else climb(Text.dir_of(dir), root, next)
+	if (dir == root or dir.is_empty()) next else climb(Text.dir_of(dir), root, next)
 }
 
 known_tables : List(Str)
@@ -224,7 +224,7 @@ read_build = |doc| {
 		"build",
 		"target",
 		|v| match v {
-			Value.String(text) => if BuildTarget.is_name(text) Ok(text) else Err("'${text}' is not a Roc target")
+			Value.String(text) => if (BuildTarget.is_name(text)) Ok(text) else Err("'${text}' is not a Roc target")
 			_ => Err("must be a string")
 		},
 	)

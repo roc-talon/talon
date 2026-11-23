@@ -16,7 +16,7 @@ ToolsHeld :: [].{
 	of! : Fx, List(Str) => List(Str)
 	of! = |fx, files| {
 		paths = ToolsPlan.held_paths({ files: files })
-		if paths.is_empty() return []
+		if (paths.is_empty()) return []
 		reads = paths.map2(fx.read_files!(paths), |path, got| (path, got)).keep_oks(
 			|(path, got)| match got {
 				Ok(text) => Ok({ path, text })

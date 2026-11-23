@@ -33,7 +33,7 @@ Project := {
 			Err(AtRoot)
 		} else {
 			up = Str.join_with(segments.drop_last(1), "/")
-			Ok(if up.is_empty() "/" else up)
+			Ok(if (up.is_empty()) "/" else up)
 		}
 	}
 
@@ -42,7 +42,7 @@ Project := {
 	## at the end. `..` at the root stays at the root. R-PD1 (`--file` is relative to the current directory).
 	absolute : { base : Str, path : Str } -> Str
 	absolute = |facts| {
-		full = if facts.path.starts_with("/") facts.path else "${facts.base}/${facts.path}"
+		full = if (facts.path.starts_with("/")) facts.path else "${facts.base}/${facts.path}"
 		kept = full.split_on("/").fold(
 			[],
 			|segments, segment| if segment.is_empty() or segment == "." {
@@ -240,7 +240,7 @@ pick_file = |walk, members, root_dir| match walk {
 		is_root = root_dir == Ok(d.dir)
 		match own {
 			[only] => Ok(Ok(only))
-			[] => if !is_root and d.names.contains("main.roc") Ok(Ok(Text.join(d.dir, "main.roc"))) else pick_file(above, members, root_dir)
+			[] => if (!is_root and d.names.contains("main.roc")) Ok(Ok(Text.join(d.dir, "main.roc"))) else pick_file(above, members, root_dir)
 			_ => Err(Fail.new(Usage, "${d.dir} has ${own.len().to_str()} member files: ${Str.join_with(own, ", ")}. Pass --file <path>."))
 		}
 	}
@@ -268,7 +268,7 @@ climb_toml = |walk, root_dir| match walk {
 	[] => Err(NoToml)
 	[d, .. as above] => match d.toml {
 		Ok(_) => Ok(Text.join(d.dir, "talon.toml"))
-		Err(None) => if d.dir == root_dir Err(NoToml) else climb_toml(above, root_dir)
+		Err(None) => if (d.dir == root_dir) Err(NoToml) else climb_toml(above, root_dir)
 	}
 }
 
@@ -286,7 +286,7 @@ nearest_version = |walk, from| match walk {
 climb_version : List(Dir) -> Try(Str, [None])
 climb_version = |walk| match walk {
 	[] => Err(None)
-	[d, .. as above] => if d.names.contains(".roc-version") Ok(Text.join(d.dir, ".roc-version")) else climb_version(above)
+	[d, .. as above] => if (d.names.contains(".roc-version")) Ok(Text.join(d.dir, ".roc-version")) else climb_version(above)
 }
 
 # Slice 086: the steps of `find_loose!`, and `text`: the text of the `talon.toml` of the project (`toml`), from the read of step 3. No new call.
@@ -331,7 +331,7 @@ toml_text = |walk, path| match path {
 own_toml : List(Dir), Str, Try(Str, [NoRoot]) -> Try(Str, [NoToml])
 own_toml = |walk, dir, root_dir| match walk.find_first(|d| d.dir == dir) {
 	Ok(d) => match d.toml {
-		Ok(_) => if root_dir == Ok(dir) Err(NoToml) else Ok(Text.join(dir, "talon.toml"))
+		Ok(_) => if (root_dir == Ok(dir)) Err(NoToml) else Ok(Text.join(dir, "talon.toml"))
 		Err(None) => Err(NoToml)
 	}
 	Err(_) => Err(NoToml)
@@ -360,7 +360,7 @@ walk! = |fx, dir, home, walked| {
 read_tomls! : Fx, List(Listing) => Try(List(Dir), Fail)
 read_tomls! = |fx, listed| {
 	paths = listed.keep_if(|l| l.names.contains("talon.toml")).map(|l| Text.join(l.dir, "talon.toml"))
-	texts = if paths.is_empty() [] else fx.read_files!(paths)
+	texts = if (paths.is_empty()) [] else fx.read_files!(paths)
 	var $texts = texts
 	var $dirs = []
 	for l in listed {

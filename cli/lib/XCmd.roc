@@ -99,7 +99,7 @@ XCmd :: [].{
 			default: No,
 			question: "${what} is in the cache. It was not checked online for yanks and advisories. ${verb} it?",
 			subject: "using the cached ${what}, which was not checked online",
-			answer_line: |answer| if answer == Yes "using cached ${what}, not checked online" else "not using cached ${what}",
+			answer_line: |answer| if (answer == Yes) "using cached ${what}, not checked online" else "not using cached ${what}",
 		}
 	}
 

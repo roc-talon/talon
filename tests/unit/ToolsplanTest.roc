@@ -318,9 +318,9 @@ expect {
 	stop = |name, sel| Err("tln: error[usage]: '${name}' is a selector on the [tools] key '${name.drop_suffix("@${sel}")}'. A selector changes its ref: run tln add --tool owner/app@${sel}")
 	split("update", ["fmt@^2"]) == stop("fmt@^2", "^2")
 		and split("upgrade", ["foo@latest"]) == stop("foo@latest", "latest")
-			and split("update", ["json@^2", "fmt", "foo@1.0.0", "fmt@^2"]) == stop("foo@1.0.0", "1.0.0")
-				and split("update", ["json@^2", "acme/fmt@^2", "zed@1", "fmt"]) == Ok((["json@^2", "acme/fmt@^2", "zed@1"], ["fmt"]))
-					and split("upgrade", ["fmt", "foo"]) == Ok(([], ["fmt", "foo"]))
+		and split("update", ["json@^2", "fmt", "foo@1.0.0", "fmt@^2"]) == stop("foo@1.0.0", "1.0.0")
+		and split("update", ["json@^2", "acme/fmt@^2", "zed@1", "fmt"]) == Ok((["json@^2", "acme/fmt@^2", "zed@1"], ["fmt"]))
+		and split("upgrade", ["fmt", "foo"]) == Ok(([], ["fmt", "foo"]))
 }
 
 # R-PT5, R-OUT4, R-J3 (slice 073): the `data` of `--json` of `install`, `update` and `upgrade` has the key `tools` after the keys of the header flow, with one row for each entry that the tools step handled (the rows of `--tool`, an entry that did not change has the action `kept`). With no row the `data` has no `tools` key.
@@ -334,7 +334,7 @@ expect {
 	none = ToolsPlan.with_tools({ base, rows: [] }).render()
 	rows == "${head},\"tools\":[{\"key\":\"foo\",\"name\":\"acme/foo\",\"action\":\"moved\",\"ref\":\"acme/foo@^2\",\"url\":\"${foo20}\",\"version\":\"2.0.0\",\"previous\":\"1.1.0\",\"file\":\"/p/talon.toml\",\"built\":false,\"would_build\":false},{\"key\":\"bar\",\"name\":\"acme/bar\",\"action\":\"kept\",\"ref\":\"acme/bar@1.0.0\",\"url\":\"${foo10}\",\"version\":\"1.0.0\",\"previous\":null,\"file\":\"/p/talon.toml\",\"built\":false,\"would_build\":false}]}"
 		and one == "${head},\"tools\":[{\"key\":\"bar\",\"name\":\"acme/bar\",\"action\":\"kept\",\"ref\":\"acme/bar@1.0.0\",\"url\":\"${foo10}\",\"version\":\"1.0.0\",\"previous\":null,\"file\":\"/p/talon.toml\",\"built\":false,\"would_build\":false}]}"
-			and none == "${head}}"
+		and none == "${head}}"
 }
 
 # R-B10, R-X2 (slice 073): an entry dir has the binary when it holds the file that the manifest names: a file, not a directory, with exactly the name that `XCache.layout` gives (the repo of the full name, `.exe` on Windows only). The file `manifest.json`, another file, a directory with the name, the name with the wrong suffix for the system, and a dir that cannot be listed are no binary.
@@ -344,12 +344,12 @@ expect {
 	holds = |names, want| XCacheIo.has_file(Ok(names), want)
 	holds([file("manifest.json"), file("fmt")], "fmt")
 		and holds([file("fmt.exe"), file("manifest.json")], "fmt.exe")
-			and !holds([file("manifest.json")], "fmt")
-				and !holds([file("manifest.json"), file("other")], "fmt")
-					and !holds([file("manifest.json"), dir("fmt")], "fmt")
-						and !holds([file("manifest.json"), file("fmt.exe")], "fmt")
-							and !holds([file("manifest.json"), file("fmt")], "fmt.exe")
-								and !holds([], "fmt")
-									and !XCacheIo.has_file(Err(NotFound), "fmt")
-										and !XCacheIo.has_file(Err(Denied), "fmt")
+		and !holds([file("manifest.json")], "fmt")
+		and !holds([file("manifest.json"), file("other")], "fmt")
+		and !holds([file("manifest.json"), dir("fmt")], "fmt")
+		and !holds([file("manifest.json"), file("fmt.exe")], "fmt")
+		and !holds([file("manifest.json"), file("fmt")], "fmt.exe")
+		and !holds([], "fmt")
+		and !XCacheIo.has_file(Err(NotFound), "fmt")
+		and !XCacheIo.has_file(Err(Denied), "fmt")
 }

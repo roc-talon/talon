@@ -96,7 +96,7 @@ expect {
 	dbg [none, two, three]
 	none == "no release tag ends with <date>-<sha>. Pass --tag-prefix."
 		and two == "release tags have 2 prefixes: fork-a-, fork-b-. Pass --tag-prefix."
-			and three == "release tags have 3 prefixes: a-, b-, c-. Pass --tag-prefix."
+		and three == "release tags have 3 prefixes: a-, b-, c-. Pass --tag-prefix."
 }
 
 # R-CH12 (exit 19): the installed ids of the name that record another source. The ids are read from the right (R-CH5): `my-fork-...` is of `my-fork`, not of `my`.

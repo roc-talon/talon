@@ -68,7 +68,7 @@ InstallPlan :: [].{
 	}
 
 	pick_notes_of : List(Pick.Chosen) -> List(Str)
-	pick_notes_of = |chosen| chosen.keep_oks(|c| c.note).fold(ResolveBase.no_names, |found, note| if found.contains(note) found else found.append(note))
+	pick_notes_of = |chosen| chosen.keep_oks(|c| c.note).fold(ResolveBase.no_names, |found, note| if (found.contains(note)) found else found.append(note))
 
 	# Q7: the lines that `finish!` prints before the ladder for a tuple, in the same order and the same text.
 	pre_lines : ResolveBase.Request, Loaded, Finish, List(Pick.Chosen) -> List(Str)
@@ -112,7 +112,7 @@ InstallPlan :: [].{
 
 	## R-UP3, D8: the line of a move into another series ends with ` new series` for `upgrade`.
 	marked : ResolveBase.Request, Vars.Scoped, Pick.Chosen, List(Edit) -> List(Edit)
-	marked = |request, s, c, edits| if request.command == Upgrade and ResolveBase.new_series(s, c) edits.map(|e| { ..e, line: "${e.line} new series" }) else edits
+	marked = |request, s, c, edits| if (request.command == Upgrade and ResolveBase.new_series(s, c)) edits.map(|e| { ..e, line: "${e.line} new series" }) else edits
 
 	outcome_of : ResolveBase.Request, Done -> Report.Outcome
 	outcome_of = |request, done| {
@@ -154,8 +154,8 @@ InstallPlan :: [].{
 			toml: toml_lines,
 			renamed: done.renames.keep_if(|r| done.touched.contains(r.path)),
 			# Slice 262b (B9, R2): the anchor notes are the last items.
-			notes: if request.command == Upgrade done.notes else done.notes.concat(Report.anchor_notes(toml_lines)),
-			written: if request.dry_run [] else done.touched,
+			notes: if (request.command == Upgrade) done.notes else done.notes.concat(Report.anchor_notes(toml_lines)),
+			written: if (request.dry_run) [] else done.touched,
 		}
 	}
 
@@ -209,7 +209,7 @@ InstallPlan :: [].{
 	dropped = |chosen, blamed| {
 		all = chosen.map_with_index(|c, i| { at: i, id: c.url })
 		named = all.keep_if(|x| Ident.of_url(x.id).map_ok(|ident| blamed.contains(ident.hash)) ?? Bool.False)
-		if named.is_empty() all else named
+		if (named.is_empty()) all else named
 	}
 
 	no_ran : Ran
@@ -231,7 +231,7 @@ fresh_step = |request, loaded, file, acc, row, c| {
 	f = row.fresh
 	plan = Add.decide({
 		selector: f.selector,
-		chosen: { name: f.name, url: c.url, kind: if f.is_platform Platform else Package },
+		chosen: { name: f.name, url: c.url, kind: if (f.is_platform) Platform else Package },
 		platform_flag: f.is_platform,
 		no_pin: request.add.no_pin,
 		as_alias: request.add.as_alias,
@@ -246,7 +246,7 @@ fresh_step = |request, loaded, file, acc, row, c| {
 		Err(Nothing) => []
 	}
 	notes = match plan.note {
-		Ok(text) => if plan.header == Replace [text] else []
+		Ok(text) => if (plan.header == Replace) [text] else []
 		Err(None) => []
 	}
 	state = { ..acc, pairs: acc.pairs.concat(pairs), notes: acc.notes.concat(notes) }

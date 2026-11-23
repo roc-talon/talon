@@ -59,7 +59,7 @@ expect {
 	copy = "/c/talon/tmp/0123456789abcdef"
 	program = "/h/.cache/roc/toolchains/${id}/roc"
 	env = [("XDG_CACHE_HOME", "/h/.cache"), ("ROC_CACHE_DIR", "/h/.cache/roc"), ("TALON_IN_PROXY", "1")]
-	spec = |dir, args| { compiler: id, program, args, dir, env, timeout: 30, weight: if args.first() == Ok("build") 4 else 1 }
+	spec = |dir, args| { compiler: id, program, args, dir, env, timeout: 30, weight: if (args.first() == Ok("build")) 4 else 1 }
 	first = [spec("/p/app", ["check", "main.roc"]), spec(copy, ["check", "main.roc"])]
 	for_app = Ladder.plan({ compiler: id, program, env, kind: App, dir: "/p/app", file: "main.roc", copy, timeout: 30 })
 	for_package = Ladder.plan({ compiler: id, program, env, kind: Package, dir: "/p/lib", file: "main.roc", copy, timeout: 30 })

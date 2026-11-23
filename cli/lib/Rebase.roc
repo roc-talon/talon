@@ -87,10 +87,10 @@ Rebase :: [].{
 changed : { files : List(File), glob : Str, from : Str, to : Str }, File -> Try(File, [Same])
 changed = |facts, file| {
 	dir = Text.dir_of(file.path)
-	file_dir = if dir == "" facts.from else "${facts.from}/${dir}"
+	file_dir = if (dir == "") facts.from else "${facts.from}/${dir}"
 	edited = header_paths({ text: file.text, file_dir, from: facts.from, to: facts.to })
 	text = Rebase.embeds({ text: edited, file_dir, from: facts.from, to: facts.to })
-	if text == file.text Err(Same) else Ok({ path: file.path, text })
+	if (text == file.text) Err(Same) else Ok({ path: file.path, text })
 }
 
 # The text with each path entry of its header changed. A file with no readable header stays.
@@ -101,7 +101,7 @@ header_paths = |facts| match Locked.read({ path: "", text: facts.text }) {
 		|text, row| match row.what {
 			Path => {
 				value = Rebase.path({ path: row.value, file_dir: facts.file_dir, from: facts.from, to: facts.to })
-				if value == row.value text else Header.set_value(text, row.alias, value) ?? text
+				if (value == row.value) text else Header.set_value(text, row.alias, value) ?? text
 			}
 			_ => text
 		},
@@ -150,17 +150,17 @@ leaves_above = |path, depth| {
 depth_of : Str, Str -> U64
 depth_of = |dir, from| {
 	rest = dir.drop_prefix(with_slash(from))
-	if dir == from or rest == dir 0 else rest.split_on("/").keep_if(|s| s != "").len()
+	if (dir == from or rest == dir) 0 else rest.split_on("/").keep_if(|s| s != "").len()
 }
 
 with_slash : Str -> Str
-with_slash = |dir| if dir.ends_with("/") dir else "${dir}/"
+with_slash = |dir| if (dir.ends_with("/")) dir else "${dir}/"
 
 # The glob from byte `g` and the path from byte `i`: the whole rest of the path must match.
 glob_at : List(U8), List(U8), U64, U64 -> Bool
 glob_at = |glob, path, g, i| match glob.get(g) {
 	Err(_) => i == path.len()
-	Ok(42) => if glob.get(g + 1) == Ok(42) glob_stars(glob, path, g, i) else glob_star(glob, path, g + 1, i)
+	Ok(42) => if (glob.get(g + 1) == Ok(42)) glob_stars(glob, path, g, i) else glob_star(glob, path, g + 1, i)
 	Ok(63) => match path.get(i) {
 		Ok(b) if b != 47 => glob_at(glob, path, g + 1, skip_char(path, i + 1))
 		_ => Bool.False
@@ -188,7 +188,7 @@ glob_stars = |glob, path, g, i| {
 
 # Is there a position `j` from `from` to the end of the path (included) with `ok(j)`?
 any_from : List(U8), U64, (U64 -> Bool) -> Bool
-any_from = |path, from, ok| if from > path.len() Bool.False else ok(from) or any_from(path, from + 1, ok)
+any_from = |path, from, ok| if (from > path.len()) Bool.False else ok(from) or any_from(path, from + 1, ok)
 
 # The position after the bytes of the same character (a UTF-8 continuation byte is 10xxxxxx).
 skip_char : List(U8), U64 -> U64

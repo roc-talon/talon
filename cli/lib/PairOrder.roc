@@ -17,7 +17,7 @@ PairOrder :: [].{
 	asks = |pairs| pairs.fold(
 		[],
 		|found, pair| match Github.hint_ref(pair.id) {
-			Ok(ref) => if found.any(|a| a.id == pair.id) found else found.append({ id: pair.id, owner: ref.owner, repo: ref.repo, tag: ref.tag })
+			Ok(ref) => if (found.any(|a| a.id == pair.id)) found else found.append({ id: pair.id, owner: ref.owner, repo: ref.repo, tag: ref.tag })
 			Err(NoRef) => found
 		},
 	)

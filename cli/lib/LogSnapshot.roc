@@ -27,7 +27,7 @@ LogSnapshot :: [].{
 	## R-AP16, R-AP19, Design Q404: the N that hides the second answer: the first `log_size`, or the smaller of it and the N of the user's `--snapshot log:N`.
 	second_cut : { user : Try(U64, [None]), first : Wire.Answer } -> U64
 	second_cut = |facts| match facts.user {
-		Ok(n) => if n < facts.first.log_size n else facts.first.log_size
+		Ok(n) => if (n < facts.first.log_size) n else facts.first.log_size
 		Err(None) => facts.first.log_size
 	}
 

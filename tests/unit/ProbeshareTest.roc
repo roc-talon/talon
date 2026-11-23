@@ -95,9 +95,9 @@ expect {
 	no_header = ProbeShare.rows({ ..input("H9", facts), answers: [rel_only] })
 	no_answer.rows == []
 		and no_answer.kept_back == [{ nightly: c1, target: "any", why: NotInAnswer }]
-			and other.kept_back == [{ nightly: c1, target: "any", why: NotInAnswer }]
-				and found.rows == [queued("H9", c1, "any", Pass)]
-					and no_header.kept_back == [{ nightly: c1, target: "any", why: Target }]
+		and other.kept_back == [{ nightly: c1, target: "any", why: NotInAnswer }]
+		and found.rows == [queued("H9", c1, "any", Pass)]
+		and no_header.kept_back == [{ nightly: c1, target: "any", why: Target }]
 }
 
 # R-PB6, R-SH3 filter 5 (R-EF3): a `bot` row of an answer for the pair (hash, nightly, target) stops the fact (`BotRow`). A bot run holds each release of D in its interval. A bot row of another hash and an `author` row stop nothing.
@@ -107,7 +107,7 @@ expect {
 	other = ProbeShare.rows(with_runs([run("H2", "any", Bot, Pass, c1, c5), run("H1", "any", Author, Pass, c1, c5)]))
 	bot.rows == [queued("H1", c1, "any", Pass), queued("H1", c4, "any", Pass)]
 		and bot.kept_back == [{ nightly: c2, target: "any", why: BotRow }]
-			and other.rows.len() == 3
+		and other.rows.len() == 3
 }
 
 # R-PB6, R-SH3 filter 7 (Registry R-CT2, Design Q432): the target must be one that the Worker takes for the kind of the hash. A package takes `any` only. A platform takes `any` or a name of its `target_names`. A fact of another target stays back (`Target`).
@@ -116,8 +116,8 @@ expect {
 	plat_plan = ProbeShare.rows(input("HP", [fact("HP", c1, "any", Pass, ""), fact("HP", c2, "x64musl", Pass, ""), fact("HP", c3, "linux_x86_64", Pass, "")]))
 	pkg_plan.rows == [queued("H1", c1, "any", Pass)]
 		and pkg_plan.kept_back == [{ nightly: c2, target: "x64musl", why: Target }]
-			and plat_plan.rows == [queued("HP", c1, "any", Pass), queued("HP", c2, "x64musl", Pass)]
-				and plat_plan.kept_back == [{ nightly: c3, target: "linux_x86_64", why: Target }]
+		and plat_plan.rows == [queued("HP", c1, "any", Pass), queued("HP", c2, "x64musl", Pass)]
+		and plat_plan.kept_back == [{ nightly: c3, target: "linux_x86_64", why: Target }]
 }
 
 # R-PB6: a stored fact of another hash is not sent (the caller gave the facts of one hash; a wrong row never reaches the registry). No fact: no row and nothing back.
@@ -136,15 +136,15 @@ expect {
 	over = ProbeShare.batches(list(10500))
 	ProbeShare.max_requests == 20
 		and sizes(0) == []
-			and sizes(1) == [1]
-				and sizes(500) == [500]
-					and sizes(501) == [500, 1]
-						and sizes(10000).len() == 20
-							and left(10000) == 0
-								and over.send.len() == 20
-									and over.send.map(|b| b.len()).fold(0, |a, n| a + n) == 10000
-										and over.unsent == list(10500).drop_first(10000)
-											and left(501) == 0
+		and sizes(1) == [1]
+		and sizes(500) == [500]
+		and sizes(501) == [500, 1]
+		and sizes(10000).len() == 20
+		and left(10000) == 0
+		and over.send.len() == 20
+		and over.send.map(|b| b.len()).fold(0, |a, n| a + n) == 10000
+		and over.unsent == list(10500).drop_first(10000)
+		and left(501) == 0
 }
 
 # R-PB6, R-AP10, R-AP51, R-E6: one answer. A 200 or a 201 with a body that decodes: the rows count (`sent`), `written`, `first` and the number of `skipped` items. A body that does not decode is exit 15.
@@ -155,8 +155,8 @@ expect {
 	want = Ok({ sent: 3, counted: 2, first: 1, skipped: 1 })
 	ask(reply(201, ok_body)) == want
 		and ask(reply(200, ok_body)) == want
-			and kind_of(ask(reply(201, "{\"written\":2}"))) == "network"
-				and kind_of(ask(reply(200, "not json"))) == "network"
+		and kind_of(ask(reply(201, "{\"written\":2}"))) == "network"
+		and kind_of(ask(reply(200, "not json"))) == "network"
 }
 
 # R-E6, R-J7: the other answers. 400 and 413 are `internal` (1), 401 403 404 409 422 to a write are `rejected` (20), 429 and 5xx are `network` (15), a body that is not problem details is `network`, an unlisted 2xx or a 3xx is `network`, no answer is `network`.
@@ -188,10 +188,10 @@ expect {
 expect {
 	ProbeShare.direct({}).kind.name() == "usage"
 		and Fail.line(ProbeShare.direct({})) == "tln: error[usage]: tln probe --share needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml."
-			and Fail.line(ProbeShare.no_hash({})) == "tln: error[usage]: tln probe --share needs a header alias: the project file has no hash"
-				and Fail.line(ProbeShare.bundle({})) == "tln: error[usage]: tln probe --share needs a header alias: a bundle file can be a hash before its release"
-					and ProbeShare.no_hash({}).kind.name() == "usage"
-						and ProbeShare.bundle({}).kind.name() == "usage"
+		and Fail.line(ProbeShare.no_hash({})) == "tln: error[usage]: tln probe --share needs a header alias: the project file has no hash"
+		and Fail.line(ProbeShare.bundle({})) == "tln: error[usage]: tln probe --share needs a header alias: a bundle file can be a hash before its release"
+		and ProbeShare.no_hash({}).kind.name() == "usage"
+		and ProbeShare.bundle({}).kind.name() == "usage"
 }
 
 # R-PB6, R-OUT2 (proposal): the lines and the `data` of a share. One line for the send, one line for each fact that stayed back, in the order of `kept_back`. 1 fact is `fact`, else `facts`.
@@ -234,8 +234,8 @@ expect {
 	words = JsonDoc.render(ProbeShare.data({ shared, kept_back: back, unsent: [] }))
 	JsonDoc.render(ProbeShare.data({ shared, kept_back: [], unsent: [] })) == "{\"share\":{\"requests\":2,\"sent\":501,\"counted\":500,\"first\":100,\"skipped\":1,\"not_shared\":[]}}"
 		and words.contains("\"reason\":\"bot-row\"")
-			and words.contains("\"reason\":\"result\"")
-				and words.contains("\"reason\":\"target\"")
+		and words.contains("\"reason\":\"result\"")
+		and words.contains("\"reason\":\"target\"")
 }
 
 # R-PB6 (4), (5), Q495, Q498: `nothing to share` when no request went and no row is unsent (then the lines of the kept back facts). Rows that are `unsent` are listed after the kept back facts, also with no request that worked (a first request that failed): the `shared` line then.
@@ -253,7 +253,7 @@ expect {
 				"  not shared: ${c3} any: not sent\n",
 				"  not shared: ${c4} x: not sent\n",
 			]
-			and data.ends_with("\"not_shared\":[{\"nightly\":\"${c2}\",\"target\":\"any\",\"reason\":\"result\"},{\"nightly\":\"${c3}\",\"target\":\"any\",\"reason\":\"not-sent\"},{\"nightly\":\"${c4}\",\"target\":\"x\",\"reason\":\"not-sent\"}]}}")
+		and data.ends_with("\"not_shared\":[{\"nightly\":\"${c2}\",\"target\":\"any\",\"reason\":\"result\"},{\"nightly\":\"${c3}\",\"target\":\"any\",\"reason\":\"not-sent\"},{\"nightly\":\"${c4}\",\"target\":\"x\",\"reason\":\"not-sent\"}]}}")
 }
 
 # R-PB6 (3), Q491: the body of the one closure request. `groups` empty, `hashes` the one hash, `compilers` from the oldest to the newest nightly of the facts that can be sent without the answer: a unit check, no hang, a nightly in `recorded`.
@@ -271,8 +271,8 @@ expect {
 expect {
 	Fail.line(ProbeShare.offline({})) == "tln: error[network]: tln probe --share needs the network: --offline sends no request"
 		and ProbeShare.offline({}).kind.name() == "network"
-			and Fail.line(ProbeShare.unfinished({ requests: 20, count: 500 })) == "tln: error[network]: tln probe --share sent 20 requests and stopped: 500 facts are not shared. Run it again to send the rest."
-				and ProbeShare.unfinished({ requests: 20, count: 500 }).kind.name() == "network"
+		and Fail.line(ProbeShare.unfinished({ requests: 20, count: 500 })) == "tln: error[network]: tln probe --share sent 20 requests and stopped: 500 facts are not shared. Run it again to send the rest."
+		and ProbeShare.unfinished({ requests: 20, count: 500 }).kind.name() == "network"
 }
 
 # R-PB6 (3), (5), Q495, Q503: with no answer (no request was sent because no fact passes the local filters 2, 3 and 6) the reasons are still the filter reasons: a hang is `Result`, a build row `Kind`,

@@ -14,7 +14,7 @@ other = "nightly-2026-10-09-258ab27"
 nt_long = "nightly-2026-October-14-38a3029"
 
 # A row of `facts`: the target `any` is a check, a host target is a build.
-fact = |hash, nightly, target, outcome, modules| { hash, nightly, target, outcome, modules, closure: if target == "any" "" else "d1" }
+fact = |hash, nightly, target, outcome, modules| { hash, nightly, target, outcome, modules, closure: if (target == "any") "" else "d1" }
 
 no_pin = Err(NoPin)
 

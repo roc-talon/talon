@@ -11,7 +11,7 @@ TomlKeys :: [].{
 
 	## The order of two line numbers.
 	compare_lines : U64, U64 -> [Before, Same, After]
-	compare_lines = |a, b| if a < b Before else if a > b After else Same
+	compare_lines = |a, b| if (a < b) Before else if (a > b) After else Same
 
 	## The line of a key. A key that is not in the file gives 1.
 	key_line : Toml, List(Str) -> U64
@@ -79,6 +79,6 @@ probe_keys = ["max", "timeout", "slots", "max-toolchains"]
 # A whole number of `least` or more.
 probe_number : Value, U64 -> Try(U64, Str)
 probe_number = |v, least| match v {
-	Value.Integer(n) if n >= 0 => if n.to_u64_wrap() >= least Ok(n.to_u64_wrap()) else Err("must be ${least.to_str()} or more")
+	Value.Integer(n) if n >= 0 => if (n.to_u64_wrap() >= least) Ok(n.to_u64_wrap()) else Err("must be ${least.to_str()} or more")
 	_ => Err("must be a whole number")
 }

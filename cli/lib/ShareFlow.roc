@@ -65,7 +65,7 @@ ShareFlow :: [].{
 	record! : Fx, Roots, Bool => Try({}, Fail)
 	record! = |fx, roots, value| {
 		_ = set_share!(fx, Roots.item(roots, Item.Config), value)?
-		if value ensure_id!(fx, Roots.item(roots, Item.ShareJson)) else Ok({})
+		if (value) ensure_id!(fx, Roots.item(roots, Item.ShareJson)) else Ok({})
 	}
 
 	## Slice 216 (Q452): `share.json` under its lock for the send: the file that is there (`ShareJson.read`), or a new file with a new id (the write of `tln share on`).
@@ -185,7 +185,7 @@ write_share! = |fx, path, value| {
 		Same => Ok(first)
 		Set(_) => {
 			second = RocInstall.read_text!(fx, path)?
-			last = if second == first done else Share.edit({ path, text: second, value })?
+			last = if (second == first) done else Share.edit({ path, text: second, value })?
 			match last.edit {
 				Same => Ok(second)
 				Set(content) => match fx.write_atomic!([{ path, content }]) {
@@ -217,7 +217,7 @@ make_id! = |fx, path| match read_file!(fx, path) {
 }
 
 rewrite! : Fx, Str, Str => Try({}, Fail)
-rewrite! = |fx, path, content| if fx.windows!() write_direct!(fx, path, content) else write_via_temp!(fx, path, content)
+rewrite! = |fx, path, content| if (fx.windows!()) write_direct!(fx, path, content) else write_via_temp!(fx, path, content)
 
 # Windows: R-CC1 makes the temp file and the rename inside `write_atomic!`. No chmod.
 write_direct! : Fx, Str, Str => Try({}, Fail)

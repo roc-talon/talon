@@ -194,8 +194,8 @@ ToolCompiler :: [].{
 	prompt : { name : Str, version : Str, pin : Str, size : U64, tried : List(Tried), becomes_default : Bool } -> Prompt
 	prompt = |facts| {
 		size = Toolchain.size_text(facts.size)
-		default_line = if facts.becomes_default "\nIt becomes the default compiler." else ""
-		failed = if facts.tried.is_empty() "" else "\nNo installed compiler release built it:${facts.tried.fold("", |acc, t| "${acc}\n  ${ToolCompiler.tried_text(t)}")}"
+		default_line = if (facts.becomes_default) "\nIt becomes the default compiler." else ""
+		failed = if (facts.tried.is_empty()) "" else "\nNo installed compiler release built it:${facts.tried.fold("", |acc, t| "${acc}\n  ${ToolCompiler.tried_text(t)}")}"
 		Prompt.{
 			id: "tool-compiler",
 			kind: Required(["--roc pinned", "--roc installed", "TALON_AUTO_INSTALL=yes"]),
@@ -204,7 +204,7 @@ ToolCompiler :: [].{
 			question: "${facts.name} ${facts.version} was tested with compiler release ${facts.pin}. It is not installed.${default_line}${failed}\n\n  1) Download ${facts.pin} (${size})    [default]\n  3) Cancel\n\nSelect an option",
 			subject: "the compiler ${facts.pin}",
 			answer_line: |answer| match answer {
-				Option(1) => "downloading ${facts.pin} (${size})${if facts.becomes_default ", the default compiler" else ""}"
+				Option(1) => "downloading ${facts.pin} (${size})${if (facts.becomes_default) ", the default compiler" else ""}"
 				_ => "cancelled"
 			},
 		}
@@ -219,7 +219,7 @@ ToolCompiler :: [].{
 
 	## R-NI8, R-NM6 (D-E4): the line on stderr when option 2 starts with no person to ask (`--roc installed`): `trying <n> installed compiler releases` (`release` for 1).
 	trying_line : U64 -> Str
-	trying_line = |count| "trying ${count.to_str()} installed compiler ${if count == 1 "release" else "releases"}"
+	trying_line = |count| "trying ${count.to_str()} installed compiler ${if (count == 1) "release" else "releases"}"
 
 	## R-NI8 option 3: the failure when the person cancels. Kind `Consent` (exit 13), a proposal: `the compiler <pin> is not installed. Nothing was downloaded and nothing was built. Run: tln roc install <pin>, pass --roc pinned, or set TALON_AUTO_INSTALL=yes.`
 	declined : Str -> Fail

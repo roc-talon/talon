@@ -68,7 +68,7 @@ VerifyFlow :: [].{
 		sent = ran.map_ok(|found| { ..found, built: done.built, audit: done.audit })
 		# R-DT5 (Design Q438): the log size of a run with a registry answer, as `InstallFlow.finish!`.
 		match InstallFlow.log_size(ready.request) {
-			Ok(n) => Ok({ outcome: { ..outcome, at: if picked.facts.snapshot.is_ok() outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent, fell: ResolveBase.fell_of(ready.request) })
+			Ok(n) => Ok({ outcome: { ..outcome, at: if (picked.facts.snapshot.is_ok()) outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent, fell: ResolveBase.fell_of(ready.request) })
 			Err(None) => Ok({ outcome, ran: sent, fell: ResolveBase.fell_of(ready.request) })
 		}
 	}
@@ -98,7 +98,7 @@ verified! = |fx, request, loaded, picked, decision, listed| {
 	edits = pairs.join_map(|(s, c)| ResolveBase.set_edits(s, c)).keep_if(|e| files.contains(e.file))
 	replace = pairs
 		.join_map(|(s, c)| s.variable.uses.keep_if(|u| u.url != c.url and files.contains(u.file)).map(|u| { old: u.url, new: c.url }))
-		.fold(no_replace, |found, r| if found.contains(r) found else found.append(r))
+		.fold(no_replace, |found, r| if (found.contains(r)) found else found.append(r))
 	closures = ResolveBase.closure!(
 		fx,
 		request,
@@ -194,5 +194,5 @@ checked_members = |request, loaded| {
 	current = request.project.file ?? ""
 	all = loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), patch: Patched.replaces(PatchApply.entries(m)), target: ResolveBase.member_target(m) })
 	named = all.keep_if(|m| m.file == current)
-	if named.is_empty() all else named
+	if (named.is_empty()) all else named
 }

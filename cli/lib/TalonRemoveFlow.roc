@@ -140,7 +140,7 @@ scene! = |fx| {
 	}
 	ids = Compiler.installed(in_toolchains)
 	zigs = TalonRemove.zig_versions(in_toolchains)
-	metas = if ids.is_empty() [] else fx.read_files!(ids.map(|id| Roots.item(roots, Item.ToolchainMeta(id))))
+	metas = if (ids.is_empty()) [] else fx.read_files!(ids.map(|id| Roots.item(roots, Item.ToolchainMeta(id))))
 	asks = TalonRemove.asks({
 		roots,
 		file: TalonRemove.file(machine.os),
@@ -169,18 +169,18 @@ carry_out! : Fx, Scene, TalonRemove.Choice, TalonRemove.Done => Try(TalonRemove.
 carry_out! = |fx, scene, choice, base| {
 	check = checks!(fx, scene, choice)?
 	plan = { choice, check }
-	if TalonRemove.removes({ choice, group: Compilers }) remove_compilers!(fx, scene)?
+	if (TalonRemove.removes({ choice, group: Compilers })) remove_compilers!(fx, scene)?
 	renamed = update_tools!(fx, scene, plan)?
 	tail = match scene.os {
 		Windows => windows!(fx, scene, plan, renamed)?
 		_ => unix!(fx, scene, plan)?
 	}
-	kept_tools = if choice == WithTools check.tools.keep_if(|tool| tool.fate == Keep).map(|tool| Text.join(scene.bin, tool.file)) else []
+	kept_tools = if (choice == WithTools) check.tools.keep_if(|tool| tool.fate == Keep).map(|tool| Text.join(scene.bin, tool.file)) else []
 	kept = [(check.tln, entry_of(scene, TalonRemove.file(scene.os))), (check.roc, entry_of(scene, roc_file(scene.os)))].keep_if(|(fate, _)| fate == Keep).map(|(_, path)| path)
 	Ok({
 		..base,
 		choice,
-		stays: if choice == TalonOnly stays_of(scene, tail.back) else [],
+		stays: if (choice == TalonOnly) stays_of(scene, tail.back) else [],
 		back: tail.back,
 		path: tail.path,
 		kept: kept.concat(kept_tools),
@@ -192,7 +192,7 @@ entry_of : Scene, Str -> Str
 entry_of = |scene, name| Text.join(scene.bin, name)
 
 roc_file : Setup.Os -> Str
-roc_file = |os| if os == Windows "roc.exe" else "roc"
+roc_file = |os| if (os == Windows) "roc.exe" else "roc"
 
 data_file : Scene, Str -> Str
 data_file = |scene, name| Text.join(Roots.item(scene.roots, Item.Bin), name)
@@ -280,7 +280,7 @@ tools_removed! = |fx, scene, check| match scene.os {
 # One `delete!`. A path that is not there is no failure (D13). Another error stops the run (exit 18).
 delete_all! : Fx, List(Str) => Try({}, Fail)
 delete_all! = |fx, paths| {
-	if paths.is_empty() return Ok({})
+	if (paths.is_empty()) return Ok({})
 	for each in paths.map2(fx.delete!(paths), |path, result| { path, result }) {
 		match each.result {
 			Ok(_) | Err(NotFound) => {}
@@ -293,8 +293,8 @@ delete_all! = |fx, paths| {
 # Steps 10 to 12 for Linux and macOS.
 unix! : Fx, Scene, Plan => Try(Tail, Fail)
 unix! = |fx, scene, plan| {
-	path = if plan.choice == WithTools strip_profiles!(fx, scene)? else []
-	if TalonRemove.removes({ choice: plan.choice, group: Data }) delete_all!(fx, data_paths(scene))?
+	path = if (plan.choice == WithTools) strip_profiles!(fx, scene)? else []
+	if (TalonRemove.removes({ choice: plan.choice, group: Data })) delete_all!(fx, data_paths(scene))?
 	back = last!(fx, scene, plan.check)?
 	Ok({ back, path, stuck: [] })
 }
@@ -323,7 +323,7 @@ strip_profiles! = |fx, scene| {
 			Err(err) => return Err(Fail.new(Environment, "cannot read ${each.path}: ${Str.inspect(err)}"))
 		}
 	}
-	if $writes.is_empty() return Ok([])
+	if ($writes.is_empty()) return Ok([])
 	match fx.write_atomic!($writes) {
 		Ok(_) => Ok($writes.map(|file| Profile(file.path)))
 		Err(failure) => Err(Fail.new(Environment, "cannot write ${failure.path}: ${Str.inspect(failure.err)}"))
@@ -334,10 +334,10 @@ strip_profiles! = |fx, scene| {
 last! : Fx, Scene, Check => Try(Try({ from : Str, to : Str }, [None]), Fail)
 last! = |fx, scene, check| {
 	roc = entry_of(scene, roc_file(scene.os))
-	if check.roc == Remove delete_all!(fx, [roc])?
+	if (check.roc == Remove) delete_all!(fx, [roc])?
 	back = move_back!(fx, scene, check)?
 	tln = TalonRemove.file(scene.os)
-	entry = if check.tln == Remove [entry_of(scene, tln)] else []
+	entry = if (check.tln == Remove) [entry_of(scene, tln)] else []
 	delete_all!(fx, entry.append(data_file(scene, tln)))?
 	Ok(back)
 }
@@ -360,8 +360,8 @@ move_back! = |fx, scene, check| {
 # Steps 10 to 12 for Windows: the user `Path` (option 2, D12: a failure stops the run), the Talon data, then Talon (R-RM5, R-ST10).
 windows! : Fx, Scene, Plan, List(Str) => Try(Tail, Fail)
 windows! = |fx, scene, plan, renamed| {
-	path = if plan.choice == WithTools [UserPath(user_path!(fx, scene)?)] else []
-	if TalonRemove.removes({ choice: plan.choice, group: Data }) delete_all!(fx, data_paths(scene))?
+	path = if (plan.choice == WithTools) [UserPath(user_path!(fx, scene)?)] else []
+	if (TalonRemove.removes({ choice: plan.choice, group: Data })) delete_all!(fx, data_paths(scene))?
 	last = windows_last!(fx, scene, plan.check, renamed)?
 	Ok({ back: last.back, path, stuck: last.stuck })
 }
@@ -406,7 +406,7 @@ stays_of = |scene, moved| scene.ids.map2(
 	scene.metas,
 	|id, meta| {
 		meta_path = Roots.item(scene.roots, Item.ToolchainMeta(id))
-		link = if id.starts_with("link-") Link.target({ id, path: meta_path, text: meta }).map_err(|_| None) else Err(None)
+		link = if (id.starts_with("link-")) Link.target({ id, path: meta_path, text: meta }).map_err(|_| None) else Err(None)
 		{ id, path: TalonRemove.kept_path({ id, roc: Roots.item(scene.roots, Item.ToolchainRoc(id)), link, moved }) }
 	},
 )

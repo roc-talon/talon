@@ -97,7 +97,7 @@ Why :: [].{
 			} else {
 				Via(r.via ?? "")
 			}
-			{ alias: if r.direct r.alias else "", what, role }
+			{ alias: if (r.direct) r.alias else "", what, role }
 		},
 	)
 
@@ -112,7 +112,7 @@ Why :: [].{
 			Existing(e) => (e.alias, e.name, e.series)
 			New(n) => ("", n, "")
 		}
-		key = |r| (if r.direct r.alias else "", if r.kind == Release r.name else "", if r.kind == Release r.series else "")
+		key = |r| (if (r.direct) r.alias else "", if (r.kind == Release) r.name else "", if (r.kind == Release) r.series else "")
 		facts.rows.find_first(|r| key(r) == (alias, name, series)).map_err(|_| not_in(facts.text))
 	}
 
@@ -138,7 +138,7 @@ Why :: [].{
 	text = |found| {
 		target = found.target
 		marks = marks_of(target)
-		suffix = if marks.is_empty() "" else " (${Str.join_with(marks, "; ")})"
+		suffix = if (marks.is_empty()) "" else " (${Str.join_with(marks, "; ")})"
 		lines = paths({ walked: found.walked, target: target.id }).map(|p| "    ${Str.join_with(p.map(step_text), " -> ")}\n")
 		"${found.file}\n  ${label_of(target)}${suffix}\n${Str.join_with(lines, "")}"
 	}
@@ -164,7 +164,7 @@ Why :: [].{
 				ran = ShareHook.ran_of(walk.request, { notes: Bool.False, second: Err(NotRead) })
 				match answers(opts.name, walk.closures) {
 					Err({ fail, block }) => {
-						if !block.is_empty() fx.err!(block)
+						if (!block.is_empty()) fx.err!(block)
 						ShareHook.failed!(fx, args, ShareHook.attach(fail, ran, Bool.False))
 					}
 					Ok(found) => match EvidenceFlow.blocks!(fx, { request: walk.request, loaded: walk.loaded }, found) {
@@ -193,17 +193,17 @@ not_in = |name| { fail: Fail.new(Usage, "'${name}' is not in the project"), bloc
 
 # `<name> <version>` for a release, else the value as written.
 label_of : Closure.Row -> Str
-label_of = |row| if row.kind == Release "${row.name} ${row.version}" else row.name
+label_of = |row| if (row.kind == Release) "${row.name} ${row.version}" else row.name
 
 # The marks of `list` without `via` (R-CM9).
 marks_of : Closure.Row -> List(Str)
 marks_of = |row| {
-	direct = if row.direct ["direct"] else []
+	direct = if (row.direct) ["direct"] else []
 	raised = match row.raised {
 		Ok(version) => ["raised from ${version}"]
 		Err(None) => []
 	}
-	direct.concat(raised).concat(if row.kind == Release [] else ["foreign"])
+	direct.concat(raised).concat(if (row.kind == Release) [] else ["foreign"])
 }
 
 step_text : Why.Step -> Str
@@ -297,6 +297,6 @@ walk_indexed! = |fx, args| {
 # Slice 206e3b (Design Q502): the window of the query is the nightly of the workspace when the pins of the members agree. Different pins give no window (no `compilers` member, Q437): each block shows the facts of its own pin. No pin: no window.
 pin_window : List(Str) -> [Held(Str), None]
 pin_window = |pins| match pins {
-	[first, .. as rest] => if rest.all(|id| Pin.same_id(id, first)) Held(first) else None
+	[first, .. as rest] => if (rest.all(|id| Pin.same_id(id, first))) Held(first) else None
 	[] => None
 }

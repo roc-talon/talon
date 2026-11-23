@@ -132,8 +132,8 @@ expect {
 	dbg with_user
 	with_user == "2 nightlies, 1 release, 1 git build, 1 link, 1 copy, zig 0.17.0"
 		and only_user == "1 nightly"
-			and two_channels == "2 nightlies"
-				and old == "2 nightlies, 1 git build, zig 0.17.0"
+		and two_channels == "2 nightlies"
+		and old == "2 nightlies, 1 git build, zig 0.17.0"
 }
 
 # R-C15 R-CH9 (Design Q614 item 6): the name for `min-release-age-exclude`. A nightly (both forms) is `roc-lang/nightlies` also with no table. A build of a user channel is the `source` of its
@@ -166,5 +166,5 @@ expect {
 expect {
 	Age.compiler_name("nightly-2026-10-09-258ab27") == "roc-lang/nightlies"
 		and Age.compiler_name("nightly-2026-July-31-123c5d7") == "roc-lang/nightlies"
-			and Age.compiler_name("0.1.0") == "roc-lang/roc"
+		and Age.compiler_name("0.1.0") == "roc-lang/roc"
 }

@@ -136,9 +136,9 @@ ShareHook :: [].{
 			Off(_) => return {}
 			On => {}
 		}
-		if ran.built.is_empty() return {}
+		if (ran.built.is_empty()) return {}
 		open = { path: Roots.item(roots, CompatDb), busy_ms: Db.busy_ms, format: Db.format }
-		keys = ran.built.map(|b| b.key).fold([], |found, k| if found.contains(k) found else found.append(k))
+		keys = ran.built.map(|b| b.key).fold([], |found, k| if (found.contains(k)) found else found.append(k))
 		done = match fx.db_query!(open, Smoke(keys)) {
 			Ok(Smoke(rows)) => rows
 			_ => return {}
@@ -148,7 +148,7 @@ ShareHook :: [].{
 			Err(_) => return {}
 		}
 		target = Nightlies.target(host)
-		ids = keys.map(|k| k.nightly).fold([], |found, id| if found.contains(id) found else found.append(id))
+		ids = keys.map(|k| k.nightly).fold([], |found, id| if (found.contains(id)) found else found.append(id))
 		pins = match fx.db_query!(open, Pinned(ids.map(|id| { tag: id, target }))) {
 			Ok(Pinned(rows)) => rows
 			_ => return {}
@@ -193,8 +193,8 @@ ShareHook :: [].{
 				Skip(_) => {}
 			}
 		}
-		if $jobs.is_empty() return {}
-		pool = $jobs.map(|j| j.slots).fold(0, |most, n| if n > most n else most)
+		if ($jobs.is_empty()) return {}
+		pool = $jobs.map(|j| j.slots).fold(0, |most, n| if (n > most) n else most)
 		outputs = fx.probes!({ pool, specs: $jobs.map(|j| j.spec) })
 		results = $jobs.map2(outputs, |j, out| (j, Smoke.result(out)))
 		rows = results.keep_oks(

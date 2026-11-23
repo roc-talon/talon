@@ -68,7 +68,7 @@ own = |id| { id, passed: Err(None), first: Bool.True }
 # Step 3 (R-T30): the try of the installed releases, with no prompt. An empty order (`--roc pinned`, no release) makes no call.
 tried! : Fx, ToolCompiler.Run, { build : { id : Str, first : Bool } => Try(ToolCompiler.Attempt, Fail) }, { order : List(Str), pin : Str } => Try([Passed(ToolCompilerFlow.Chosen), Failed(List(ToolCompiler.Tried))], Fail)
 tried! = |fx, run, hooks, step| {
-	if step.order.is_empty() return Ok(Failed([]))
+	if (step.order.is_empty()) return Ok(Failed([]))
 	fx.err!("${ToolCompiler.trying_line(step.order.len())}\n")
 	match ToolTry.installed!(fx, run, { ids: step.order, build: hooks.build })? {
 		Passed(done) => {
@@ -137,7 +137,7 @@ asked! = |fx, ctx| {
 ask! : Fx, Ctx, Prompt => Try(Answer, Fail)
 ask! = |fx, ctx, prompt| {
 	got = Prompt.ask!(fx, prompt, { mode: Interactive, yes: ctx.args.yes, quiet: ctx.args.quiet, flag: Err(NoFlag) })?
-	if ToolCompiler.allowed({ answer: got.answer }) Ok(got.answer) else ask!(fx, ctx, prompt)
+	if (ToolCompiler.allowed({ answer: got.answer })) Ok(got.answer) else ask!(fx, ctx, prompt)
 }
 
 # The `default-roc` of `config.toml` now (the unpack of the bundle can have set it, R-FE4). One read, and only when no compiler is selected: a selected compiler decides without it.

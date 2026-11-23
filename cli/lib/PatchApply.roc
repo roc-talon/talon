@@ -67,7 +67,7 @@ PatchApply :: [].{
 	run! : Fx, ResolveBase.Request, ResolveBase.Loaded, { scoped : List(Vars.Scoped), chosen : List(Pick.Chosen) } => Try(PatchApply.Done, Fail)
 	run! = |fx, request, loaded, x| {
 		wanted = loaded.members.map(|m| { member: m, entries: PatchApply.entries(m) }).keep_if(|w| !w.entries.is_empty())
-		if wanted.is_empty() return Ok(PatchApply.none)
+		if (wanted.is_empty()) return Ok(PatchApply.none)
 		check_all(request, wanted)?
 		install = request.command == Install and request.names.is_empty()
 		needs = wanted.join_map(
@@ -91,7 +91,7 @@ PatchApply :: [].{
 	base! : Fx, ResolveBase.Request, { alias : Str, url : Str, base : Str, dir : Str } => Try({}, Fail)
 	base! = |fx, request, entry| {
 		# Slice 076: the base is a part of a path. `Intent` has checked it already, so this guard stops no entry that the commands pass.
-		if !Ident.safe_part(entry.base) return Err(Fail.new(Usage, "the base ${entry.base} of the patch ${entry.alias} is not a hash"))
+		if (!Ident.safe_part(entry.base)) return Err(Fail.new(Usage, "the base ${entry.base} of the patch ${entry.alias} is not a hash"))
 		match fx.list_dirs!([Roots.item(request.roots, Package(entry.base))]) {
 			[Ok(_)] => Ok({})
 			_ => match Ident.of_url(entry.url) {
@@ -233,7 +233,7 @@ build_all! = |fx, request, root, applied| {
 	for (i, a) in applied.map_with_index(|a, i| (i, a)) {
 		alias = a.found.entry.alias
 		earlier = applied.take_first(i).count_if(|b| b.found.entry.alias == alias)
-		temp = Text.join(root, if earlier == 0 alias else "${alias}-${earlier.to_str()}")
+		temp = Text.join(root, if (earlier == 0) alias else "${alias}-${earlier.to_str()}")
 		match build!(fx, request, temp, a) {
 			Ok({}) => {}
 			Err(fail) => {

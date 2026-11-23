@@ -21,8 +21,8 @@ Download :: [].{
 	choose : { want : [Auto, Curl, Wget, Bad(Str)], curl : Bool, wget : Bool } -> Try(Program, Fail)
 	choose = |facts| match facts.want {
 		Bad(text) => Err(Fail.new(Usage, "TALON_DOWNLOADER must be curl or wget, not '${text}'"))
-		Curl => if facts.curl Ok(Curl) else Err(missing("curl"))
-		Wget => if facts.wget Ok(Wget) else Err(missing("wget"))
+		Curl => if (facts.curl) Ok(Curl) else Err(missing("curl"))
+		Wget => if (facts.wget) Ok(Wget) else Err(missing("wget"))
 		Auto => if facts.curl {
 			Ok(Curl)
 		} else if facts.wget {

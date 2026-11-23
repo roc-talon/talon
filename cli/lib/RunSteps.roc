@@ -69,10 +69,10 @@ RunSteps :: [].{
 					Ok(d) => d.names.contains("main.roc")
 					Err(_) => Bool.False
 				}
-				[Text.join(found.dir, if has_main "main.roc" else "talon.toml")]
+				[Text.join(found.dir, if (has_main) "main.roc" else "talon.toml")]
 			}
 		}
-		if files.is_empty() files else files.map2(fx.canonical!(files), |file, result| result ?? file)
+		if (files.is_empty()) files else files.map2(fx.canonical!(files), |file, result| result ?? file)
 	}
 
 	## R-RUN1, R-RUN2, R-RUN4, R-RUN8, R-RUN10: the plan of the script `name` of the `talon.toml` in `dir`, before any step. `stop` is the stop directory of the walk (R-RUN8). A `Need(dir)` is one `read_files!` of `<dir>/talon.toml`, then the plan again.
@@ -120,7 +120,7 @@ RunSteps :: [].{
 				Ok(note) => fx.err!("${note}\n")
 				Err(None) => {}
 			}
-			if !end.pass return Ok(end.code)
+			if (!end.pass) return Ok(end.code)
 		}
 		Ok(0)
 	}

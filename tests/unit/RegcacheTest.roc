@@ -31,14 +31,14 @@ expect {
 			"/c/roc/talon/index/registry/http_[__1]_8787",
 		]
 		and key == "98479255038c5453bde9313928301713"
-			and same == key
-				and other != key
-					and files
-						== {
-							dir: "/c/roc/talon/index/registry/http_127.0.0.1_9/get",
-							body: "/c/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json",
-							meta: "/c/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta",
-						}
+		and same == key
+		and other != key
+		and files
+			== {
+				dir: "/c/roc/talon/index/registry/http_127.0.0.1_9/get",
+				body: "/c/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json",
+				meta: "/c/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta",
+			}
 }
 
 # R-IX2, G-C38 (Design Q218): the meta text (the lines url, etag, max-age: the form is a proposal) and its reverse. The etag line is there only when the answer had an ETag, the max-age line only when it had a max-age: a copy with no ETag is kept (and read again with no
@@ -52,26 +52,26 @@ expect {
 		== "url /v1/packages/acme/lib/releases\netag \"e1\"\nmax-age 60\n"
 		and no_etag
 			== "url /x\nmax-age 60\n"
-			and no_age
-				== "url /x\netag \"e\"\n"
-				and neither
-					== "url /x\n"
-					and RegistryCache.parse_meta(text)
-						== Ok({ etag: Ok("\"e1\""), max_age: Ok(60) })
-						and RegistryCache.parse_meta(no_etag)
-							== Ok({ etag: Err(None), max_age: Ok(60) })
-							and RegistryCache.parse_meta(no_age)
-								== Ok({ etag: Ok("\"e\""), max_age: Err(None) })
-								and RegistryCache.parse_meta(neither)
-									== Ok({ etag: Err(None), max_age: Err(None) })
-									and RegistryCache.parse_meta("url /x\nnote a\netag \"e2\"\nmax-age 300\n")
-										== Ok({ etag: Ok("\"e2\""), max_age: Ok(300) })
-										and RegistryCache.parse_meta("etag \"e\"\nmax-age 60\n")
-											== Err(BadMeta)
-											and RegistryCache.parse_meta("url /x\netag \"e\"\nmax-age soon\n")
-												== Err(BadMeta)
-												and RegistryCache.parse_meta("")
-													== Err(BadMeta)
+		and no_age
+			== "url /x\netag \"e\"\n"
+		and neither
+			== "url /x\n"
+		and RegistryCache.parse_meta(text)
+			== Ok({ etag: Ok("\"e1\""), max_age: Ok(60) })
+		and RegistryCache.parse_meta(no_etag)
+			== Ok({ etag: Err(None), max_age: Ok(60) })
+		and RegistryCache.parse_meta(no_age)
+			== Ok({ etag: Ok("\"e\""), max_age: Err(None) })
+		and RegistryCache.parse_meta(neither)
+			== Ok({ etag: Err(None), max_age: Err(None) })
+		and RegistryCache.parse_meta("url /x\nnote a\netag \"e2\"\nmax-age 300\n")
+			== Ok({ etag: Ok("\"e2\""), max_age: Ok(300) })
+		and RegistryCache.parse_meta("etag \"e\"\nmax-age 60\n")
+			== Err(BadMeta)
+		and RegistryCache.parse_meta("url /x\netag \"e\"\nmax-age soon\n")
+			== Err(BadMeta)
+		and RegistryCache.parse_meta("")
+			== Err(BadMeta)
 }
 
 # R-IX3, R-AP54, R-AP55: the Cache-Control of an answer. The header name in any case (the Worker sends lower case). A directive list with white space, names in any case. `no-store` wins over `max-age`. `max-age=0` is a value.
@@ -84,32 +84,32 @@ expect {
 		== MaxAge(60)
 		and upper
 			== MaxAge(300)
-			and of("max-age=60")
-				== MaxAge(60)
-				and of("public ,  Max-Age=300 , immutable")
-					== MaxAge(300)
-					and of("max-age=0")
-						== MaxAge(0)
-						and of("no-store")
-							== NoStore
-							and of("max-age=60, NO-STORE")
-								== NoStore
-								and of("no-cache")
-									== NoMaxAge
-									and of("max-age=abc")
-										== NoMaxAge
-										and of("s-maxage=60")
-											== NoMaxAge
-											and of("s-maxage=600, max-age=30")
-												== MaxAge(30)
-												and of("max-age=60, stale-while-revalidate=30, s-maxage=600")
-													== MaxAge(60)
-													and of("stale-while-revalidate=30")
-														== NoMaxAge
-														and of("s-maxage=10, no-store")
-															== NoStore
-															and RegistryCache.max_age_of([("etag", "\"x\"")])
-																== NoMaxAge
+		and of("max-age=60")
+			== MaxAge(60)
+		and of("public ,  Max-Age=300 , immutable")
+			== MaxAge(300)
+		and of("max-age=0")
+			== MaxAge(0)
+		and of("no-store")
+			== NoStore
+		and of("max-age=60, NO-STORE")
+			== NoStore
+		and of("no-cache")
+			== NoMaxAge
+		and of("max-age=abc")
+			== NoMaxAge
+		and of("s-maxage=60")
+			== NoMaxAge
+		and of("s-maxage=600, max-age=30")
+			== MaxAge(30)
+		and of("max-age=60, stale-while-revalidate=30, s-maxage=600")
+			== MaxAge(60)
+		and of("stale-while-revalidate=30")
+			== NoMaxAge
+		and of("s-maxage=10, no-store")
+			== NoStore
+		and RegistryCache.max_age_of([("etag", "\"x\"")])
+			== NoMaxAge
 }
 
 # R-IX2, R-IX3, R-IX7, R-AP43, G-C38: what is kept. A 200 is kept, with the header names in any case (the Worker sends lower case): with an ETag and a max-age, with no ETag (etag is `Err(None)`), with no max-age (also when only `s-maxage` is there),
@@ -121,26 +121,26 @@ expect {
 		== Ok({ etag: Ok("\"e1\""), max_age: Ok(60) })
 		and keep(200, [("Cache-Control", "max-age=300"), ("ETag", "\"t\"")])
 			== Ok({ etag: Ok("\"t\""), max_age: Ok(300) })
-			and keep(200, [("cache-control", "max-age=60")])
-				== Ok({ etag: Err(None), max_age: Ok(60) })
-				and keep(200, [("etag", "\"e1\"")])
-					== Ok({ etag: Ok("\"e1\""), max_age: Err(None) })
-					and keep(200, [("cache-control", "s-maxage=60"), ("etag", "\"e1\"")])
-						== Ok({ etag: Ok("\"e1\""), max_age: Err(None) })
-						and keep(200, [])
-							== Ok({ etag: Err(None), max_age: Err(None) })
-							and keep(200, [("cache-control", "no-store"), ("etag", "\"e1\"")])
-								== Err(NotKept)
-								and keep(404, ok)
-									== Err(NotKept)
-									and keep(400, ok)
-										== Err(NotKept)
-										and keep(304, ok)
-											== Err(NotKept)
-											and keep(301, ok)
-												== Err(NotKept)
-												and keep(500, ok)
-													== Err(NotKept)
+		and keep(200, [("cache-control", "max-age=60")])
+			== Ok({ etag: Err(None), max_age: Ok(60) })
+		and keep(200, [("etag", "\"e1\"")])
+			== Ok({ etag: Ok("\"e1\""), max_age: Err(None) })
+		and keep(200, [("cache-control", "s-maxage=60"), ("etag", "\"e1\"")])
+			== Ok({ etag: Ok("\"e1\""), max_age: Err(None) })
+		and keep(200, [])
+			== Ok({ etag: Err(None), max_age: Err(None) })
+		and keep(200, [("cache-control", "no-store"), ("etag", "\"e1\"")])
+			== Err(NotKept)
+		and keep(404, ok)
+			== Err(NotKept)
+		and keep(400, ok)
+			== Err(NotKept)
+		and keep(304, ok)
+			== Err(NotKept)
+		and keep(301, ok)
+			== Err(NotKept)
+		and keep(500, ok)
+			== Err(NotKept)
 }
 
 # R-AP24, R-AP43, R-IX2, R-IX3, R-IX6, G-C38: the plan. A copy is used when its age is less than its max-age (also at the age max-age minus 1, not at max-age), else it is revalidated with its ETag. max-age 0 always revalidates.
@@ -157,48 +157,48 @@ expect {
 		== Use
 		and plan(copy(60, 1000), 1059, Bool.False, Bool.False)
 			== Use
-			and plan(copy(60, 1000), 1060, Bool.False, Bool.False)
-				== Revalidate("\"e\"")
-				and plan(copy(60, 1000), 90000, Bool.False, Bool.False)
-					== Revalidate("\"e\"")
-					and plan(copy(0, 1000), 1000, Bool.False, Bool.False)
-						== Revalidate("\"e\"")
-						and plan(copy(300, 1000), 1299, Bool.False, Bool.False)
-							== Use
-							and plan(copy(60, 2000), 1000, Bool.False, Bool.False)
-								== Use
-								and plan(none, 1000, Bool.False, Bool.False)
-									== Fetch
-									and plan(copy(60, 1000), 1010, Bool.False, Bool.True)
-										== Fetch
-										and plan(none, 1010, Bool.False, Bool.True)
-											== Fetch
-											and plan(copy(60, 1000), 99999, Bool.True, Bool.False)
-												== Use
-												and plan(copy(60, 1000), 99999, Bool.True, Bool.True)
-													== Use
-													and plan(none, 1000, Bool.True, Bool.False)
-														== Missing
-														and plan(none, 1000, Bool.True, Bool.True)
-															== Missing
-															and plan(no_etag(60, 1000), 1059, Bool.False, Bool.False)
-																== Use
-																and plan(no_etag(60, 1000), 1060, Bool.False, Bool.False)
-																	== Fetch
-																	and plan(no_etag(60, 1000), 90000, Bool.True, Bool.False)
-																		== Use
-																		and plan(no_age, 1000, Bool.False, Bool.False)
-																			== Revalidate("\"e\"")
-																			and plan(no_age, 1001, Bool.False, Bool.False)
-																				== Revalidate("\"e\"")
-																				and plan(no_age, 1001, Bool.False, Bool.True)
-																					== Fetch
-																					and plan(no_age, 99999, Bool.True, Bool.False)
-																						== Use
-																						and plan(bare, 1000, Bool.False, Bool.False)
-																							== Fetch
-																							and plan(bare, 99999, Bool.True, Bool.True)
-																								== Use
+		and plan(copy(60, 1000), 1060, Bool.False, Bool.False)
+			== Revalidate("\"e\"")
+		and plan(copy(60, 1000), 90000, Bool.False, Bool.False)
+			== Revalidate("\"e\"")
+		and plan(copy(0, 1000), 1000, Bool.False, Bool.False)
+			== Revalidate("\"e\"")
+		and plan(copy(300, 1000), 1299, Bool.False, Bool.False)
+			== Use
+		and plan(copy(60, 2000), 1000, Bool.False, Bool.False)
+			== Use
+		and plan(none, 1000, Bool.False, Bool.False)
+			== Fetch
+		and plan(copy(60, 1000), 1010, Bool.False, Bool.True)
+			== Fetch
+		and plan(none, 1010, Bool.False, Bool.True)
+			== Fetch
+		and plan(copy(60, 1000), 99999, Bool.True, Bool.False)
+			== Use
+		and plan(copy(60, 1000), 99999, Bool.True, Bool.True)
+			== Use
+		and plan(none, 1000, Bool.True, Bool.False)
+			== Missing
+		and plan(none, 1000, Bool.True, Bool.True)
+			== Missing
+		and plan(no_etag(60, 1000), 1059, Bool.False, Bool.False)
+			== Use
+		and plan(no_etag(60, 1000), 1060, Bool.False, Bool.False)
+			== Fetch
+		and plan(no_etag(60, 1000), 90000, Bool.True, Bool.False)
+			== Use
+		and plan(no_age, 1000, Bool.False, Bool.False)
+			== Revalidate("\"e\"")
+		and plan(no_age, 1001, Bool.False, Bool.False)
+			== Revalidate("\"e\"")
+		and plan(no_age, 1001, Bool.False, Bool.True)
+			== Fetch
+		and plan(no_age, 99999, Bool.True, Bool.False)
+			== Use
+		and plan(bare, 1000, Bool.False, Bool.False)
+			== Fetch
+		and plan(bare, 99999, Bool.True, Bool.True)
+			== Use
 }
 
 # R-IX7, R-E6, G-C38: the failure for an answer that is not a copy (a 3xx, or a 304 to a request with no If-None-Match). Kind network (exit 15). The text is a proposal (TW24): it names the registry, the status and the path.
@@ -223,10 +223,10 @@ expect {
 		== [("User-Agent", "tln/0.4.1")]
 		and revalidate
 			== [("User-Agent", "tln/0.4.1"), ("If-None-Match", "\"e1\"")]
-			and newest
-				== [("User-Agent", "tln/0.4.1"), ("Cache-Control", "no-cache")]
-				and bookmark
-					== [("User-Agent", "tln/0.4.1"), ("Cache-Control", "no-cache"), ("Talon-Bookmark", "b123")]
-					and both
-						== bookmark
+		and newest
+			== [("User-Agent", "tln/0.4.1"), ("Cache-Control", "no-cache")]
+		and bookmark
+			== [("User-Agent", "tln/0.4.1"), ("Cache-Control", "no-cache"), ("Talon-Bookmark", "b123")]
+		and both
+			== bookmark
 }

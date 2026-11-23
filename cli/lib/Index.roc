@@ -74,7 +74,7 @@ Index :: [].{
 	new_entry = |facts| match facts.list {
 		[] => Err(NoCandidate)
 		[first, .. as rest] => {
-			newest = rest.fold(first, |best, c| if c.published_at > best.published_at c else best)
+			newest = rest.fold(first, |best, c| if (c.published_at > best.published_at) c else best)
 			form = newest.ident.group.form
 			others = Text.sorted_unique(facts.list.map(|c| c.ident.group.form).keep_if(|f| f != form))
 			Ok({
@@ -119,7 +119,7 @@ Index :: [].{
 			Ok(h) => h
 			Err(_) => after_scheme
 		}
-		if host == "github.com" Indexed else Fixed(host)
+		if (host == "github.com") Indexed else Fixed(host)
 	}
 
 	## The text that `tln update`, `tln upgrade` and `tln outdated` print for a `Fixed` host (R-DI11, the text of the design):
@@ -202,7 +202,7 @@ package_assets = |pairs| match field(pairs, "assets") {
 						name,
 						hash: name.drop_suffix(".tar.zst"),
 						size: match field(asset, "size") {
-							Ok(Num(n)) => if n >= 0 n.to_u64_wrap() else 0
+							Ok(Num(n)) => if (n >= 0) n.to_u64_wrap() else 0
 							_ => 0
 						},
 					})
@@ -231,11 +231,11 @@ version_numbers = |version| version.split_on(".").map(|part| U64.from_str(part) 
 
 compare_versions : List(U64), List(U64) -> [Before, Same, After]
 compare_versions = |a, b| match (a, b) {
-	([x, .. as xs], [y, .. as ys]) => if x < y Before else if x > y After else compare_versions(xs, ys)
+	([x, .. as xs], [y, .. as ys]) => if (x < y) Before else if (x > y) After else compare_versions(xs, ys)
 	([], []) => Same
 	([], _) => Before
 	(_, []) => After
 }
 
 compare_index : U64, U64 -> [Before, Same, After]
-compare_index = |i, j| if i < j Before else if i > j After else Same
+compare_index = |i, j| if (i < j) Before else if (i > j) After else Same

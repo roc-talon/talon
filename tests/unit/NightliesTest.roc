@@ -19,19 +19,19 @@ hex64 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 ## One asset of the answer, with fields that Talon does not read. `digest` is the JSON text of the field, or the empty text for no field.
 asset : { name : Str, size : U64, digest : Str } -> Str
 asset = |a| {
-	digest = if a.digest == "" "" else ",\"digest\":${a.digest}"
+	digest = if (a.digest == "") "" else ",\"digest\":${a.digest}"
 	"{\"id\":9,\"name\":\"${a.name}\",\"size\":${a.size.to_str()}${digest},\"content_type\":\"application/gzip\",\"browser_download_url\":\"http://127.0.0.1:1/dl/x/${a.name}\"}"
 }
 
 ## One release of the answer. `published` is a time or `null`. `assets` is `Err(Missing)` for a release with no `assets` field.
 release : { tag : Str, draft : Bool, pre : Bool, published : Str, assets : Try(List(Str), [Missing]) } -> Str
 release = |r| {
-	published = if r.published == "null" "null" else "\"${r.published}\""
+	published = if (r.published == "null") "null" else "\"${r.published}\""
 	assets = match r.assets {
 		Ok(list) => ",\"assets\":[${Str.join_with(list, ",")}]"
 		Err(Missing) => ""
 	}
-	"{\"id\":1,\"tag_name\":\"${r.tag}\",\"name\":\"${r.tag}\",\"draft\":${if r.draft "true" else "false"},\"prerelease\":${if r.pre "true" else "false"},\"published_at\":${published},\"body\":\"notes\",\"author\":{\"login\":\"github-actions[bot]\",\"id\":2}${assets}}"
+	"{\"id\":1,\"tag_name\":\"${r.tag}\",\"name\":\"${r.tag}\",\"draft\":${if (r.draft) "true" else "false"},\"prerelease\":${if (r.pre) "true" else "false"},\"published_at\":${published},\"body\":\"notes\",\"author\":{\"login\":\"github-actions[bot]\",\"id\":2}${assets}}"
 }
 
 plain : { tag : Str, published : Str, assets : List(Str) } -> Str
@@ -294,9 +294,9 @@ expect {
 	dbg snap
 	age2 == [r1.id, r2.id, r5.id]
 		and off == [r1.id, r2.id, r3.id, r4.id, r5.id]
-			and snap == [r1.id, r5.id]
-				and both == [r5.id]
-					and kept == [r1.id, r2.id, r4.id, r5.id]
+		and snap == [r1.id, r5.id]
+		and both == [r5.id]
+		and kept == [r1.id, r2.id, r4.id, r5.id]
 }
 
 # R-CV8: the target of each host in the name of an asset.

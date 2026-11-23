@@ -26,7 +26,7 @@ ResolveLoad :: [].{
 			Err(Standalone) => files.first().map_ok(|f| Text.dir_of(f)) ?? ""
 		}
 		candidates = files.map(|f| Intent.paths({ member: f, root }))
-		toml_paths = candidates.join_map(|c| c).fold([], |found, path| if found.contains(path) found else found.append(path))
+		toml_paths = candidates.join_map(|c| c).fold([], |found, path| if (found.contains(path)) found else found.append(path))
 		config_path = Roots.item(request.roots, Config)
 		version_path = match request.project.roc_version {
 			Ok(path) => [path]
@@ -73,7 +73,7 @@ ResolveLoad :: [].{
 		var $intents = no_intents
 		for t in $tomls {
 			role = match request.project.workspace {
-				Ok(_) => if t.path == root_toml Root else Member
+				Ok(_) => if (t.path == root_toml) Root else Member
 				Err(Standalone) => Root
 			}
 			read = Intent.read({ path: t.path, text: t.text, role })?
@@ -192,7 +192,7 @@ empty_intent = |_| Intent.read({ path: "talon.toml", text: "", role: Root }).map
 # R-PD5: the members of a workspace, or the current file of a standalone project.
 member_files : Project -> Try(List(Str), Fail)
 member_files = |project| match project.workspace {
-	Ok(ws) => if ws.members.is_empty() Err(Fail.new(Usage, "the workspace at ${ws.root} has no member files")) else Ok(ws.members)
+	Ok(ws) => if (ws.members.is_empty()) Err(Fail.new(Usage, "the workspace at ${ws.root} has no member files")) else Ok(ws.members)
 	Err(Standalone) => match project.file {
 		Ok(file) => Ok([file])
 		Err(NoCurrent) => Err(Fail.new(Usage, "no project file found. Pass --file <path>."))

@@ -161,7 +161,7 @@ expect {
 	new = errs(pkg_new_err, copy_dir)
 	apps = errs(app_errors_err, project("app-errors"))
 	# The real output has 5 errors, and 2 of them have the same file, title and message (a value that is not used, in 2 lines of main.roc). By R-BL4 they are one error (question Q2).
-	distinct = apps.fold([], |kept, e| if kept.contains(e) kept else kept.append(e))
+	distinct = apps.fold([], |kept, e| if (kept.contains(e)) kept else kept.append(e))
 	redeclared = errs(dup_err, project("dup"))
 	first = apps.first() ?? { file: NoFile, title: "", message: "" }
 	other_message = { ..first, message: "another text" }

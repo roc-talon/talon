@@ -30,7 +30,7 @@ Ident := {
 	of_url : Str -> Try(Ident, [Foreign])
 	of_url = |url| match PackageUrl.parse(url) {
 		Err(_) => Err(Foreign)
-		Ok(parsed) => if !Ident.safe_part(parsed.hash()) Err(Foreign) else {
+		Ok(parsed) => if (!Ident.safe_part(parsed.hash())) Err(Foreign) else {
 			v = parsed.version()
 			version = "${v.major.to_str()}.${v.minor.to_str()}.${v.patch.to_str()}"
 			name = github_name(parsed.url_form())
@@ -56,7 +56,7 @@ Ident := {
 	## A text that is not `X.Y.Z` is `Err(BadVersion)`. A pre-release part is not tested (question Q10).
 	series_of : Str -> Try(Str, [BadVersion])
 	series_of = |version| match Semver.parse(version) {
-		Ok(v) => Ok(if v.major() >= 1 v.major().to_str() else "0.${v.minor().to_str()}")
+		Ok(v) => Ok(if (v.major() >= 1) v.major().to_str() else "0.${v.minor().to_str()}")
 		Err(_) => Err(BadVersion)
 	}
 }

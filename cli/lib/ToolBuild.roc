@@ -208,7 +208,7 @@ build_in! : Fx, Args, ToolBuild.Facts, { bundle : ToolBuild.Bundle, req : { id :
 build_in! = |fx, args, facts, run| {
 	id = run.req.id
 	if !args.quiet {
-		pf = if run.req.first run.bundle.pf else Err(None)
+		pf = if (run.req.first) run.bundle.pf else Err(None)
 		for line in ToolInstall.header_lines({ name: facts.name, version: run.bundle.version, id, pf, hash: ToolBuild.pf_hash(run.bundle) }) {
 			fx.err!("${line}\n")
 		}

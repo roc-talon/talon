@@ -193,7 +193,7 @@ Manage :: [].{
 			Ok(Value.String(old)) if old == facts.id => Ok({ previous: Ok(old), edit: Same })
 			Ok(Value.String(old)) => match Toml.replace(doc, ["default-roc"], Value.String(facts.id)) {
 				Ok(done) => Ok({ previous: Ok(old), edit: Set(done.to_str()) })
-				Err(NoEntry) => Err(cannot_write(facts.path))
+				Err(_) => Err(cannot_write(facts.path))
 			}
 			Ok(_) => Err(Fail.new(Input, "${facts.path}: default-roc is not a text"))
 			Err(NotFound) => match Toml.insert(doc, ["default-roc"], Value.String(facts.id)) {
@@ -221,7 +221,7 @@ Manage :: [].{
 		# Slice 243 (R-RR1, R-CH15, R-CH9, Design Q619 R1): a user-channel default moves only inside its channel, to the newest other build (`Channel.user_order`). With none, no default is set: never a nightly, never another channel. The switch does not matter (a user build counts as a nightly, so none is admitted when it is off, and the newest still takes it).
 		Ok(_) => {
 			same = |id| id != facts.removed and Channel.user_order(id, facts.removed, facts.times).is_ok()
-			newest_user = |best, id| if Channel.user_order(id, best, facts.times) == Ok(After) id else best
+			newest_user = |best, id| if (Channel.user_order(id, best, facts.times) == Ok(After)) id else best
 			match facts.installed.keep_if(same) {
 				[first, .. as rest] => Ok(rest.fold(first, newest_user))
 				[] => Err(None)
@@ -230,7 +230,7 @@ Manage :: [].{
 		Err(_) => {
 			other = |id| id != facts.removed and Pin.is_id(id)
 			admitted = |id| other(id) and (facts.nightly or Manage.kind_of(id) != Nightly)
-			newest = |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best
+			newest = |best, id| if (Pin.order({ a: id, b: best, times: facts.times }) == After) id else best
 			# R-RR1: no admitted compiler is left, so the newest of any kind takes the default (a note tells that the switch rejects it).
 			match facts.installed.keep_if(admitted) {
 				[first, .. as rest] => Ok(rest.fold(first, newest))
@@ -293,7 +293,7 @@ Manage :: [].{
 			Set => "${facts.id} is now the default compiler\n"
 			Same => "${facts.id} is already the default compiler\n"
 		}
-		if facts.installed ["installed ${facts.id}\n", now] else [now]
+		if (facts.installed) ["installed ${facts.id}\n", now] else [now]
 	}
 
 	## R-J3, R-J4, R-OUT4 (a proposal): the `data` of `roc default --json`, the keys in this order: `id`, `previous` (the old default as text, or `null`), `changed` (true when `default-roc` was written), `installed` (true when this run downloaded the compiler).
@@ -363,7 +363,7 @@ Manage :: [].{
 	update_move_to = |facts| match Channel.user_parts(facts.id) {
 		Ok(new) => match facts.default {
 			Ok(current) => match Channel.user_parts(current) {
-				Ok(old) => if old.name == new.name Move else Stay
+				Ok(old) => if (old.name == new.name) Move else Stay
 				Err(_) => Stay
 			}
 			Err(Unset) => Stay
@@ -477,7 +477,7 @@ short_repo : Str -> Str
 short_repo = |repo| {
 	prefix = "https://github.com/"
 	rest = repo.drop_prefix(prefix)
-	if repo.starts_with(prefix) and rest.split_on("/").len() == 2 and !rest.split_on("/").any(|part| part == "") rest else repo
+	if (repo.starts_with(prefix) and rest.split_on("/").len() == 2 and !rest.split_on("/").any(|part| part == "")) rest else repo
 }
 
 # The date of a time (`YYYY-MM-DD`), `-` for no time.
@@ -494,7 +494,7 @@ table = |rows, origins, users| {
 	source_of = |r| match users.find_first(|u| u.id == r.id) {
 		Ok(u) => {
 			text = u.source ?? "-"
-			Ok(if u.removed "${text} (channel removed)" else text)
+			Ok(if (u.removed) "${text} (channel removed)" else text)
 		}
 		Err(_) => match origin_for(origins, r.id) {
 			Ok(o) => Ok("${short_repo(o.repo)}@${o.ref}")
@@ -509,7 +509,7 @@ table = |rows, origins, users| {
 	head = { mark: "  ", id: "ID", kind: "KIND", installed: "INSTALLED", used: "LAST USE", source: "SOURCE" }
 	body = rows.map(
 		|r| {
-			mark: if r.is_default "* " else "  ",
+			mark: if (r.is_default) "* " else "  ",
 			id: r.id,
 			kind: kind_of_row(r),
 			installed: date_text(r.installed_at),
@@ -525,7 +525,7 @@ table = |rows, origins, users| {
 	used_w = all.fold(0, |size, c| wide(size, c.used))
 	pad = |text, size| "${text}${" ".repeat(size - text.count_utf8_bytes())}"
 	start = |c| "${c.mark}${pad(c.id, id_w)}  ${pad(c.kind, kind_w)}  ${pad(c.installed, installed_w)}  "
-	all.map(|c| if has_source "${start(c)}${pad(c.used, used_w)}  ${c.source}\n" else "${start(c)}${c.used}\n")
+	all.map(|c| if (has_source) "${start(c)}${pad(c.used, used_w)}  ${c.source}\n" else "${start(c)}${c.used}\n")
 }
 
 parse_toml : Str, Str -> Try(Toml, Fail)

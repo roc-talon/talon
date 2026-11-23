@@ -67,7 +67,7 @@ FakeFiles :: [].{
 		unreadable = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/treeinfo")).keep_if(|l| l.starts_with("denied ")).map(|l| l.drop_prefix("denied "))
 		var $results = []
 		for p in paths {
-			one = if unreadable.any(|suffix| p.ends_with(suffix)) Err(Denied) else tree_one!(p, overrides)
+			one = if (unreadable.any(|suffix| p.ends_with(suffix))) Err(Denied) else tree_one!(p, overrides)
 			$results = $results.append(one)
 		}
 		$results
@@ -129,7 +129,7 @@ FakeFiles :: [].{
 				Err(PathErr(AlreadyExists, _)) => Err(Exists)
 				Err(PathErr(NotFound, _)) => Err(NotFound)
 				Err(PathErr(PermissionDenied, _)) => Err(Denied)
-				Err(PathErr(Other(text), _)) => if text.contains("not empty") Err(Exists) else Err(Other(text))
+				Err(PathErr(Other(text), _)) => if (text.contains("not empty")) Err(Exists) else Err(Other(text))
 				Err(PathErr(other, _)) => Err(Other(Str.inspect(other)))
 			}
 		}
@@ -266,7 +266,7 @@ tree_one! = |path, overrides| match tree_files!(path, overrides) {
 		Ok(IsDir) => Ok({ newest: time_of!(path, overrides), size: 0 })
 		_ => Ok({ newest: 0, size: 0 })
 	}
-	Ok(files) => Ok({ newest: files.fold(0, |top, f| if f.time > top f.time else top), size: files.fold(0, |sum, f| sum + f.size) })
+	Ok(files) => Ok({ newest: files.fold(0, |top, f| if (f.time > top) f.time else top), size: files.fold(0, |sum, f| sum + f.size) })
 }
 
 ## The files below a path, with their time and size. A link and any other kind of entry gives no file.

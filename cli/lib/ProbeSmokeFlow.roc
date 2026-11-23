@@ -163,7 +163,7 @@ built! = |fx, args, plan| {
 # Step 8: one `db_write!` `Smoke` with the rows (no row: no call). A failed write is the warning or the stop of `Db.on_err` (R-CC8).
 save! : Fx, Roots, List(Db.SmokeRow) => Try({}, Fail)
 save! = |fx, roots, rows| {
-	if rows.is_empty() return Ok({})
+	if (rows.is_empty()) return Ok({})
 	open = { path: Roots.item(roots, CompatDb), busy_ms: Db.busy_ms, format: Db.format }
 	match fx.db_write!(open, Smoke(rows)) {
 		Ok(_) => Ok({})
@@ -181,7 +181,7 @@ save! = |fx, roots, rows| {
 finish! : Fx, Args, Done => I32
 finish! = |fx, args, done| {
 	answer = ProbeSmoke.text({ label: done.label, compiler: done.compiler, items: done.items })
-	if args.json fx.err!(answer) else fx.out!(answer)
+	if (args.json) fx.err!(answer) else fx.out!(answer)
 	doc = ProbeSmoke.data(done.items)
 	no_fact = done.items.any(
 		|item| match item.result {

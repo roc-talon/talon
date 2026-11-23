@@ -123,7 +123,7 @@ FullName :: [].{
 			Ok(Exact(_)) | Ok(Range(_)) => Bool.True
 			_ => Bool.False
 		}
-		pool = if live.is_empty() and !named kept else live
+		pool = if (live.is_empty() and !named) kept else live
 		newest = pool.fold(
 			Err(NoMatch),
 			|best, r| match best {

@@ -16,7 +16,7 @@ AuditReport :: [].{
 		ReleaseMissing => "release-missing"
 		Prerelease => "prerelease"
 		Moved => "moved"
-		Other(text) => text
+		Other(other) => other
 	}
 
 	## The column "Fails" of R-AU2. An unknown value fails (Q-244-3).
@@ -44,12 +44,12 @@ AuditReport :: [].{
 			}
 			Via([]) => {
 				base = "update the package that needs it (tln why ${f.entry.why}), or use [overrides]"
-				if ask "${base}; ask the author to release a new version" else base
+				if (ask) "${base}; ask the author to release a new version" else base
 			}
 			Via(aliases) => {
 				updates = Str.join_with(aliases.map(|a| "tln update ${a}"), " or ")
 				base = "${updates} (tln why ${f.entry.why}), or use [overrides]"
-				if ask "${base}; ask the author to release a new version" else base
+				if (ask) "${base}; ask the author to release a new version" else base
 			}
 			Tool(key) => "tln update --tool ${key}"
 		}
@@ -73,7 +73,7 @@ AuditReport :: [].{
 		unused_lines = report.unused.map(|item| "unused ignore: ${item}")
 		count = "${plural(failing.len(), "finding")}, ${plural(warnings.len(), "warning")}, ${ignored.len().to_str()} ignored."
 		items = open.keep_if(|f| AuditReport.fails(f.reason) or f.successor != Err(None)).keep_if(|f| AuditReport.fix(f) != "").map(|f| "${f.entry.edge}: ${AuditReport.fix(f)}.")
-		fix_lines = if items.is_empty() [] else ["fix: ${Str.join_with(items, " ")}"]
+		fix_lines = if (items.is_empty()) [] else ["fix: ${Str.join_with(items, " ")}"]
 		why_not = match report.index {
 			Registry => "the registry has no release of it"
 			Direct => "no index without a registry"
@@ -82,7 +82,7 @@ AuditReport :: [].{
 		gone_lines = report.gone.map(|g| "note: not checked: the deps of ${g.name} ${g.version}: its archive is gone")
 		# R-AU4, Design Q629: only `direct` has the note. A registry has the yank data.
 		note = match report.index {
-			Direct => if report.no_yank_data ["note: no yank and advisory data without a registry"] else []
+			Direct => if (report.no_yank_data) ["note: no yank and advisory data without a registry"] else []
 			Registry => []
 		}
 		lines = head.concat(rows).concat(warn_lines).concat(ignored_lines).concat(unused_lines).concat([count]).concat(fix_lines).concat(not_checked).concat(gone_lines).concat(note)
@@ -92,7 +92,7 @@ AuditReport :: [].{
 	## R-OUT4: the `data` of `--json`, and the `details` of exit 21 (R-AU5). `notes` are objects with a `kind`.
 	data : AuditTypes.Report -> JsonDoc
 	data = |report| {
-		yank_note = if report.no_yank_data and report.index == Direct [JsonDoc.Obj([("kind", Text("no-yank-data"))])] else []
+		yank_note = if (report.no_yank_data and report.index == Direct) [JsonDoc.Obj([("kind", Text("no-yank-data"))])] else []
 		unused = report.unused.map(|item| JsonDoc.Obj([("kind", Text("unused-ignore")), ("item", Text(item))]))
 		not_indexed = report.unindexed.map(|u| JsonDoc.Obj([("kind", Text("not-indexed")), ("name", Text(u.name)), ("version", Text(u.version)), ("hash", Text(u.hash))]))
 		deps_gone = report.gone.map(|g| JsonDoc.Obj([("kind", Text("deps-not-checked")), ("name", Text(g.name)), ("version", Text(g.version)), ("hash", Text(g.hash))]))
@@ -119,13 +119,13 @@ AuditReport :: [].{
 		e = f.entry
 		head = match place_of(e) {
 			Header(alias) => alias
-			Via(aliases) => if aliases.is_empty() e.edge else "${e.edge} via ${Str.join_with(aliases, ", ")}"
+			Via(aliases) => if (aliases.is_empty()) e.edge else "${e.edge} via ${Str.join_with(aliases, ", ")}"
 			Tool(key) => key
 		}
 		fixed = AuditReport.fix(f)
 		match (f.reason, place_of(e), f.successor) {
 			(Moved, Header(alias), Ok(to)) => "${alias}: moved to ${to}. Run: tln update ${alias}"
-			_ => "${head}: ${e.name} ${e.version} ${state_text(f)}.${if fixed == "" "" else " Fix: ${fixed}."}"
+			_ => "${head}: ${e.name} ${e.version} ${state_text(f)}.${if (fixed == "") "" else " Fix: ${fixed}."}"
 		}
 	}
 
@@ -211,7 +211,7 @@ words = |reason| match reason {
 }
 
 plural : U64, Str -> Str
-plural = |n, word| if n == 1 "1 ${word}" else "${n.to_str()} ${word}s"
+plural = |n, word| if (n == 1) "1 ${word}" else "${n.to_str()} ${word}s"
 
 item_of : AuditTypes.Finding -> Str
 item_of = |f| "${f.entry.name}@${f.entry.version}:${AuditReport.reason_text(f.reason)}"
@@ -276,7 +276,7 @@ finding_doc = |f| {
 		Ok(ms) => JsonDoc.Text(Clock.format_utc(ms // 1000))
 		Err(None) => JsonDoc.Null
 	}
-	yank = if f.reason == Yanked JsonDoc.Obj([("reason", text_or_null(f.yank_reason))]) else JsonDoc.Null
+	yank = if (f.reason == Yanked) JsonDoc.Obj([("reason", text_or_null(f.yank_reason))]) else JsonDoc.Null
 	JsonDoc.Obj([
 		("name", Text(e.name)),
 		("group", Text(e.group)),
@@ -293,7 +293,7 @@ finding_doc = |f| {
 		("yank", yank),
 		("new_hash", text_or_null(f.new_hash)),
 		("successor", text_or_null(f.successor)),
-		("fix", if AuditReport.fix(f) == "" JsonDoc.Null else JsonDoc.Text(AuditReport.fix(f))),
+		("fix", if (AuditReport.fix(f) == "") JsonDoc.Null else JsonDoc.Text(AuditReport.fix(f))),
 	])
 }
 
@@ -321,7 +321,7 @@ sentence = |fix| if fix.starts_with("tln ") {
 	"Run ${fix}"
 } else {
 	match fix.to_utf8() {
-		[first, .. as rest] => Str.from_utf8_lossy([if first >= 'a' and first <= 'z' first - 32 else first].concat(rest))
+		[first, .. as rest] => Str.from_utf8_lossy([if (first >= 'a' and first <= 'z') first - 32 else first].concat(rest))
 		[] => fix
 	}
 }

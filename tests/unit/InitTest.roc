@@ -108,13 +108,13 @@ expect {
 		(InitText.default_platform, "roc-lang/basic-cli"),
 		(hello, "app [main!] {\n\tpf: platform \"${url}\",\n}\n\nimport pf.Stdout\n\nmain! = |_args| {\n\tStdout.line!(\"Hello, World!\")?\n\tOk({})\n}\n"),
 		(InitText.package_file, "package [] {\n}\n"),
-		(if hello.contains("roc:") or InitText.package_file.contains("roc:") "a roc entry" else "no roc entry", "no roc entry"),
-		(if ci.contains("curl -fsSL https://github.com/roc-talon/talon/releases/download/v1.2.3/install.sh | sh -s -- --yes --version 1.2.3\n") "install line" else "no install line", "install line"),
-		(if ci.contains("runs-on: ubuntu-latest\n") "ubuntu-latest" else "other runner", "ubuntu-latest"),
-		(if ci.contains("TALON_AUTO_INSTALL: \"yes\"") "auto install" else "no auto install", "auto install"),
-		(if ci.contains("run: tln install --frozen\n") and ci.contains("run: roc check\n") and ci.contains("run: roc test\n") "steps" else "missing step", "steps"),
-		(if ci.contains("0.0.0") "the version is fixed" else "the version is a parameter", "the version is a parameter"),
-		(if ci.contains("tln audit") "audit" else "no audit", "no audit"),
+		(if (hello.contains("roc:") or InitText.package_file.contains("roc:")) "a roc entry" else "no roc entry", "no roc entry"),
+		(if (ci.contains("curl -fsSL https://github.com/roc-talon/talon/releases/download/v1.2.3/install.sh | sh -s -- --yes --version 1.2.3\n")) "install line" else "no install line", "install line"),
+		(if (ci.contains("runs-on: ubuntu-latest\n")) "ubuntu-latest" else "other runner", "ubuntu-latest"),
+		(if (ci.contains("TALON_AUTO_INSTALL: \"yes\"")) "auto install" else "no auto install", "auto install"),
+		(if (ci.contains("run: tln install --frozen\n") and ci.contains("run: roc check\n") and ci.contains("run: roc test\n")) "steps" else "missing step", "steps"),
+		(if (ci.contains("0.0.0")) "the version is fixed" else "the version is a parameter", "the version is a parameter"),
+		(if (ci.contains("tln audit")) "audit" else "no audit", "no audit"),
 	]
 	bad = checks.keep_if(|(got, want)| got != want)
 	dbg bad

@@ -30,7 +30,7 @@ Common :: [].{
 	failed! : Fx, Args, Fail => I32
 	failed! = |fx, args, fail| {
 		shown = Out.fail({ command: args.typed, json: args.json, fail })
-		if !shown.stdout.is_empty() fx.out!(shown.stdout)
+		if (!shown.stdout.is_empty()) fx.out!(shown.stdout)
 		fx.err!(shown.stderr)
 		Exit.choose({ failures: [fail], child: Err(NoChild) })
 	}

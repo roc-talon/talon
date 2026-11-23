@@ -107,7 +107,7 @@ flow! = |fx, args, plan| {
 			OnPath => OnPath
 			Present => Present
 			NoShell(shell) => NoShell({ line: shell.line })
-			Pending(pending) => if answers.modify Added({ target: pending.target }) else Declined({ target: pending.target, line: pending.line })
+			Pending(pending) => if (answers.modify) Added({ target: pending.target }) else Declined({ target: pending.target, line: pending.line })
 		},
 		completion: match completion {
 			Pending(pending) => Written(pending.path)
@@ -163,14 +163,14 @@ latest_default! = |fx, args, facts, config| match RocInstall.latest!(fx, { env: 
 record_bin! : Fx, Facts, List((Str, [HardLink, Copy])) => Try({}, Fail)
 record_bin! = |fx, facts, forms| {
 	made = facts.rows.keep_if(|row| forms.any(|(name, _)| name == row.entry.entry)).map(|row| { entry: row.entry.entry, sha256: row.source_sha })
-	if made.is_empty() return Ok({})
+	if (made.is_empty()) return Ok({})
 	path = Roots.item(facts.roots, ToolsJson)
 	fx.locked!(
 		path,
 		|| {
 			text = SetupIo.read_text!(fx, path)?
 			after = BinRecord.record_all({ path, text, made })?
-			if text == Ok(after) or text == Err(NotFound) Ok({}) else SetupIo.write_file!(fx, path, after)
+			if (text == Ok(after) or text == Err(NotFound)) Ok({}) else SetupIo.write_file!(fx, path, after)
 		},
 	)
 }
@@ -220,13 +220,13 @@ old_path : Facts -> Str
 old_path = |facts| Text.join(facts.bin, Setup.old_roc(facts.os))
 
 exe_name : Setup.Os, Str -> Str
-exe_name = |os, name| if os == Windows "${name}.exe" else name
+exe_name = |os, name| if (os == Windows) "${name}.exe" else name
 
 # What happened to the entry of `row`: made (it is in `forms`), kept, or skipped.
 act_of : Row, List((Str, [HardLink, Copy])) -> SetupText.Act
 act_of = |row, forms| match forms.find_first(|(name, _)| name == row.entry.entry) {
 	Ok((_, form)) => Made(form)
-	Err(_) => if row.verdict == Keep Kept else Skipped
+	Err(_) => if (row.verdict == Keep) Kept else Skipped
 }
 
 # Steps 2 to 5: the facts of the run. A missing `tln` file is a failure (question Q2).
@@ -319,8 +319,8 @@ warn! = |fx, facts| {
 # Step 7: the `PATH` step (R-ST4). Windows has no file to read: the user `Path` is changed by a child.
 path_step! : Fx, Facts => Try(PathPlan, Fail)
 path_step! = |fx, facts| {
-	if facts.os == Windows return Ok(Pending({ target: "the user Path", content: "", line: "" }))
-	if Setup.on_path({ path: SetupText.var_of(facts.env, "PATH"), dir: facts.bin }) return Ok(OnPath)
+	if (facts.os == Windows) return Ok(Pending({ target: "the user Path", content: "", line: "" }))
+	if (Setup.on_path({ path: SetupText.var_of(facts.env, "PATH"), dir: facts.bin })) return Ok(OnPath)
 	github = SetupText.var_of(facts.env, "GITHUB_PATH")
 	if !github.is_empty() {
 		existing = SetupIo.read_text!(fx, github)?
@@ -345,7 +345,7 @@ path_step! = |fx, facts| {
 # Step 8: the completion file of the shell (R-ST5).
 completion_step! : Fx, Facts => Try(CompletionPlan, Fail)
 completion_step! = |fx, facts| {
-	if facts.os == Windows return Ok(None)
+	if (facts.os == Windows) return Ok(None)
 	match Setup.shell_of(SetupText.var_of(facts.env, "SHELL")) {
 		Err(Unknown) => Ok(None)
 		Ok(shell) => {
@@ -367,7 +367,7 @@ ask! = |fx, args, plan, run| {
 	roc_foreign = facts.rows.any(|row| row.entry.entry == exe_name(facts.os, "roc") and row.verdict == Foreign)
 	roc_answer = if roc_foreign {
 		prompt = Consent.setup_replace_roc({ path: roc_path(facts), old: old_path(facts) })
-		flag = if plan.replace_roc Ok(Yes) else Err(NoFlag)
+		flag = if (plan.replace_roc) Ok(Yes) else Err(NoFlag)
 		Prompt.ask!(fx, prompt, { mode, yes: args.yes, quiet: args.quiet, flag })?
 	} else {
 		{ answer: No, mode }
@@ -382,7 +382,7 @@ ask! = |fx, args, plan, run| {
 	modify = match run.path {
 		Pending(pending) => {
 			prompt = Consent.setup_modify_path({ dir: facts.bin, target: pending.target })
-			flag = if plan.no_modify_path Ok(No) else Err(NoFlag)
+			flag = if (plan.no_modify_path) Ok(No) else Err(NoFlag)
 			Prompt.ask!(fx, prompt, { mode: roc_answer.mode, yes: args.yes, quiet: args.quiet, flag })?.answer == Yes
 		}
 		_ => Bool.False
@@ -468,7 +468,7 @@ write_path! = |fx, facts, pending| if facts.os == Windows {
 	match fx.exec!({ argv: command.argv, env: command.env }) {
 		Ok(ended) => {
 			code = Exit.of_child(ended)
-			if code == 0 Ok({}) else Err(Fail.new(Environment, "the change of the user Path failed (exit code ${code.to_str()})"))
+			if (code == 0) Ok({}) else Err(Fail.new(Environment, "the change of the user Path failed (exit code ${code.to_str()})"))
 		}
 		Err(NotStarted(text)) => Err(Fail.new(Environment, "cannot start powershell: ${text}"))
 	}

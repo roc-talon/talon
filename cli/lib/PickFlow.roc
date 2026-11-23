@@ -78,8 +78,8 @@ PickFlow :: [].{
 		request = ResolveBase.routed(asked_request, asked.fell)
 		# A named header entry is moved as `update X@sel` does it (R-AD22).
 		command = match request.command {
-			Upgrade => if NightlyPlan.scope(request.names).who == None NightlyOnly else Upgrade
-			Install => if asked.names.is_empty() Install else Update
+			Upgrade => if (NightlyPlan.scope(request.names).who == None) NightlyOnly else Upgrade
+			Install => if (asked.names.is_empty()) Install else Update
 			Update => Update
 		}
 		everyone = Vars.scope_with({
@@ -96,7 +96,7 @@ PickFlow :: [].{
 			),
 		})?
 		# `--platform` replaces the platform entry, so the old platform is no variable of the pick (R-AD31).
-		scoped = if request.add.as_platform and !asked.fresh.is_empty() everyone.keep_if(|s| !s.variable.is_platform) else everyone
+		scoped = if (request.add.as_platform and !asked.fresh.is_empty()) everyone.keep_if(|s| !s.variable.is_platform) else everyone
 		# Slice 206d (reading 6, Design Q462): with a registry the `direct` text of a `Fixed` host (R-DI11) is not printed. With the `Offline` index it prints `<alias>: fixed: not in the registry index` (Design Q465).
 		registry = match (request.registry, request.index) {
 			(Read(_), _) | (_, Offline(_)) => Bool.True
@@ -126,7 +126,7 @@ PickFlow :: [].{
 		held_anchors = IndexQuery.held_anchors({ scoped, anchors: queried.anchors })
 		free_names = scoped.keep_if(|s| s.free).keep_oks(|s| s.variable.name.map_err(|_| None))
 		want_names = stale.live.keep_oks(|w| w.name.map_err(|_| None))
-		repos = free_names.concat(want_names).concat(asked.fresh.map(|f| f.name)).fold(ResolveBase.no_names, |found, name| if found.contains(name) found else found.append(name))
+		repos = free_names.concat(want_names).concat(asked.fresh.map(|f| f.name)).fold(ResolveBase.no_names, |found, name| if (found.contains(name)) found else found.append(name))
 		counted = PickIndex.counted!(fx, queried.request, repos, known)?
 		# Slice 252 (R-PU28, Design Q632): a named entry whose repository has a successor follows it (`SuccessorFlow.follow!`): the variable gets the name and the URL form of the successor, and the index of the run gets its releases.
 		(keep, user) = match queried.second {
@@ -142,7 +142,7 @@ PickFlow :: [].{
 		offline_notes!(fx, indexed, held_scope, found)
 		prepared = PickIndex.prepare!(fx, indexed, loaded, asked.fresh, found)?
 		input = PickIndex.slots_of(held_scope, stale.live, found, asked, prepared.rows, settings, snapshot, PickAsk.unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? "")
-		setup = { held, free, newest, movable: Err(None), optional, probes: if request.probe.no_probe Off else Allowed, settings: ResolveBase.probe_settings(request, loaded), members: loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), target: ResolveBase.member_target(m) }) }
+		setup = { held, free, newest, movable: Err(None), optional, probes: if (request.probe.no_probe) Off else Allowed, settings: ResolveBase.probe_settings(request, loaded), members: loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), target: ResolveBase.member_target(m) }) }
 		Ok({ request: indexed, loaded, settings, snapshot, scoped: held_scope, asked, stale, found, known, prepared, input, setup, second: queried.second, yanked: counted.yanked, follows: followed.follows })
 	}
 
@@ -158,7 +158,7 @@ PickFlow :: [].{
 		searched = match PickLoop.run!(fx, request, ready.input, ready.setup, state) {
 			Ok(c) => { looped: c, moves: [], found: ready.found }
 			Err(stuck) => {
-				if !PickMoves.second_wanted(stuck.fail, ready.scoped) return Err(failed(stuck.fail))
+				if (!PickMoves.second_wanted(stuck.fail, ready.scoped)) return Err(failed(stuck.fail))
 				# R-SP16, R-DI1: the second search of a held move. The index of the movable groups is read once, in the order of the slots. The facts of the first search stay (R-AL8).
 				moved = second_index!(fx, request, ready, stuck.probed.second)?
 				again = {
@@ -168,7 +168,7 @@ PickFlow :: [].{
 				held = held_nightly!(fx, request, ready, stuck)
 				match PickLoop.run!(fx, moved.request, again, held.setup, { facts: stuck.facts, paths: stuck.paths, probed: { ..held.probed, second: moved.second, domain: wider(moved.request.index, held.probed.domain) } }) {
 					Ok(c) => { looped: c, found: moved.found, moves: PickMoves.moves_of({ scoped: ready.scoped, slots: again.slots, chosen: c.chosen, facts: c.facts }).concat(roc_moves(ready, { slots: again.slots, setup: held.setup }, c)) }
-					Err(second) => if second.fail.kind == NoTuple return Err(failed(stuck.fail)) else return Err(second.fail)
+					Err(second) => if (second.fail.kind == NoTuple) return Err(failed(stuck.fail)) else return Err(second.fail)
 				}
 			}
 		}
@@ -233,7 +233,7 @@ fresh_items! = |fx, request, fresh, known, first| {
 					# R-RG9 (Design Q601): the full-name read is the first registry request of the run: no answer from the built-in default, the run goes on in `direct`.
 					Err(fail) => {
 						# R-RG9 row 2: only the first registry request of the run falls back. A later one (`$items` has an answer, or the short names had one) is exit 15.
-						if !first or !$items.is_empty() return Err(fail)
+						if (!first or !$items.is_empty()) return Err(fail)
 						return Ok({ items: [], fell: Ok(Fallback.decide!(fx, fail, registry.origin)?), answered: Bool.False })
 					}
 				}
@@ -268,7 +268,7 @@ each_yanked_check = |f, found| {
 		Err(None) | Ok(Latest) => Bool.True
 		_ => Bool.False
 	}
-	if no_selector and !rows.is_empty() and rows.all(|r| r.yanked or r.withdrawn != Err(None)) Err(each_yanked_fail(f, found)) else Ok({})
+	if (no_selector and !rows.is_empty() and rows.all(|r| r.yanked or r.withdrawn != Err(None))) Err(each_yanked_fail(f, found)) else Ok({})
 }
 
 # Design Q430: the text of `add`. A name with no selector and no release at all is the text of R-AD35 step 2.
@@ -302,7 +302,7 @@ wider = |index, domain| match (index, domain) {
 held_nightly! : Fx, ResolveBase.Request, PickFlow.Ready, PickLoop.Stuck => { setup : PickLoop.Setup, probed : ResolveBase.Probed }
 held_nightly! = |fx, request, ready, stuck| {
 	moves = request.command == Upgrade and NightlyPlan.scope(request.names).nightly == Held and ready.setup.held.is_ok()
-	if !moves return { setup: ready.setup, probed: stuck.probed }
+	if (!moves) return { setup: ready.setup, probed: stuck.probed }
 	releases = match stuck.probed.listed {
 		Ok(list) => list
 		Err(NotRead) => PickLoop.releases!(fx, request)
@@ -341,7 +341,7 @@ movable_names : List(Vars.Scoped), List(Candidates) -> List(Str)
 movable_names = |scoped, found| scoped
 	.keep_if(|s| s.movable)
 	.keep_oks(|s| s.variable.name.map_err(|_| None))
-	.fold(ResolveBase.no_names, |names, name| if names.contains(name) or found.any(|c| c.name == name) names else names.append(name))
+	.fold(ResolveBase.no_names, |names, name| if (names.contains(name) or found.any(|c| c.name == name)) names else names.append(name))
 
 PickInput : PickLoop.Input
 
@@ -434,7 +434,7 @@ live_wants! = |fx, request, wants| {
 
 ask_rename! : Fx, ResolveBase.Request, List(Vars.Want) => Try(List(Rename), Fail)
 ask_rename! = |fx, request, stale| {
-	if stale.is_empty() return Ok([])
+	if (stale.is_empty()) return Ok([])
 	consent = Consent.rename_keys(stale.map(|w| { key: w.key, name: w.name ?? w.key, alias: w.stale ?? "" }))
 	fx.err!(consent.report)
 	done = Prompt.ask!(fx, consent.prompt, { mode: request.prompt.mode, yes: request.prompt.yes, quiet: request.prompt.quiet, flag: request.prompt.rename_keys })?
@@ -493,7 +493,7 @@ query! = |fx, request, loaded, groups, is_first| match request.registry {
 		first = match ClosureIndex.query!(fx, { origin: query.origin, version: Help.version, facts, source: query.source }) {
 			Ok(answer) => answer
 			Err(fail) => {
-				if !is_first return Err(fail)
+				if (!is_first) return Err(fail)
 				return Ok({ request: { ..request, registry: Fell(Fallback.decide!(fx, fail, query.origin)?) }, anchors: [], second: Err(None) })
 			}
 		}
@@ -534,7 +534,7 @@ anchored = |found, anchors| {
 			forms = idents
 				.keep_if(|ident| (ident.name.map_ok(|n| n.with_ascii_lowercased() == lower) ?? Bool.False))
 				.map(|ident| ident.group.form)
-				.fold(c.missing_forms, |list, form| if list.contains(form) list else list.append(form))
+				.fold(c.missing_forms, |list, form| if (list.contains(form)) list else list.append(form))
 			{ ..c, missing_forms: forms }
 		},
 	)
@@ -573,7 +573,7 @@ second_index! = |fx, request, ready, kept| match (ready.second, request.index) {
 		names = ready.scoped
 			.keep_if(|s| s.movable)
 			.keep_oks(|s| s.variable.name.map_err(|_| None))
-			.fold(ResolveBase.no_names, |list, name| if list.contains(name) list else list.append(name))
+			.fold(ResolveBase.no_names, |list, name| if (list.contains(name)) list else list.append(name))
 		more = anchored(PickIndex.index!(fx, { ..request, index: Answer({ origin: q.origin, answer }) }, names, ready.known)?, q.anchors)
 		both = LogSnapshot.merged({ first: a.answer, second: answer })
 		Ok({ request: { ..request, index: Answer({ origin: a.origin, answer: both }) }, found: joined(ready.found, more), second: Ok(answer) })

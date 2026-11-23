@@ -361,8 +361,8 @@ expect {
 	upper = AuditCheck.state_of({ answer: { ..answer, repos: [{ ..active("Acme/JSON"), state: Moved, successor: Ok("acme/roc-json") }] }, entry: entry_of(h_json) })
 	json == Ok({ row: r_json, repo: Ok(active("acme/json")) })
 		and xml == Ok({ row: r_xml, repo: Ok(moved("someone/roc-xml", "acme/roc-xml")) })
-			and fmt == Err(NotIndexed)
-				and upper == Ok({ row: r_json, repo: Ok({ ..active("Acme/JSON"), state: Moved, successor: Ok("acme/roc-json") }) })
+		and fmt == Err(NotIndexed)
+		and upper == Ok({ row: r_json, repo: Ok({ ..active("Acme/JSON"), state: Moved, successor: Ok("acme/roc-json") }) })
 }
 
 # R-AU2 R-AU13 R-OUT2: the fields of a finding. `since` is the `state_at` of the `repos` item for `repo-missing` and `moved` (the time of that state), else Err(None) (the closure answer has no time of a yank or a withdraw).
@@ -377,9 +377,9 @@ expect {
 	base = |hash, reason| { entry: entry_of(hash), reason, ignored: Err(None), since: Err(None), yank_reason: Err(None), new_hash: Err(None), successor: Err(None) }
 	json == Ok({ ..base(h_json, Yanked), yank_reason: Ok("parse bug, use 2.1.1") })
 		and csv == Ok({ ..base(h_csv, RepoMissing), since: Ok(1700000000000) })
-			and xml == Ok({ ..base(h_xml, Moved), since: Ok(1700000000000), successor: Ok("acme/roc-xml") })
-				and yanked_moved == Ok({ ..base(h_json, Yanked), yank_reason: Ok("parse bug, use 2.1.1"), successor: Ok("acme/roc-json") })
-					and none == Err(None)
+		and xml == Ok({ ..base(h_xml, Moved), since: Ok(1700000000000), successor: Ok("acme/roc-xml") })
+		and yanked_moved == Ok({ ..base(h_json, Yanked), yank_reason: Ok("parse bug, use 2.1.1"), successor: Ok("acme/roc-json") })
+		and none == Err(None)
 }
 
 # R-AU1 R-AU2 (Q-244-4): the findings of a closure answer, in the order of the entries. `checked` counts the entries that have a release in the answer. An entry with no release (`unknown`, another host) is in `unindexed`, is not counted, and gives no finding.
@@ -388,7 +388,7 @@ expect {
 	got = AuditCheck.of_answer({ answer, entries })
 	got.checked == 8
 		and got.findings.map(|x| (x.entry.hash, x.reason)) == [(h_json, Yanked), (h_csv, RepoMissing), (h_xml, Moved), (h_old, Yanked), (h_parser, AssetReplaced), (h_util, ReleaseMissing)]
-			and got.unindexed.map(|e| e.hash) == [h_fmt]
+		and got.unindexed.map(|e| e.hash) == [h_fmt]
 }
 
 # R-AU9 R-AU12 R-SC7 (Q-244-3 for the reason form): an ignore item is `<full name>@<version>:<reason>`. The full name has a `/` (`owner/repo`, or `host/path`), the version is `X.Y.Z`, the reason is not empty and is a-z, 0-9 and `-`, starting with a letter.
@@ -625,7 +625,7 @@ expect {
 	none = AuditCheck.text({ ..empty, index: Registry, no_yank_data: Bool.False })
 	d == "audit: 3 packages checked (direct)\n0 findings, 0 warnings, 0 ignored.\nnote: no yank and advisory data without a registry\n"
 		and g == "audit: 3 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\n"
-			and none == "audit: 3 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\n"
+		and none == "audit: 3 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\n"
 }
 
 # R-OUT2 R-OUT4 R-AU10 R-AU11 R-AU13 (TW24: the catalog row `audit`, with `tool` and `members` added, and `yank` without `by`): the `data` of `--json`. Keys in this order. `notes` are objects with `kind`
@@ -684,7 +684,7 @@ expect {
 # A release object of a GitHub release list page (R-DI3, R-DI4: `tag_name`, `draft`, `prerelease`, `published_at`, `assets`; `html_url` names the repository that answered, Q-244b-1).
 gh_release = |name, tag, draft, prerelease, assets| {
 	asset_text = Str.join_with(assets.map(|a| "{\"name\":\"${a}\",\"size\":1000,\"browser_download_url\":\"https://github.com/${name}/releases/download/${tag}/${a}\"}"), ",")
-	"{\"tag_name\":\"${tag}\",\"draft\":${if draft "true" else "false"},\"prerelease\":${if prerelease "true" else "false"},\"published_at\":\"2026-07-01T12:00:00Z\",\"html_url\":\"https://github.com/${name}/releases/tag/${tag}\",\"assets\":[${asset_text}]}"
+	"{\"tag_name\":\"${tag}\",\"draft\":${if (draft) "true" else "false"},\"prerelease\":${if (prerelease) "true" else "false"},\"published_at\":\"2026-07-01T12:00:00Z\",\"html_url\":\"https://github.com/${name}/releases/tag/${tag}\",\"assets\":[${asset_text}]}"
 }
 
 gh_page = |releases| "[${Str.join_with(releases, ",")}]"
@@ -777,8 +777,8 @@ expect {
 		Ok(r) =>
 			r.checked == 3
 				and r.findings.map(|x| (x.entry.hash, x.reason)) == [(h_json, Prerelease), (h_csv, RepoMissing)]
-					and r.unindexed.map(|e| e.hash) == [h_old, h_xml]
-						and bad_page == Err(Fail.new(Network, "the release list of acme/json (page 1) is not a list of releases"))
+				and r.unindexed.map(|e| e.hash) == [h_old, h_xml]
+				and bad_page == Err(Fail.new(Network, "the release list of acme/json (page 1) is not a list of releases"))
 		Err(_) => Bool.False
 	}
 }
@@ -792,8 +792,8 @@ expect {
 	plain = AuditCheck.of_answer({ answer: no_csv, entries })
 	got.checked == 8
 		and got.findings.map(|x| (x.entry.hash, x.reason, x.since)) == [(h_json, Yanked, Err(None)), (h_csv, RepoMissing, Err(None)), (h_xml, Moved, Ok(1700000000000)), (h_old, Yanked, Err(None)), (h_parser, AssetReplaced, Err(None)), (h_util, ReleaseMissing, Err(None))]
-			and got.unindexed == []
-				and plain.unindexed.map(|e| e.hash) == [h_csv]
+		and got.unindexed == []
+		and plain.unindexed.map(|e| e.hash) == [h_csv]
 }
 
 # R-AU4 R-DI11 R-OUT2 (TW24 proposal): with `direct` the note of an entry with no index has its own text: `note: not checked: <name> <version>: no index without a registry`. The note of no yank data is the text of R-C6.
@@ -950,7 +950,7 @@ expect {
 # Slice 244d (verify/au7-direct bug): the `edge` of a transitive entry is the alias of the first link that names it (AuditTypes.Entry), also when the walk row has no alias (`alias: ""`).
 # The R-AU7 line of a resolve shows it as the head `<edge> via <aliases>` (Q622).
 expect {
-	no_alias = p1_rows.map(|r| if r.id == u_util { ..r, alias: "" } else r)
+	no_alias = p1_rows.map(|r| if (r.id == u_util) { ..r, alias: "" } else r)
 	got = AuditCheck.entries({ members: [{ file: "/p/main.roc", walked: { rows: no_alias, links: p1_links } }], tools: [] }).keep_if(|e| e.hash == h_util).map(|e| (e.edge, e.via))
 	dbg got
 	got == [("util", ["json"])]

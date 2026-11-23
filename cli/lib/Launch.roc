@@ -93,7 +93,7 @@ Launch :: [].{
 	xdg_dir = |x| {
 		slash = Text.dir_of(x.cache)
 		back = Str.join_with(x.cache.split_on("\\").drop_last(1), "\\")
-		if x.windows and back.count_utf8_bytes() > slash.count_utf8_bytes() back else slash
+		if (x.windows and back.count_utf8_bytes() > slash.count_utf8_bytes()) back else slash
 	}
 
 	## Slice 088d and 088e, R-PX6, Design Q212 and Q214: the text-only cleanup of a path that does not exist (no file system call, no symlink resolved). `windows` gives the separator: on Windows each `/` becomes `\`, and the parts are split at `\`; on another system only `/` separates (a `\` is a letter of a name).
@@ -101,8 +101,8 @@ Launch :: [].{
 	## Rows: `("/h/./a/../b", Linux)` gives `/h/b`. `("C:/a/../b", Windows)` gives `C:\b`. `("\\srv\sh\..\x", Windows)` gives `\\srv\sh\x`. `("x/./y", Windows)` gives `x\y`. Slice 088f, Q216: a UNC root has a `\\` at the end (`\\srv\sh` gives `\\srv\sh\`), `//srv/sh` is UNC on Windows, and a `..` that starts a relative path stays (`..\a` on Windows, `../a` on other systems). A `..` after a root removes nothing.
 	clean_text : { windows : Bool, path : Str } -> Str
 	clean_text = |x| {
-		sep = if x.windows "\\" else "/"
-		text = if x.windows x.path.replace_each("/", "\\") else x.path
+		sep = if (x.windows) "\\" else "/"
+		text = if (x.windows) x.path.replace_each("/", "\\") else x.path
 		all = text.split_on(sep)
 		head = all.first() ?? ""
 		server = all.get(2) ?? ""
@@ -110,14 +110,14 @@ Launch :: [].{
 		unc = x.windows and head == "" and all.get(1) == Ok("") and server != "" and share != ""
 		drive = x.windows and head.count_utf8_bytes() == 2 and head.ends_with(":")
 		rooted = head == "" and all.len() > 1
-		skip = if unc 4 else if drive 1 else if rooted 1 else 0
-		root = if unc "${sep}${sep}${server}${sep}${share}${sep}" else if drive "${head}${sep}" else if rooted sep else ""
+		skip = if (unc) 4 else if (drive) 1 else if (rooted) 1 else 0
+		root = if (unc) "${sep}${sep}${server}${sep}${share}${sep}" else if (drive) "${head}${sep}" else if (rooted) sep else ""
 		var $kept = []
 		for part in all.drop_first(skip) {
 			if part == "" or part == "." {
 				{}
 			} else if part == ".." {
-				$kept = if ($kept == [] and root == "") or $kept.last() == Ok("..") $kept.append("..") else $kept.drop_last(1)
+				$kept = if (($kept == [] and root == "") or $kept.last() == Ok("..")) $kept.append("..") else $kept.drop_last(1)
 			} else {
 				$kept = $kept.append(part)
 			}
@@ -130,7 +130,7 @@ Launch :: [].{
 	child_env! : Fx, Roots, { opted_out : Bool } => List((Str, Str))
 	child_env! = |fx, roots, run| {
 		xdg = Launch.xdg_dir({ windows: fx.windows!(), cache: roots.cache })
-		canonical = if run.opted_out [] else fx.canonical!([xdg, roots.build])
+		canonical = if (run.opted_out) [] else fx.canonical!([xdg, roots.build])
 		Launch.child_env({
 			opted_out: run.opted_out,
 			windows: fx.windows!(),

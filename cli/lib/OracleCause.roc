@@ -19,7 +19,7 @@ OracleCause :: [].{
 					kind: match p.kind {
 						Fail => Fail
 						Fault => match OracleDomain.row_of(compat.checks, p.from, p.id) {
-							Ok(f) => if f.outcome == Hang Hang else Crash
+							Ok(f) => if (f.outcome == Hang) Hang else Crash
 							Err(_) => Crash
 						}
 					},
@@ -31,7 +31,7 @@ OracleCause :: [].{
 				_ => Err(NoProbe)
 			},
 		)
-		.fold([], |found, c| if found.contains(c) found else found.append(c))
+		.fold([], |found, c| if (found.contains(c)) found else found.append(c))
 
 	# R-PH13: the text of a failure. A unit fail in the proof is the blame of `Units.judge` (the same text, so a run with one tuple gives the text of slice 031). Else the text of `Pick.step`.
 	# R-RP2: with `assume` the lines of `Explain.lines` follow, and the details are `Explain.details`. `hint` is the oldest nightly that works (`OracleHint.hint`): the caller gives `Err(None)` when `assume` is off or the proof has no probe cause.
@@ -39,7 +39,7 @@ OracleCause :: [].{
 	failure = |input, compat, assume, why, hint| {
 		nightly = compat.compiler ?? ""
 		causes = causes_of(input, compat, why)
-		blames = causes.map(blame_text).fold([], |found, text| if found.contains(text) found else found.append(text))
+		blames = causes.map(blame_text).fold([], |found, text| if (found.contains(text)) found else found.append(text))
 		first = "no tuple works: the unit check on ${nightly} fails for ${Str.join_with(blames, "; ")}"
 		if causes.is_empty() {
 			Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(input.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)")
@@ -56,7 +56,7 @@ OracleCause :: [].{
 		what = match c.kind {
 			Hang => "hangs"
 			Crash => "crashes"
-			Fail => if c.modules.is_empty() "no module is named" else Str.join_with(c.modules, ", ")
+			Fail => if (c.modules.is_empty()) "no module is named" else Str.join_with(c.modules, ", ")
 		}
 		"${c.label} (${what})"
 	}
@@ -68,7 +68,7 @@ OracleCause :: [].{
 			Ok(ident) => "${ident.name ?? id} ${ident.version}"
 			Err(_) => id
 		}
-		if OracleBase.platform_of(input, id) "the platform ${name}" else name
+		if (OracleBase.platform_of(input, id)) "the platform ${name}" else name
 	}
 
 	# The alias of the slot of a release (`""` for the platform: the app cannot stop using it).

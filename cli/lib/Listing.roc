@@ -93,7 +93,7 @@ Listing :: [].{
 
 # `<name> <version>` for a release, else the value as written.
 label_of : Closure.Row -> Str
-label_of = |row| if row.kind == Release "${row.name} ${row.version}" else row.name
+label_of = |row| if (row.kind == Release) "${row.name} ${row.version}" else row.name
 
 # The marks of a row (R-CM9): `direct` or, in the flat list only, `via <alias>`; `raised from <version>`; `foreign` for a path entry and a foreign URL (R-H4).
 marks_of : Closure.Row, Bool, List(Str) -> List(Str)
@@ -107,8 +107,8 @@ marks_of = |row, with_via, patched| {
 		Ok(version) => ["raised from ${version}"]
 		Err(None) => []
 	}
-	foreign = if row.kind == Release [] else ["foreign"]
-	mark = if is_patched(row, patched) ["patched"] else []
+	foreign = if (row.kind == Release) [] else ["foreign"]
+	mark = if (is_patched(row, patched)) ["patched"] else []
 	origin.concat(raised).concat(foreign).concat(mark)
 }
 
@@ -134,7 +134,7 @@ tree_lines = |walked, patched, at| walked.links.keep_if(|l| l.from == at.from).f
 				Ok(r) => marks_of(r, Bool.False, patched)
 				Err(_) => []
 			}
-			suffix = if marks.is_empty() "" else " (${Str.join_with(marks, "; ")})"
+			suffix = if (marks.is_empty()) "" else " (${Str.join_with(marks, "; ")})"
 			inner = tree_lines(walked, patched, { from: Ok(link.to), depth: at.depth + 1, shown: acc.shown.append(link.to) })
 			{ lines: acc.lines.append("${indent}${link.alias}: ${label}${suffix}\n").concat(inner.lines), shown: inner.shown }
 		}
@@ -153,7 +153,7 @@ package_fields : Closure.Row -> List((Str, JsonDoc))
 package_fields = |row| [
 	("alias", Text(row.alias)),
 	("name", Text(row.name)),
-	("version", if row.kind == Release Text(row.version) else Null),
+	("version", if (row.kind == Release) Text(row.version) else Null),
 	(
 		"kind",
 		Text(

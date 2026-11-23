@@ -18,7 +18,7 @@ Picker :: [].{
 	## `update can move these packages:`, `  1) json    acme/json 2.0.0`, `  2) parser  acme/parser 1.0.0`.
 	text : List(Item) -> Str
 	text = |items| {
-		width = items.fold(0, |most, item| if item.alias.count_utf8_bytes() > most item.alias.count_utf8_bytes() else most) + 2
+		width = items.fold(0, |most, item| if (item.alias.count_utf8_bytes() > most) item.alias.count_utf8_bytes() else most) + 2
 		lines = items.map_with_index(
 			|item, i| {
 				pad = " ".repeat(width - item.alias.count_utf8_bytes())

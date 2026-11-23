@@ -97,7 +97,7 @@ read_file = |facts| {
 item_of : JsonDoc -> Try(Item, [NotAnItem])
 item_of = |doc| match doc {
 	JsonDoc.Obj(pairs) => match (pairs.find_first(|(key, _)| key == "path"), pairs.find_first(|(key, _)| key == "last_use")) {
-		(Ok((_, JsonDoc.Text(path))), Ok((_, JsonDoc.Num(n)))) => if n >= 0 Ok({ path, last_use: n.to_u64_wrap(), pairs }) else Err(NotAnItem)
+		(Ok((_, JsonDoc.Text(path))), Ok((_, JsonDoc.Num(n)))) => if (n >= 0) Ok({ path, last_use: n.to_u64_wrap(), pairs }) else Err(NotAnItem)
 		_ => Err(NotAnItem)
 	}
 	_ => Err(NotAnItem)
@@ -107,7 +107,7 @@ item_of = |doc| match doc {
 write_text : Loaded, List(Item) -> Str
 write_text = |loaded, items| {
 	docs = items.map(|item| JsonDoc.Obj(item.pairs))
-	fields = loaded.fields.map(|(key, value)| if key == "projects" (key, JsonDoc.Arr(docs)) else (key, value))
+	fields = loaded.fields.map(|(key, value)| if (key == "projects") (key, JsonDoc.Arr(docs)) else (key, value))
 	TalonFile.render({ format: loaded.format, fields })
 }
 
@@ -124,7 +124,7 @@ touch = |state, file, now, refresh| match state.items.find_first(|item| item.pat
 	}
 	Ok(old) => if due(old.last_use, now, refresh) {
 		same = |item| item.path == file
-		renew = |item| if same(item) { path: item.path, last_use: now, pairs: with_time(item.pairs, now) } else item
+		renew = |item| if (same(item)) { path: item.path, last_use: now, pairs: with_time(item.pairs, now) } else item
 		{ items: state.items.map(renew), changed: Bool.True }
 	} else {
 		state
@@ -145,4 +145,4 @@ too_old = |last_use, now, max_age| match max_age {
 }
 
 with_time : List((Str, JsonDoc)), U64 -> List((Str, JsonDoc))
-with_time = |pairs, now| pairs.map(|(key, value)| if key == "last_use" (key, JsonDoc.Num(now.to_i64_wrap())) else (key, value))
+with_time = |pairs, now| pairs.map(|(key, value)| if (key == "last_use") (key, JsonDoc.Num(now.to_i64_wrap())) else (key, value))

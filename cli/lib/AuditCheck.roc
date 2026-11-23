@@ -91,7 +91,7 @@ AuditCheck :: [].{
 				listed = AuditDirect.repo_of(entry.url)?
 				l = facts.lists.find_first(|x| x.owner == listed.owner and x.repo == listed.repo).map_err(|_| None)?
 				f = AuditDirect.direct_finding({ entry, list: l.list }).map_err(|_| None)?
-				if f.new_hash != Err(None) Err(None) else Ok(f)
+				if (f.new_hash != Err(None)) Err(None) else Ok(f)
 			},
 		)
 		AuditCheck.ignore({ findings: found, items: facts.items }).findings.keep_if(|f| f.ignored == Err(None))
@@ -132,7 +132,7 @@ AuditCheck :: [].{
 				}
 			}
 		}
-		hashes = $found.fold([], |acc, f| if acc.contains(f.hash) acc else acc.append(f.hash))
+		hashes = $found.fold([], |acc, f| if (acc.contains(f.hash)) acc else acc.append(f.hash))
 		closure = hashes.map(|hash| closure_entry(hash, $found.keep_if(|f| f.hash == hash)))
 		tool_rows = facts.tools.keep_oks(|t| Ident.of_url(t.url).map_ok(|ident| { key: t.key, url: t.url, ident }))
 		var $tooled = closure.map(|e| { ..e, tool: tool_rows.find_first(|t| t.ident.hash == e.hash).map_ok(|t| t.key).map_err(|_| None) })
@@ -179,7 +179,7 @@ AuditCheck :: [].{
 				Ok("deleted") | Ok("unpublished") => Ok(ReleaseMissing)
 				Ok("prereleased") | Ok("edited") => Ok(Prerelease)
 				Ok(other) => Ok(Other(other))
-				Err(None) => if state == Ok(Moved) Ok(Moved) else Err(None)
+				Err(None) => if (state == Ok(Moved)) Ok(Moved) else Err(None)
 			}
 		}
 	}
@@ -198,7 +198,7 @@ AuditCheck :: [].{
 			reason,
 			ignored: Err(None),
 			since,
-			yank_reason: if reason == Yanked facts.row.yank_reason else Err(None),
+			yank_reason: if (reason == Yanked) facts.row.yank_reason else Err(None),
 			new_hash: Err(None),
 			successor: facts.repo.map_ok(|p| p.successor) ?? Err(None),
 		})
@@ -230,15 +230,15 @@ AuditCheck :: [].{
 			[first, .. as tail] => is_lower(first) and tail.all(|b| is_lower(b) or (b >= '0' and b <= '9') or b == '-')
 			[] => Bool.False
 		}
-		if name_ok and version_ok and reason_ok Ok({ name, version, reason }) else Err(BadItem)
+		if (name_ok and version_ok and reason_ok) Ok({ name, version, reason }) else Err(BadItem)
 	}
 
 	## R-CM14, R-AU12: the line of `tln audit`. No operand. The `--ignore` items in the order of the line; an item that does not parse is exit 2. The flags of `Opts.read` are checked first.
 	read : Args -> Try({ items : List(Str) }, Fail)
 	read = |args| {
 		_ = Opts.read(args)?
-		if !args.operands.is_empty() return Err(Fail.new(Usage, "tln audit takes no operand"))
-		items = args.options.keep_oks(|(name, value)| if name == "--ignore" value.map_err(|_| None) else Err(None))
+		if (!args.operands.is_empty()) return Err(Fail.new(Usage, "tln audit takes no operand"))
+		items = args.options.keep_oks(|(name, value)| if (name == "--ignore") value.map_err(|_| None) else Err(None))
 		for item in items {
 			if AuditCheck.parse_item(item).is_err() {
 				return Err(Fail.new(Usage, "--ignore: ${not_item(item)}"))
@@ -281,7 +281,7 @@ AuditCheck :: [].{
 	## R-AU9 to R-AU11: an item ignores the findings with the same full name (any case, R-AP56), version and reason. The finding keeps the item as written. `unused` are the items that match no finding, once each, in the order of the items.
 	ignore : { findings : List(AuditTypes.Finding), items : List(Str) } -> { findings : List(AuditTypes.Finding), unused : List(Str) }
 	ignore = |facts| {
-		items = facts.items.fold([], |acc, i| if acc.contains(i) acc else acc.append(i))
+		items = facts.items.fold([], |acc, i| if (acc.contains(i)) acc else acc.append(i))
 		parsed = items.map(|i| (i, AuditCheck.parse_item(i)))
 		matches = |f, p| p.name.with_ascii_lowercased() == f.entry.name.with_ascii_lowercased() and p.version == f.entry.version and p.reason == AuditReport.reason_text(f.reason)
 		item_for = |f| parsed.find_first(
@@ -302,7 +302,7 @@ AuditCheck :: [].{
 
 	## R-AU3, R-AU10, R-EC21: exit code 21 when a finding that is not ignored fails, else 0.
 	code : List(AuditTypes.Finding) -> I32
-	code = |findings| if findings.any(|f| f.ignored == Err(None) and AuditReport.fails(f.reason)) 21 else 0
+	code = |findings| if (findings.any(|f| f.ignored == Err(None) and AuditReport.fails(f.reason))) 21 else 0
 }
 
 not_item : Str -> Str
@@ -324,20 +324,20 @@ closure_entry = |hash, rows| {
 	edge = if row.direct {
 		row.alias
 	} else {
-		match rows.first() {
+		match first {
 			Ok(f) => f.walked.links.find_first(|l| l.to == row.id).map_ok(|l| l.alias) ?? row.alias
 			Err(_) => row.alias
 		}
 	}
-	members = rows.fold([], |acc, f| if acc.contains(f.file) acc else acc.append(f.file))
-	via = rows.fold([], |acc, f| if f.row.direct acc else header_aliases(f.walked, f.row.id).fold(acc, |a, x| if a.contains(x) a else a.append(x)))
+	members = rows.fold([], |acc, f| if (acc.contains(f.file)) acc else acc.append(f.file))
+	via = rows.fold([], |acc, f| if (f.row.direct) acc else header_aliases(f.walked, f.row.id).fold(acc, |a, x| if (a.contains(x)) a else a.append(x)))
 	{
 		url: row.id,
 		name: row.name,
 		group: row.form,
 		version: row.version,
 		hash,
-		alias: if row.direct Ok(row.alias) else Err(None),
+		alias: if (row.direct) Ok(row.alias) else Err(None),
 		edge,
 		via,
 		tool: Err(None),
@@ -351,7 +351,7 @@ header_aliases : Closure.Walked, Str -> List(Str)
 header_aliases = |walked, target| walked.links
 	.keep_if(|l| l.from == Err(Header) and (l.to == target or reaches(walked, l.to, target, [l.to])))
 	.map(|l| l.alias)
-	.fold([], |acc, a| if acc.contains(a) acc else acc.append(a))
+	.fold([], |acc, a| if (acc.contains(a)) acc else acc.append(a))
 
 reaches : Closure.Walked, Str, Str, List(Str) -> Bool
 reaches = |walked, from, target, seen| walked.links.keep_if(|l| l.from == Ok(from)).any(
@@ -372,7 +372,7 @@ with_series = |facts, list| {
 	list.map(
 		|e| {
 			many = names.keep_if(|(n, s)| n == e.name and s != series_of(e)).len() > 0
-			if many { ..e, why: "${e.name}@${series_of(e)}" } else e
+			if (many) { ..e, why: "${e.name}@${series_of(e)}" } else e
 		},
 	)
 }

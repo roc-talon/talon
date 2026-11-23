@@ -36,10 +36,10 @@ InstallWrite :: [].{
 	write! : Fx, ResolveBase.Request, Loaded, List(Edit), List(Pair), List(Rename), PatchApply.Done => Try(List(Str), Fail)
 	write! = |fx, request, loaded, edits, pairs, renames, patch| {
 		header_files = loaded.members.keep_if(|m| edits.any(|e| e.file == m.file)).map(|m| m.file)
-		toml_files = pairs.map(|p| p.path).concat(renames.map(|r| r.path)).concat(patch.rebased.map(|r| r.toml)).fold([], |found, path| if found.contains(path) found else found.append(path))
+		toml_files = pairs.map(|p| p.path).concat(renames.map(|r| r.path)).concat(patch.rebased.map(|r| r.toml)).fold([], |found, path| if (found.contains(path)) found else found.append(path))
 		paths = header_files.concat(toml_files)
-		if paths.is_empty() return Ok([])
-		if request.dry_run Ok(paths) else changed_files!(fx, loaded, { header_files, paths, edits, pairs, renames, rebased: patch.rebased })
+		if (paths.is_empty()) return Ok([])
+		if (request.dry_run) Ok(paths) else changed_files!(fx, loaded, { header_files, paths, edits, pairs, renames, rebased: patch.rebased })
 	}
 
 	## Slice 255 (Design Q635, D1 strict): the lines of the files (R-LF4), printed by the command after `write!` and after the audit lines.
@@ -73,15 +73,15 @@ InstallWrite :: [].{
 	# R-SP16, R-SP17, R-SP26, R-NI3: the report of the moves on stderr, then the prompt. It is the last step before the write. `--dry-run` asks nothing. No: exit 13.
 	confirm_moves! : Fx, ResolveBase.Request, List(Consent.Move) => Try({}, Fail)
 	confirm_moves! = |fx, request, moves| {
-		if moves.is_empty() return Ok({})
+		if (moves.is_empty()) return Ok({})
 		consent = Consent.move_held(moves)
 		fx.err!(consent.report)
-		if request.dry_run return Ok({})
+		if (request.dry_run) return Ok({})
 		done = match Prompt.ask!(fx, consent.prompt, { mode: request.prompt.mode, yes: request.prompt.yes, quiet: request.prompt.quiet, flag: request.prompt.allow_moves }) {
 			Ok(d) => d
 			Err(fail) => return Err({ ..fail, details: Ok(consent.details) })
 		}
-		if done.answer == Yes Ok({}) else Err(Consent.declined(moves))
+		if (done.answer == Yes) Ok({}) else Err(Consent.declined(moves))
 	}
 
 	# Slice 006: the place of the probe ladder in the flow (Resolution 4, R-LD4, R-LD5, R-PH9, R-PH10): after the choice and before the write, when a header changes (R-AL6).
@@ -99,7 +99,7 @@ InstallWrite :: [].{
 			Ok({ ran: { probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }, built: [] })
 		} else {
 			rows = ResolveBase.owner_rows(facts.scoped, facts.news, facts.chosen)
-			files = facts.changes.map(|e| e.file).fold(ResolveBase.no_names, |found, file| if found.contains(file) found else found.append(file))
+			files = facts.changes.map(|e| e.file).fold(ResolveBase.no_names, |found, file| if (found.contains(file)) found else found.append(file))
 			members = files.keep_oks(|file| ladder_member(loaded, facts.changes, facts.decision, facts.patch, file))
 			done = Ladder.run!(
 				fx,
@@ -146,7 +146,7 @@ loop_base = |candidate, decision| match candidate {
 # Q6 (a) of slice 038: a toml line of a key that had another value ends with ` (was "<old>")`.
 was_text : Loaded, Pair -> Str
 was_text = |loaded, p| match Lags.was({ members: loaded.members, path: p.path, key: p.key }) {
-	Ok(old) => if old == p.value "" else " (was \"${old}\")"
+	Ok(old) => if (old == p.value) "" else " (was \"${old}\")"
 	Err(None) => ""
 }
 
@@ -175,7 +175,7 @@ changed_files! = |fx, loaded, plan| {
 		read = ResolveBase.loaded_text(loaded, path)
 		now = match result {
 			Ok(text) => text
-			Err(NotFound) => if is_header return Err(Fail.new(Environment, "cannot read ${path}")) else ""
+			Err(NotFound) => if (is_header) return Err(Fail.new(Environment, "cannot read ${path}")) else ""
 			Err(_) => return Err(Fail.new(Environment, "cannot read ${path}"))
 		}
 		ops = plan.edits.keep_if(|e| e.file == path).map(|e| e.op)
@@ -185,10 +185,10 @@ changed_files! = |fx, loaded, plan| {
 		writes = mine.map(|p| { key: p.key, value: p.value })
 		rebased = plan.rebased.keep_if(|r| r.toml == path)
 		patch_keys = rebased.map(|r| { table: Patch, key: r.entry.alias })
-		spans_of = |text| if is_header Locked.spans({ text, ops }) else IntentEdit.spans({ text, keys }).concat(IntentEdit.table_spans({ text, keys: patch_keys }))
+		spans_of = |text| if (is_header) Locked.spans({ text, ops }) else IntentEdit.spans({ text, keys }).concat(IntentEdit.table_spans({ text, keys: patch_keys }))
 		spans_read = spans_of(read)
 		spans_now = spans_of(now)
-		new = if is_header Locked.edit({ path, text: now, ops })? else with_bases(path, IntentEdit.rename({ path, text: IntentEdit.apply({ path, text: now, writes })?, renames: renames.map(|r| { from: r.from, to: r.to }) })?, rebased)?
+		new = if (is_header) Locked.edit({ path, text: now, ops })? else with_bases(path, IntentEdit.rename({ path, text: IntentEdit.apply({ path, text: now, writes })?, renames: renames.map(|r| { from: r.from, to: r.to }) })?, rebased)?
 		$files = $files.append({ path, read, now, spans_read, spans_now })
 		$edited = $edited.append({ path, now, new })
 	}

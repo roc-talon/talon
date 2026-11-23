@@ -65,7 +65,7 @@ release_or_sha = |text| match Semver.parse(text) {
 	Ok(_) => Ok(Exact(text))
 	Err(_) => match VersionReq.parse(text) {
 		Ok(_) => Ok(Range(with_caret(text)))
-		Err(_) => if is_sha(text) Ok(GitSha(text)) else Err(Unknown)
+		Err(_) => if (is_sha(text)) Ok(GitSha(text)) else Err(Unknown)
 	}
 }
 
@@ -74,13 +74,13 @@ with_caret : Str -> Str
 with_caret = |text| {
 	bytes = text.to_utf8()
 	bare = bytes.all(|b| is_digit(b) or b == '.') and bytes.keep_if(|b| b == '.').len() < 2
-	if bare "^${text}" else text
+	if (bare) "^${text}" else text
 }
 
 # R-SL7: a sign and decimal digits.
 step_of : Str -> Try(I64, [NotStep])
 step_of = |text| {
-	sign = if text.starts_with("-") -1 else 1
+	sign = if (text.starts_with("-")) -1 else 1
 	digits = text.drop_prefix("-").drop_prefix("+")
 	signed = text.starts_with("-") or text.starts_with("+")
 	if signed and all_digits(digits) {

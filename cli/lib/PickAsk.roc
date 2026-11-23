@@ -23,9 +23,9 @@ PickAsk :: [].{
 	asked! = |fx, request, loaded, vars| {
 		# Slice 225 (R-RG9): the short-name read is the first registry request of the run, so it can fall back to `direct`. A failure after it carries the note.
 		current = request.project.file ?? ""
-		scope = if request.command != Install Scope.Project else Scope.Install
-		entities = if request.command != Install entities_of(vars, loaded.members) else entities_of(in_file(vars, current), loaded.members.keep_if(|m| m.file == current))
-		texts = if request.command == Upgrade request.names.keep_if(|name| name != "roc") else request.names
+		scope = if (request.command != Install) Scope.Project else Scope.Install
+		entities = if (request.command != Install) entities_of(vars, loaded.members) else entities_of(in_file(vars, current), loaded.members.keep_if(|m| m.file == current))
+		texts = if (request.command == Upgrade) request.names.keep_if(|name| name != "roc") else request.names
 		got = short_names!(fx, request, scope, entities, texts)?
 		asked = asked_with!(fx, request, loaded, vars, got.entries).map_err(|fail| Fail.with_fell(fail, got.fell))?
 		Ok({ ..asked, fell: got.fell, answered: !got.entries.is_empty() })
@@ -34,19 +34,19 @@ PickAsk :: [].{
 	asked_with! : Fx, ResolveBase.Request, ResolveBase.Loaded, List(Vars.Var), List({ ref : Ref, lookup : Lookup, matched : Try(Str, [None]) }) => Try(ResolveBase.Asked, Fail)
 	asked_with! = |fx, request, loaded, vars, shorts| {
 		current = request.project.file ?? ""
-		scope = if request.command != Install Scope.Project else Scope.Install
+		scope = if (request.command != Install) Scope.Project else Scope.Install
 		rows = ResolveBase.current_rows(loaded.members, current)
-		entities = if request.command != Install entities_of(vars, loaded.members) else entities_of(in_file(vars, current), loaded.members.keep_if(|m| m.file == current))
+		entities = if (request.command != Install) entities_of(vars, loaded.members) else entities_of(in_file(vars, current), loaded.members.keep_if(|m| m.file == current))
 		var $names = ResolveBase.no_names
 		var $picks = no_picks
 		var $kept = no_kept
 		var $fresh = no_fresh
 		var $shorted = 0
-		texts = if request.command == Upgrade request.names.keep_if(|name| name != "roc") else request.names
+		texts = if (request.command == Upgrade) request.names.keep_if(|name| name != "roc") else request.names
 		# Slice 206f (R-AD34, R-I8, Design Q223): with a registry, the short names of the command are read with one request, before any other registry call.
 		for text in texts {
 			parsed = Ref.parse(text, scope, Bool.False)?
-			short = if shorts.is_empty() Err(None) else if Lookup.needs_registry(scope, parsed, entities) shorts.get($shorted).map_err(|_| None) else Err(None)
+			short = if (shorts.is_empty()) Err(None) else if (Lookup.needs_registry(scope, parsed, entities)) shorts.get($shorted).map_err(|_| None) else Err(None)
 			if short.is_ok() {
 				$shorted = $shorted + 1
 			}
@@ -56,12 +56,12 @@ PickAsk :: [].{
 			}
 			looked = match short {
 				Ok(entry) => Ok(entry.lookup)
-				Err(None) => if request.command != Install Lookup.find_move(scope, ref, entities) else add_lookup(request, ref, entities)
+				Err(None) => if (request.command != Install) Lookup.find_move(scope, ref, entities) else add_lookup(request, ref, entities)
 			}
 			found = match looked {
 				Ok(f) => f
 				Err({ fail, block }) => {
-					if !block.is_empty() fx.err!(block)
+					if (!block.is_empty()) fx.err!(block)
 					return Err(fail)
 				}
 			}
@@ -177,7 +177,7 @@ short_names! = |fx, request, scope, entities, texts| {
 					Ok({ entries, fell: Err(None) })
 				}
 				Err({ fail, block }) => {
-					if !block.is_empty() fx.err!(block)
+					if (!block.is_empty()) fx.err!(block)
 					Err(fail)
 				}
 			}
@@ -232,7 +232,7 @@ fresh_of = |request, loaded, current, ref, text| {
 	name = ref.name
 	key = match request.add.as_alias {
 		Ok(alias) => alias
-		Err(Unset) => if request.add.as_platform platform_alias(loaded, current) else Alias.default(name)
+		Err(Unset) => if (request.add.as_platform) platform_alias(loaded, current) else Alias.default(name)
 	}
 	typed = match ref.selector {
 		Ok(Latest) | Err(None) => replaced_key_range(loaded, current, key) ?? "*"
@@ -286,7 +286,7 @@ entities_of = |vars, members| Lookup.build(
 			|u| {
 				alias: u.alias,
 				what: Release({ name: v.name ?? v.group.form, series: v.group.series, version: u.version }),
-				role: if v.is_platform Platform else Direct,
+				role: if (v.is_platform) Platform else Direct,
 			},
 		),
 	).concat(
@@ -294,7 +294,7 @@ entities_of = |vars, members| Lookup.build(
 			|m| m.locked.rows.keep_oks(
 				|r| match r.what {
 					Release(_) => Err(NotUnmanaged)
-					_ => Ok({ alias: r.alias, what: Unmanaged, role: if r.is_platform Platform else Direct })
+					_ => Ok({ alias: r.alias, what: Unmanaged, role: if (r.is_platform) Platform else Direct })
 				},
 			),
 		),

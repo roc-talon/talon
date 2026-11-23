@@ -161,12 +161,12 @@ BuildTarget :: [].{
 				slot.urls.join_map(|url| members.map(|target| { url, target }))
 			},
 		)
-		.fold([], |found, want| if found.contains(want) found else found.append(want))
+		.fold([], |found, want| if (found.contains(want)) found else found.append(want))
 
 	## R-C10, R-C4: the facts for the solver. A fact of a release of kind `Platform` whose URL has a `Want`, whose `seen` entry is `Ok(list)` and with a `Want.target` that `list` lacks, gets the kind `App`: the solver never takes an `App` release for a slot (R-C4), so the release is no candidate.
 	## Every other fact is unchanged (a release with no `seen` entry, a `NoSection`, a package, a platform that has the target, a URL with no `Want`). A release with 2 `Want`s is excluded when it lacks one of them.
 	gate : { facts : List({ url : Str, release : Release }), seen : List(BuildTarget.Seen), wanted : List(BuildTarget.Want) } -> List({ url : Str, release : Release })
-	gate = |x| x.facts.map(|fact| if lacks_target(fact, x.seen, x.wanted) { url: fact.url, release: { kind: App, pf: fact.release.pf, deps: fact.release.deps } } else fact)
+	gate = |x| x.facts.map(|fact| if (lacks_target(fact, x.seen, x.wanted)) { url: fact.url, release: { kind: App, pf: fact.release.pf, deps: fact.release.deps } } else fact)
 
 	## R-C10: the failure when no platform release has the build target (kind `NoTuple`, exit 10). `alias` is the alias of the platform slot. The text is a proposal (TW24):
 	## `no tuple works: <alias> has no platform release with the build target <target> (R-C10). Change [build] target in talon.toml, or use a platform that has it.`
@@ -192,7 +192,7 @@ none_text = |file, list, host| match list.first() {
 }
 
 host_text : List(Str) -> Str
-host_text = |host| if host.is_empty() "unknown host" else Str.join_with(host, ", ")
+host_text = |host| if (host.is_empty()) "unknown host" else Str.join_with(host, ", ")
 
 # The scan of a platform header (D6 of slice 054). A token is a word, a bracket, a colon or another byte. Comments and strings give no token.
 Tok : [Word(Str), Open, Close, Colon, Other]
@@ -221,7 +221,7 @@ string_end = |bytes, start| {
 	n = bytes.len()
 	var $j = start + 1
 	while $j < n and at(bytes, $j) != '"' {
-		$j = if at(bytes, $j) == '\\' $j + 2 else $j + 1
+		$j = if (at(bytes, $j) == '\\') $j + 2 else $j + 1
 	}
 	$j + 1
 }
@@ -255,7 +255,7 @@ tokens = |bytes| {
 			$out = $out.append(Word(Str.from_utf8_lossy(bytes.drop_first($i).take_first(end - $i))))
 			$i = end
 		} else {
-			tok = if b == '{' or b == '[' or b == '(' Open else if b == '}' or b == ']' or b == ')' Close else if b == ':' Colon else Other
+			tok = if (b == '{' or b == '[' or b == '(') Open else if (b == '}' or b == ']' or b == ')') Close else if (b == ':') Colon else Other
 			$out = $out.append(tok)
 			$i = $i + 1
 		}

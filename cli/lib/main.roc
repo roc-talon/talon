@@ -270,9 +270,9 @@ package
 	]
 	{
 		base58: "https://github.com/Karakatiza666/roc-base58/releases/download/0.1.0/BgUuQGqWY94NikfEx4rBkWkgxYhngMim3ZEnD8wpM4NS.tar.zst",
-		header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.0/HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU.tar.zst",
+		header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.1/Ev4sYWkY8XDbQsPxtaaXZaARYjH9KS2x2dbmVch2d4qS.tar.zst",
 		records: "../../packages/records/main.roc",
 		resolve: "../../packages/resolve/main.roc",
-		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst",
-		toml: "https://github.com/Karakatiza666/roc-toml/releases/download/0.1.0/3icmtKz6XQUyHqu5JftcoJJT6a9YTND1B8z1UAmtqJpN.tar.zst",
+		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.1/6BPnjRNpioc4pS8vxuiYDV3kNi13wMC6emA4qiPHK75L.tar.zst",
+		toml: "https://github.com/Karakatiza666/roc-toml/releases/download/0.2.0/2jDX3pSSC7cpPb3iuoemnX1BkYJfsxQTHB2p2vBsUzz7.tar.zst",
 	}

@@ -350,7 +350,7 @@ expect {
 	dbg bad
 	bad == []
 		and Str.inspect(refused.kind) == "Consent"
-			and refused.message == "no installed compiler is in [toolchain] roc (${range}). TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes."
+		and refused.message == "no installed compiler is in [toolchain] roc (${range}). TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes."
 }
 
 # R-NI5, R-NI6, R-DL1, R-DL3, R-DL5, R-U3 (slice 026b, question Q4, proposal): the one prompt of `tln roc use` when a baseline compiler is not installed. It lists the compilers that it covers, the new one first, and the total size. It is a Required prompt

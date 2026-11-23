@@ -28,7 +28,7 @@ ConfigToml :: [].{
 				# R-TF8: each failure of a value of a known key has the hint. A reserved channel name is no such value (slice 238).
 				[first, ..] => {
 					fail = Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}")
-					if Channel.hintless(first.message) Err(fail) else Err(Fail.with_hint(fail))
+					if (Channel.hintless(first.message)) Err(fail) else Err(Fail.with_hint(fail))
 				}
 				[] => Ok({ config: found.config, warnings: shown(facts.path, found.warnings) })
 			}

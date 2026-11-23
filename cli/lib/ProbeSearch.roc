@@ -76,7 +76,7 @@ ProbeSearch :: [].{
 		first = rounds!(fx, run, { domain, askable, env }, start)?
 		wide = { allowed, sizes: sizes_of(listed.releases) }
 		more = { facts: first.facts, probes: first.probes, cut: first.cut, have: run.installed, tried: 0, downloads: 0, removed: [], dropped: 0 }
-		ended = if first.cut.is_ok() Ok(more) else more!(fx, run, { domain, askable, env }, wide, more)
+		ended = if (first.cut.is_ok()) Ok(more) else more!(fx, run, { domain, askable, env }, wide, more)
 		last = ended?
 		if run.probe.max_toolchains > 0 and last.dropped > 0 {
 			fx.err!("${Consent.optional_capped({ cap: run.probe.max_toolchains, dropped: last.dropped })}\n")
@@ -104,13 +104,13 @@ rounds! = |fx, run, world, state| match ProbeRange.step({ hash: run.node.hash, d
 	Need(ids) => {
 		room = Units.budget({ max: run.probe.max, started: state.probes, fixed: 0, wanted: ids.len() }) ?? { run: 0, cut: Bool.True }
 		asked = ids.take_first(room.run)
-		cut = if room.cut Ok(Units.spent({ max: run.probe.max, left: ids.len() - asked.len() })) else Err(None)
+		cut = if (room.cut) Ok(Units.spent({ max: run.probe.max, left: ids.len() - asked.len() })) else Err(None)
 		if asked.is_empty() {
 			Ok({ ..state, cut })
 		} else {
 			made = round!(fx, run, world, asked)?
 			next = { facts: state.facts.concat(made), probes: state.probes + asked.len(), cut }
-			if room.cut Ok(next) else rounds!(fx, run, world, next)
+			if (room.cut) Ok(next) else rounds!(fx, run, world, next)
 		}
 	}
 }
@@ -126,7 +126,7 @@ round! = |fx, run, world, asked| {
 		$specs = $specs.concat(Units.specs({ nodes: [run.node], compiler: id, program, env: world.env, pkgs, timeout: run.probe.timeout }))
 	}
 	outputs = fx.probes!({ pool: run.probe.slots, specs: $specs })
-	if outputs.len() != asked.len() return Err(Fail.new(Internal, "the probes gave no result for each probe"))
+	if (outputs.len() != asked.len()) return Err(Fail.new(Internal, "the probes gave no result for each probe"))
 	results = asked.map2(outputs, |id, output| Units.results({ nodes: [run.node], outputs: [output], nightly: id, compiler: id, pkgs }))
 	made = results.join_map(|r| r.facts)
 	_ = Facts.save!(fx, { roots: run.roots, rows: made, existing: Replace })?
@@ -159,7 +159,7 @@ more! = |fx, run, world, wide, state| {
 		Need(ids) => {
 			room = Units.budget({ max: run.probe.max, started: state.probes, fixed: 0, wanted: ids.len() }) ?? { run: 0, cut: Bool.True }
 			wanted = ids.take_first(room.run)
-			cut = if room.cut Ok(Units.spent({ max: run.probe.max, left: ids.len() - wanted.len() })) else Err(None)
+			cut = if (room.cut) Ok(Units.spent({ max: run.probe.max, left: ids.len() - wanted.len() })) else Err(None)
 			if wanted.is_empty() {
 				Ok({ ..state, cut })
 			} else {
@@ -173,7 +173,7 @@ more! = |fx, run, world, wide, state| {
 					Download => {
 						got = fetch!(fx, run, plan.fetch, state)
 						next = probed!(fx, run, world, { plan, got, cut, state })?
-						if room.cut Ok(next) else more!(fx, run, world, wide, next)
+						if (room.cut) Ok(next) else more!(fx, run, world, wide, next)
 					}
 				}
 			}
@@ -189,7 +189,7 @@ Got : { have : List(Str), failed : List(Str), tried : U64, downloads : U64 }
 probed! : Fx, ProbeSearch.Run, World, { plan : Plan, got : Got, cut : Try(Fail, [None]), state : More } => Try(More, Fail)
 probed! = |fx, run, world, step| {
 	ids = step.plan.asked.keep_if(|id| !step.got.failed.contains(id))
-	made = if ids.is_empty() Ok([]) else round!(fx, { ..run, installed: step.got.have }, world, ids)
+	made = if (ids.is_empty()) Ok([]) else round!(fx, { ..run, installed: step.got.have }, world, ids)
 	Ok({
 		facts: step.state.facts.concat(made?),
 		probes: step.state.probes + ids.len(),

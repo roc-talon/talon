@@ -25,7 +25,7 @@ L2Resolve :: [].{
 			given = L2Util.words(line)
 			value = |name| given.find_first(|word| word.starts_with("${name}=")).map_ok(|word| word.drop_prefix("${name}="))
 			fx.out!("== ${line}\n")
-			command = if given.first() == Ok("update") Update else Install
+			command = if (given.first() == Ok("update")) Update else Install
 			names = given.drop_first(1).keep_if(|word| !["compiler=", "toolchain=", "nightly=", "file=", "now=", "snapshot=", "as=", "auto-install=", "slots="].any(|key| word.starts_with(key)) and !["frozen", "no-check", "offline", "lowest", "dry-run", "platform", "no-pin", "yes", "quiet", "rename-keys", "allow-moves", "allow-downloads", "probe-downloads", "no-probe"].contains(word))
 			file = match value("file") {
 				Ok(f) => Ok(f)
@@ -47,7 +47,7 @@ L2Resolve :: [].{
 						net,
 						now: U64.from_str(value("now") ?? "") ?? 1792065600,
 						offline: given.contains("offline"),
-						strategy: if given.contains("lowest") Ok(Lowest) else Err(Unset),
+						strategy: if (given.contains("lowest")) Ok(Lowest) else Err(Unset),
 						nightly: match value("nightly") {
 							Ok("true") => Ok(Bool.True)
 							Ok("false") => Ok(Bool.False)
@@ -78,15 +78,15 @@ L2Resolve :: [].{
 							},
 							no_pin: given.contains("no-pin"),
 						},
-						prompt: { mode, yes: given.contains("yes"), quiet: given.contains("quiet"), rename_keys: if given.contains("rename-keys") Ok(Yes) else Err(NoFlag), allow_moves: if given.contains("allow-moves") Ok(Yes) else Err(NoFlag) },
+						prompt: { mode, yes: given.contains("yes"), quiet: given.contains("quiet"), rename_keys: if (given.contains("rename-keys")) Ok(Yes) else Err(NoFlag), allow_moves: if (given.contains("allow-moves")) Ok(Yes) else Err(NoFlag) },
 						downloads: {
 							auto: match value("auto-install") {
 								Ok("yes") => Yes
 								Ok("no") => No
 								_ => Ask
 							},
-							allow: if given.contains("allow-downloads") Ok(Yes) else Err(NoFlag),
-							probe: if given.contains("probe-downloads") Ok(Yes) else Err(NoFlag),
+							allow: if (given.contains("allow-downloads")) Ok(Yes) else Err(NoFlag),
+							probe: if (given.contains("probe-downloads")) Ok(Yes) else Err(NoFlag),
 							env,
 						},
 						probe: {

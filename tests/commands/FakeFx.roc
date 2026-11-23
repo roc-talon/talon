@@ -133,7 +133,7 @@ FakeFx :: [].{
 		cwd!: || {
 			FakeBase.log!(w, "cwd")
 			sub = FakeBase.read_or_empty!("${w}/fx/cwd").trim()
-			if sub == "" "${w}/project" else "${w}/project/${sub}"
+			if (sub == "") "${w}/project" else "${w}/project/${sub}"
 		},
 		tty!: || {
 			FakeBase.log!(w, "tty")
@@ -258,7 +258,7 @@ FakeFx :: [].{
 		},
 		program_name!: || {
 			name = FakeBase.read_or_empty!("${w}/fx/program").trim()
-			if name.is_empty() "tln" else name
+			if (name.is_empty()) "tln" else name
 		},
 		exec!: |run| FakeJobs.exec!(w, run),
 		exec_in!: |run| FakeJobs.exec_in!(w, run),
@@ -269,7 +269,7 @@ FakeFx :: [].{
 			log_lines = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log"))
 			held = log_lines.keep_if(|l| l.starts_with("lock ") and l.ends_with(": held")).len()
 			released = log_lines.keep_if(|l| l.starts_with("unlock ")).len()
-			if held > released FakeBase.log!(w, "VIOLATION ask while a lock is held")
+			if (held > released) FakeBase.log!(w, "VIOLATION ask while a lock is held")
 			FakeBase.log!(w, "ask ${Str.inspect(prompt)}")
 			match FakeBase.keep_empty(FakeBase.read_or_empty!("${w}/fx/answers")).get(asked) {
 				Ok(reply) => Ok(reply)

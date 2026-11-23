@@ -99,7 +99,7 @@ RunTools :: [].{
 			Err(_) => Err(Unset)
 		}
 		# Slice 093 (R-PT9 step 1, R-PT25, Q237): a prebuilt entry with the `bin` value wins, when `tool-binaries` allows it. `config.toml` is read only when there is such an entry.
-		config = if ToolBinFlow.prebuilt_there({ found: know.found, bundle: ident.hash, target: know.target, bin }) Ok(RocInstall.read_config!(fx, run.roots)?) else Err(NotRead)
+		config = if (ToolBinFlow.prebuilt_there({ found: know.found, bundle: ident.hash, target: know.target, bin })) Ok(RocInstall.read_config!(fx, run.roots)?) else Err(NotRead)
 		machine = match config {
 			Ok(c) => c.tool_binaries
 			Err(NotRead) => Err(Unset)

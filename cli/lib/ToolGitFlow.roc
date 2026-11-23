@@ -101,7 +101,7 @@ Run : { done : ToolBuild.Done, commit : Str }
 flow! : Fx, Args, ToolGit.Plan => Try(Run, Fail)
 flow! = |fx, args, plan| {
 	facts = ToolFlow.gather_for!(fx, { ref: plan.ref, as_name: plan.as_name, roc: plan.roc })?
-	if args.offline return Err(GitRef.offline_failure(plan.source))
+	if (args.offline) return Err(GitRef.offline_failure(plan.source))
 	sha = ToolGitFlow.head!(fx, facts.net, plan.source, facts.now)?
 	installed = match facts.entries.find_first(|e| e.key == facts.key) {
 		Ok(entry) => Ok(entry)

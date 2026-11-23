@@ -36,7 +36,7 @@ Explain :: [].{
 	## Slice 065 (R-AL12, R-SP8): the command that failed. `UpgradeRoc` for `tln upgrade roc` (`command` is `Upgrade` and `names` is `["roc"]`), `Other` for each other command, also `tln upgrade` and `tln upgrade roc <name>` (manager answer Q1 of `docs/slices/065-fix-line.md`). Flags do not matter (they are not in the input).
 	failed_command : { command : [Install, Update, Upgrade], names : List(Str) } -> [UpgradeRoc, Other]
 	failed_command = |x| match x.command {
-		Upgrade => if x.names == ["roc"] UpgradeRoc else Other
+		Upgrade => if (x.names == ["roc"]) UpgradeRoc else Other
 		Install => Other
 		Update => Other
 	}
@@ -66,8 +66,8 @@ word = |c| match c.kind {
 # R-EP7, R-EP9: the interval, and the compilers whose fail is inferred.
 cause_line : Explain.Cause -> Str
 cause_line = |c| {
-	span = if c.from == c.to c.from else "${c.from} .. ${c.to}"
-	mark = if c.inferred.is_empty() "" else " (inferred on ${Str.join_with(c.inferred, ", ")})"
+	span = if (c.from == c.to) c.from else "${c.from} .. ${c.to}"
+	mark = if (c.inferred.is_empty()) "" else " (inferred on ${Str.join_with(c.inferred, ", ")})"
 	"  ${c.label} ${word(c)} on ${span}${mark}"
 }
 
@@ -84,13 +84,13 @@ fix_lines = |hint, causes, failed| {
 		Other => ["or tln upgrade roc"]
 	}
 	options = ["fix: ${first}"].concat(upgrade).concat(stops(causes).map(|s| "or ${s}"))
-	options.map_with_index(|text, i| if i == 0 "  ${text}" else "       ${text}")
+	options.map_with_index(|text, i| if (i == 0) "  ${text}" else "       ${text}")
 }
 
 stops : List(Explain.Cause) -> List(Str)
 stops = |causes| causes
-	.join_map(|c| if c.alias == "" [] else c.modules.keep_if(|m| m != "main.roc").map(|m| "stop using ${c.alias}.${m.drop_suffix(".roc")}"))
-	.fold([], |found, s| if found.contains(s) found else found.append(s))
+	.join_map(|c| if (c.alias == "") [] else c.modules.keep_if(|m| m != "main.roc").map(|m| "stop using ${c.alias}.${m.drop_suffix(".roc")}"))
+	.fold([], |found, s| if (found.contains(s)) found else found.append(s))
 
 kind_name : Explain.Cause -> Str
 kind_name = |c| match c.kind {

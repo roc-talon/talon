@@ -60,7 +60,7 @@ from_root! = |fx, args, cmd, start, tln, root| {
 		Ok(dir) => return Err(Fail.new(Usage, "tln run --each needs a workspace: ${dir}/talon.toml is a standalone project (no member file of a workspace is in it) and the walk stops there."))
 		Err(None) => {}
 	}
-	canonical = if members.is_empty() [] else members.map2(fx.canonical!(members), |file, result| result ?? file)
+	canonical = if (members.is_empty()) [] else members.map2(fx.canonical!(members), |file, result| result ?? file)
 	Known.record!(fx, { roots: start.roots, files: canonical, now: start.now })?
 	tools_path = Text.join(root, "talon.toml")
 	tools_text = match start.scan.walk.find_first(|d| d.dir == root) {
@@ -86,7 +86,7 @@ from_root! = |fx, args, cmd, start, tln, root| {
 read_nodes! : Fx, Str, List(Str) => Try(List(RunEach.Node), Fail)
 read_nodes! = |fx, root, members| {
 	paths = RunEach.paths({ root, members })
-	answers = if paths.is_empty() [] else fx.read_files!(paths)
+	answers = if (paths.is_empty()) [] else fx.read_files!(paths)
 	files = paths.map2(
 		answers,
 		|path, answer| match answer {
@@ -102,7 +102,7 @@ read_nodes! = |fx, root, members| {
 read_headers! : Fx, List(RunEach.Node) => Try(List({ file : Str, text : Str }), Fail)
 read_headers! = |fx, found| {
 	paths = RunEach.header_paths(found)
-	answers = if paths.is_empty() [] else fx.read_files!(paths)
+	answers = if (paths.is_empty()) [] else fx.read_files!(paths)
 	paths.map2(
 		answers,
 		|file, answer| match answer {
@@ -164,7 +164,7 @@ run_nodes! = |fx, args, run, tln| {
 	var $failed = no_dirs
 	var $first = 0.I32
 	for node in planned {
-		behind = if run.cmd.keep_going RunEach.skipped({ edges: space.links, failed: $failed, node: node.dir }) else Err(None)
+		behind = if (run.cmd.keep_going) RunEach.skipped({ edges: space.links, failed: $failed, node: node.dir }) else Err(None)
 		match behind {
 			Ok(cause) => fx.err!("skipped ${label(node.dir)} (after ${label(cause)})\n")
 			Err(None) => {
@@ -174,7 +174,7 @@ run_nodes! = |fx, args, run, tln| {
 					Err(fail) => Common.failed!(fx, args, fail)
 				}
 				if code != 0 {
-					if !run.cmd.keep_going return Ok(code)
+					if (!run.cmd.keep_going) return Ok(code)
 					$failed = $failed.append(node.dir)
 					if $first == 0 {
 						$first = code

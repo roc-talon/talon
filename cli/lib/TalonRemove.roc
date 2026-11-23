@@ -93,7 +93,7 @@ TalonRemove :: [].{
 
 	## The text of the tools of a screen: `none`, or the count and the keys in the order of the file: `3 (foo, bar, baz)`.
 	describe_tools : List(Str) -> Str
-	describe_tools = |keys| if keys.is_empty() "none" else "${keys.len().to_str()} (${Str.join_with(keys, ", ")})"
+	describe_tools = |keys| if (keys.is_empty()) "none" else "${keys.len().to_str()} (${Str.join_with(keys, ", ")})"
 
 	## The text of the compilers of a screen: the count of each kind in this order, `<n> nightly` or `nightlies`, `release(s)`, `git build(s)`, `link(s)`, `copy` or `copies`, then `zig <version>` for each Zig. `none` for nothing. Example: `4 nightlies, 1 git build, zig 0.17.0`.
 	describe_compilers : { ids : List(Str), zigs : List(Str) } -> Str
@@ -106,7 +106,7 @@ TalonRemove :: [].{
 			count_text(facts.ids, Copy, "copy", "copies"),
 		].keep_if(|text| !text.is_empty())
 		words = counts.concat(facts.zigs.map(|version| "zig ${version}"))
-		if words.is_empty() "none" else Str.join_with(words, ", ")
+		if (words.is_empty()) "none" else Str.join_with(words, ", ")
 	}
 
 	## R-RM7 to R-RM10, R-RM4: the paths that one `tree_info!` call measures, in this order. `file` is `tln` (`tln.exe` on Windows). `tools` are the file names in the data bin dir. `compats` are the `compat-<id>` dirs of the compilers.
@@ -197,7 +197,7 @@ TalonRemove :: [].{
 	screen : { version : Str, parts : List(Part) } -> Str
 	screen = |facts| {
 		shown = facts.parts.keep_if(|part| part.group != Talon)
-		rows = shown.map(|part| row_of(part, if part.group == Tools "they run without Talon" else ""))
+		rows = shown.map(|part| row_of(part, if (part.group == Tools) "they run without Talon" else ""))
 		options = [
 			"  1) Remove Talon, the compilers and the data. Keep the tools.   [default]",
 			"  2) Remove Talon and all of the above",
@@ -239,7 +239,7 @@ TalonRemove :: [].{
 			}
 			path = done.path.map(
 				|place| match place {
-					Profile(file) => "removed the PATH line from ${file}\n"
+					Profile(profile) => "removed the PATH line from ${profile}\n"
 					UserPath(dir) => "removed ${dir} from the user Path\n"
 				},
 			)
@@ -268,7 +268,7 @@ TalonRemove :: [].{
 			_ => done.parts.map(
 				|part| JsonDoc.Obj([
 					("group", JsonDoc.Text(group_key(part.group))),
-					("action", JsonDoc.Text(if removes({ choice: done.choice, group: part.group }) "remove" else "keep")),
+					("action", JsonDoc.Text(if (removes({ choice: done.choice, group: part.group })) "remove" else "keep")),
 					("detail", JsonDoc.Text(part.detail)),
 					("bytes", JsonDoc.Num(part.size.to_i64_wrap())),
 				]),
@@ -294,7 +294,7 @@ TalonRemove :: [].{
 				JsonDoc.Arr(
 					done.path.map(
 						|place| match place {
-							Profile(file) => JsonDoc.Text(file)
+							Profile(profile) => JsonDoc.Text(profile)
 							UserPath(_) => JsonDoc.Text("the user Path")
 						},
 					),
@@ -330,13 +330,13 @@ TalonRemove :: [].{
 		script = "for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q ${quoted} >nul 2>&1 & ${gone} exit /b 0)"
 		{
 			argv: ["cmd.exe", "/d", "/c", script],
-			env: files.map_with_index(|file, i| ("TALON_DEL_${(i + 1).to_str()}", file)),
+			env: files.map_with_index(|one, i| ("TALON_DEL_${(i + 1).to_str()}", one)),
 		}
 	}
 
 	## The file name of Talon in the data bin dir and in the bin dir: `tln` (`tln.exe` on Windows).
 	file : Setup.Os -> Str
-	file = |os| if os == Windows "tln.exe" else "tln"
+	file = |os| if (os == Windows) "tln.exe" else "tln"
 }
 
 has_flag : Args, Str -> Bool
@@ -374,7 +374,7 @@ kind_of = |id| if id.starts_with("nightly-") {
 count_text : List(Str), Kind, Str, Str -> Str
 count_text = |ids, kind, one, many| {
 	n = ids.keep_if(|id| kind_of(id) == kind).len()
-	if n == 0 "" else "${n.to_str()} ${if n == 1 one else many}"
+	if (n == 0) "" else "${n.to_str()} ${if (n == 1) one else many}"
 }
 
 Row : { label : Str, detail : Str, size : Str, tail : Str }
@@ -391,14 +391,14 @@ table = |rows| {
 	rows.map(
 		|row| {
 			size = "${Str.repeat(" ", size_width - row.size.count_utf8_bytes())}${row.size}"
-			tail = if row.tail.is_empty() "" else "   ${row.tail}"
+			tail = if (row.tail.is_empty()) "" else "   ${row.tail}"
 			"${padded(row.label, label_width)}   ${padded(row.detail, detail_width)}   ${size}${tail}"
 		},
 	)
 }
 
 widest : List(Str) -> U64
-widest = |texts| texts.fold(0, |best, text| if text.count_utf8_bytes() > best text.count_utf8_bytes() else best)
+widest = |texts| texts.fold(0, |best, text| if (text.count_utf8_bytes() > best) text.count_utf8_bytes() else best)
 
 padded : Str, U64 -> Str
 padded = |text, width| "${text}${Str.repeat(" ", width - text.count_utf8_bytes())}"
@@ -411,8 +411,8 @@ verb : Done, Group -> Str
 verb = |done, group| {
 	goes = TalonRemove.removes({ choice: done.choice, group })
 	match done.outcome {
-		DryRun => if goes "remove" else "keep"
-		_ => if goes "removed" else "kept"
+		DryRun => if (goes) "remove" else "keep"
+		_ => if (goes) "removed" else "kept"
 	}
 }
 

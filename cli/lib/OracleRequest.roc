@@ -16,7 +16,7 @@ OracleRequest :: [].{
 
 	# R-SP24: only the second search moves the `Movable` slots.
 	movable_of : OracleBase.Input -> List(Str)
-	movable_of = |input| if input.second input.slots.map_with_index(|slot, i| (slot, i)).keep_if(|(slot, _)| slot.hold == Movable).map(|(_, i)| slot_name(i)) else []
+	movable_of = |input| if (input.second) input.slots.map_with_index(|slot, i| (slot, i)).keep_if(|(slot, _)| slot.hold == Movable).map(|(_, i)| slot_name(i)) else []
 
 	group_key : { form : Str, series : Str } -> Str
 	group_key = |g| "${g.form} ${g.series}"
@@ -43,14 +43,14 @@ OracleRequest :: [].{
 		{
 			name: slot_name(i),
 			group: slot_group(slot),
-			kind: if slot.is_platform Platform else Package,
-			candidates: if open slot.candidates.map(|c| { id: c.url, version: c.ident.version, published_at: seen(c), yanked: Bool.False }) else [],
-			ranges: if open slot.ranges else [],
+			kind: if (slot.is_platform) Platform else Package,
+			candidates: if (open) slot.candidates.map(|c| { id: c.url, version: c.ident.version, published_at: seen(c), yanked: Bool.False }) else [],
+			ranges: if (open) slot.ranges else [],
 			current: match slot.current {
 				Ok(url) => Ident.of_url(url).map_ok(|ident| { id: url, version: ident.version }).map_err(|_| None)
 				Err(None) => Err(None)
 			},
-			named: if open slot.named else Err(None),
+			named: if (open) slot.named else Err(None),
 		}
 	}
 
@@ -63,7 +63,7 @@ OracleRequest :: [].{
 	releases = |slot| {
 		listed = slot.candidates.map(|c| c.id)
 		ids = match slot.current {
-			Ok(c) => if listed.contains(c.id) listed else listed.append(c.id)
+			Ok(c) => if (listed.contains(c.id)) listed else listed.append(c.id)
 			Err(_) => listed
 		}
 		ids.keep_oks(|id| Ident.of_url(id).map_ok(|ident| (id, group_key(ident.group))))
@@ -78,7 +78,7 @@ OracleRequest :: [].{
 				|(other, theirs)| mine.join_map(
 					|(a, g)| {
 						clash = theirs.keep_if(|(b, h)| h == g and b != a).map(|(b, _)| b)
-						if clash.is_empty() [] else [[{ name, ids: [a], sign: In }, { name: other, ids: clash, sign: In }]]
+						if (clash.is_empty()) [] else [[{ name, ids: [a], sign: In }, { name: other, ids: clash, sign: In }]]
 					},
 				),
 			),
@@ -99,7 +99,7 @@ OracleRequest :: [].{
 		match compat.compiler {
 			Ok(nightly) => {
 				domain = OracleDomain.space(compat.domain, nightly)
-				{ ..base, slots: slots.append(roc_slot(values_of(askable, nightly))), compat: { domain, checks: checks_of(input, compat, { domain, assumed: if assume Ok(nightly) else Err(None) }), used: used_of(input, compat), probes: compat.probes } }
+				{ ..base, slots: slots.append(roc_slot(values_of(askable, nightly))), compat: { domain, checks: checks_of(input, compat, { domain, assumed: if (assume) Ok(nightly) else Err(None) }), used: used_of(input, compat), probes: compat.probes } }
 			}
 			Err(None) => base
 		}
@@ -109,7 +109,7 @@ OracleRequest :: [].{
 	moving : OracleBase.Input, OracleBase.Compat, List(Str) -> Solver.Request
 	moving = |input, compat, values| {
 		req = request_of(input, compat, Bool.True, Ok(values))
-		with_current = |slot, held| if slot.kind == Compiler { ..slot, current: Ok({ id: held, version: held }) } else slot
+		with_current = |slot, held| if (slot.kind == Compiler) { ..slot, current: Ok({ id: held, version: held }) } else slot
 		match compat.compiler {
 			Ok(held) => { ..req, slots: req.slots.map(|slot| with_current(slot, held)) }
 			Err(None) => req

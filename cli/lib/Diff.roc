@@ -173,7 +173,7 @@ common_lead = |a, b| {
 
 common_tail : List(Str), List(Str) -> U64
 common_tail = |a, b| {
-	most = if a.len() < b.len() a.len() else b.len()
+	most = if (a.len() < b.len()) a.len() else b.len()
 	var $n = 0.U64
 	while $n < most and (a.get(a.len() - 1 - $n) ?? "") == (b.get(b.len() - 1 - $n) ?? "") {
 		$n = $n + 1
@@ -229,7 +229,7 @@ lcs_table = |a, b| {
 			} else {
 				up = prev.get($j + 1) ?? 0
 				left = $row.last() ?? 0
-				if up >= left up else left
+				if (up >= left) up else left
 			}
 			$row = $row.append(cell)
 			$j = $j + 1
@@ -255,7 +255,7 @@ groups = |script| script.map_with_index(|line, i| (line, i)).fold(
 # One hunk: the lines of the group with 3 lines of context on each side, and the numbers (R-PA7 numbers and counts).
 hunk_of : List(Diff.Line), { first : U64, last : U64 } -> Diff.Hunk
 hunk_of = |script, g| {
-	start = if g.first > 3 g.first - 3 else 0
+	start = if (g.first > 3) g.first - 3 else 0
 	lines = script.sublist({ start, len: g.last + 4 - start })
 	before = script.take_first(start)
 	old_before = before.count_if(|l| !is_ins(l))
@@ -263,9 +263,9 @@ hunk_of = |script, g| {
 	old_len = lines.count_if(|l| !is_ins(l))
 	new_len = lines.count_if(|l| !is_del(l))
 	{
-		old_start: if old_len == 0 old_before else old_before + 1,
+		old_start: if (old_len == 0) old_before else old_before + 1,
 		old_len,
-		new_start: if new_len == 0 new_before else new_before + 1,
+		new_start: if (new_len == 0) new_before else new_before + 1,
 		new_len,
 		lines,
 	}
@@ -290,12 +290,12 @@ render_change = |change| match change {
 	Edit({ path, hunks }) => "--- a/${path}\n+++ b/${path}\n${Str.join_with(hunks.map(render_hunk), "")}"
 	Add({ path, content: Utf8(text) }) => {
 		lines = lines_of(text)
-		hunk = if lines.is_empty() "" else "@@ -0,0 +1,${lines.len().to_str()} @@\n${Str.join_with(lines.map(|l| render_line("+", l)), "")}"
+		hunk = if (lines.is_empty()) "" else "@@ -0,0 +1,${lines.len().to_str()} @@\n${Str.join_with(lines.map(|l| render_line("+", l)), "")}"
 		"--- /dev/null\n+++ b/${path}\n${hunk}"
 	}
 	Delete({ path, content: Utf8(text) }) => {
 		lines = lines_of(text)
-		hunk = if lines.is_empty() "" else "@@ -1,${lines.len().to_str()} +0,0 @@\n${Str.join_with(lines.map(|l| render_line("-", l)), "")}"
+		hunk = if (lines.is_empty()) "" else "@@ -1,${lines.len().to_str()} +0,0 @@\n${Str.join_with(lines.map(|l| render_line("-", l)), "")}"
 		"--- a/${path}\n+++ /dev/null\n${hunk}"
 	}
 	Add({ path, content: Binary(_) }) => "Binary files /dev/null and b/${path} differ\n"
@@ -318,7 +318,7 @@ render_hunk = |h| {
 
 # A line with its prefix. A line with no line end is followed by the marker (D1).
 render_line : Str, Str -> Str
-render_line = |prefix, text| if text.ends_with("\n") "${prefix}${text}" else "${prefix}${text}\n\\ No newline at end of file\n"
+render_line = |prefix, text| if (text.ends_with("\n")) "${prefix}${text}" else "${prefix}${text}\n\\ No newline at end of file\n"
 
 # ---- apply ----
 
@@ -385,11 +385,11 @@ place_hunk = |lines, cur, h| {
 	)
 	if old.is_empty() {
 		# The base file was empty: the hunk applies to an empty text only.
-		if lines.is_empty() Ok({ out: cur.out.concat(new), pos: 0, shift: cur.shift }) else Err(NoFit)
+		if (lines.is_empty()) Ok({ out: cur.out.concat(new), pos: 0, shift: cur.shift }) else Err(NoFit)
 	} else if old.len() > lines.len() {
 		Err(NoFit)
 	} else {
-		number = if h.old_start > 0 h.old_start - 1 else 0
+		number = if (h.old_start > 0) h.old_start - 1 else 0
 		wanted = number.to_i64_wrap() + cur.shift
 		at = nearest(lines, old, { from: cur.pos, last: lines.len() - old.len(), wanted })?
 		Ok({
@@ -422,7 +422,7 @@ nearest = |lines, old, spot| {
 		}
 		$p = $p + 1
 	}
-	if $found Ok($at) else Err(NoFit)
+	if ($found) Ok($at) else Err(NoFit)
 }
 
 fits : List(Str), List(Str), U64 -> Bool

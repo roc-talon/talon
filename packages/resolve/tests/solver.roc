@@ -23,17 +23,17 @@ pf = |name, versions| slot(name, Platform, versions)
 
 # The facts of all releases of the slots: the kind of the slot, no platform, no dep.
 known : List(Solver.Slot) -> List(Solver.Fact)
-known = |slots| slots.join_map(|s| s.candidates.map(|c| { id: c.id, kind: if s.kind == Package Package else Platform, pf: Err(None), deps: [] }))
+known = |slots| slots.join_map(|s| s.candidates.map(|c| { id: c.id, kind: if (s.kind == Package) Package else Platform, pf: Err(None), deps: [] }))
 
 # The fact of release `id` gets these deps (a dep is `group` and the lowest version), or this platform.
 needs : List(Solver.Fact), Str, List((Str, Str)) -> List(Solver.Fact)
-needs = |facts, id, deps| facts.map(|f| if f.id == id { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
+needs = |facts, id, deps| facts.map(|f| if (f.id == id) { ..f, deps: deps.map(|(group, version)| { group, version }) } else f)
 
 on_pf : List(Solver.Fact), Str, Str -> List(Solver.Fact)
-on_pf = |facts, id, url| facts.map(|f| if f.id == id { ..f, pf: Ok(url) } else f)
+on_pf = |facts, id, url| facts.map(|f| if (f.id == id) { ..f, pf: Ok(url) } else f)
 
 kind_of : List(Solver.Fact), Str, [Package, Platform, App] -> List(Solver.Fact)
-kind_of = |facts, id, kind| facts.map(|f| if f.id == id { ..f, kind } else f)
+kind_of = |facts, id, kind| facts.map(|f| if (f.id == id) { ..f, kind } else f)
 
 req : List(Solver.Slot), List(Solver.Fact) -> Solver.Request
 req = |slots, facts| { slots, rules: { now: 1000, min_age: 100, snapshot: Err(None), strategy: Highest }, facts, conflicts: [], compat: { domain: [], checks: [], used: [], probes: Allowed } }

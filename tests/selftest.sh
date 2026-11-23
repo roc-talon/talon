@@ -254,7 +254,7 @@ build)
         [ -n "${FAKE_FUZZ_HANG:-}" ] && case "$*" in *"$FAKE_FUZZ_HANG"*) hang=1 ;; esac
         if [ -n "$fuzz" ]; then
             # Slice 033: a fake roc-fuzz target. It logs its dir and its arguments, a file that an earlier run left in its dir, and answers like the real one:
-            # FAKE_FUZZ_EXIT (default 0) is its exit code. A failing run writes an input file in --artifact-dir and prints libFuzzer noise and one crash line.
+            # FAKE_FUZZ_EXIT (default 0) is its exit code. A failing run writes an input file in <--report-dir>/failures and prints libFuzzer noise and one crash line.
             cat > "$out" << FUZZ
 #!/bin/sh
 echo "RUN \$PWD \$*" >> "$FAKE_ROC_LOG"
@@ -263,14 +263,14 @@ echo "INFO: noise"
 [ $hang = 1 ] && exec sleep 10
 if [ "${FAKE_FUZZ_EXIT:-0}" != 0 ]; then
     d=
-    for a in "\$@"; do case \$a in --artifact-dir=*) d=\${a#--artifact-dir=} ;; esac; done
+    for a in "\$@"; do case \$a in --report-dir=*) d=\${a#--report-dir=}/failures ;; esac; done
     mkdir -p "\$d"
     echo input > "\$d/crash-abc"
     echo "#9 NEW noise"
     echo "[roc crashed] R-EP6: boom"
     exit ${FAKE_FUZZ_EXIT:-0}
 fi
-echo "Done 20000 runs in 0 second(s)"
+echo "fake: passed; baseline unbaselined; examples 0; exploration passed (attempted 20000, accepted 20000, rejected 0)"
 FUZZ
         elif [ "${FAKE_ROC_APP:-}" = cases ]; then
             printf '#!/bin/sh\ncase $1 in *hang*) exec sleep 10 ;; esac\nmkdir -p "$1/out"\necho 0 > "$1/out/exit"\n' > "$out"
@@ -635,7 +635,7 @@ printf 'app [target] {}\n' > "$T/fuzz-lim/quick.roc"
 printf 'app [target] {}\n' > "$T/fuzz-lim/hangs.roc"
 fx lim-l1 env L1_HOST=Linux-x86_64 L1_DIR="$T/fuzz-lim" TEST_TIMEOUT=1 FAKE_FUZZ_HANG=hangs.roc "$ROOT/scripts/test.sh" l1
 if [ $rc = 1 ] && grep -Eq '^l1 +FAIL ' $T/lim-l1.out && grep -qx "l1: $T/fuzz-lim/hangs.roc: timed out after 1 s (seed 1, 20000 runs)" $T/lim-l1.out &&
-    [ "$(grep -c 'timed out' $T/lim-l1.out)" = 1 ] && grep -q "quick.roc: Done" $T/lim-l1.out; then ok
+    [ "$(grep -c 'timed out' $T/lim-l1.out)" = 1 ] && grep -q "quick.roc: fake: passed" $T/lim-l1.out; then ok
 else bad "limit l1: a fuzz run that hangs gives 'l1: <file>: timed out after 1 s (seed 1, 20000 runs)' (once) and 'l1 FAIL' (exit 1). The other target passes."; cat $T/lim-l1.out; fi
 }
 sec limit_l1 s_limit_l1
@@ -722,12 +722,12 @@ fx l1-pass env L1_HOST=Linux-x86_64 "$ROOT/scripts/test.sh" l1
 rc1=$rc
 if [ $rc1 = 0 ] && [ "$n_targets" -ge 1 ] && [ "$(grep -c '^build ' $T/l1-pass.log)" = "$n_targets" ] &&
     [ "$(grep -Ec "^build --fuzz --opt=speed tests/fuzz/[a-z0-9_-]+\.roc --output=$W/l1/[a-z0-9_-]+/target$" $T/l1-pass.log)" = "$n_targets" ] &&
-    [ "$(grep -Ec "^RUN $W/l1/[a-z0-9_-]+ run --runs=[0-9]+ --seed=1 --artifact-dir=$W/l1/[a-z0-9_-]+/art$" $T/l1-pass.log)" = "$n_targets" ] &&
-    ! grep -q -e '--time' $T/l1-pass.log && grep -Eq '^l1 +pass +[0-9.]+ +60$' $T/l1-pass.out; then ok
-else bad "l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in \$WORK/l1/<name> with a --runs count, --seed=1 and no --time, table row 'l1 pass .. 60'"; cat $T/l1-pass.log $T/l1-pass.out; fi
+    [ "$(grep -Ec "^RUN $W/l1/[a-z0-9_-]+ run --runs=[0-9]+ --seed=1 --time=120 --report-dir=$W/l1/[a-z0-9_-]+/rep$" $T/l1-pass.log)" = "$n_targets" ] &&
+    [ "$(grep -c -e ' --time=120 ' $T/l1-pass.log)" = "$n_targets" ] && grep -Eq '^l1 +pass +[0-9.]+ +60$' $T/l1-pass.out; then ok
+else bad "l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in \$WORK/l1/<name> with a --runs count, --seed=1 and --time=120, table row 'l1 pass .. 60'"; cat $T/l1-pass.log $T/l1-pass.out; fi
 # L1_RUNS and L1_SEED change the run. OPT=dev is given on purpose: the fuzz build stays --opt=speed.
 fx l1-cfg env OPT=dev L1_HOST=Linux-x86_64 L1_RUNS=7 L1_SEED=3 "$ROOT/scripts/test.sh" l1
-if [ $rc = 0 ] && [ "$(grep -c ' run --runs=7 --seed=3 --artifact-dir=' $T/l1-cfg.log)" = "$n_targets" ] && ! grep '^build ' $T/l1-cfg.log | grep -q -e '--opt=dev'; then ok
+if [ $rc = 0 ] && [ "$(grep -c ' run --runs=7 --seed=3 --time=120 --report-dir=' $T/l1-cfg.log)" = "$n_targets" ] && ! grep '^build ' $T/l1-cfg.log | grep -q -e '--opt=dev'; then ok
 else bad "l1: L1_RUNS=7 L1_SEED=3 give --runs=7 --seed=3, and OPT=dev does not change the fuzz build"; cat $T/l1-cfg.log; fi
 # The count of a target (TESTING.md 1: the long runs are for the nightly run): the line `# l1-runs: <n>` of the target file, else 20000. L1_RUNS is for all targets and wins. L1_DIR is a dir of fake targets.
 mkdir -p "$T/fuzz-cnt"
@@ -744,7 +744,7 @@ W=$T/work-l1-fail
 fx l1-fail env L1_HOST=Linux-x86_64 FAKE_FUZZ_EXIT=77 "$ROOT/scripts/test.sh" l1
 if [ $rc = 1 ] && grep -Eq '^l1 +FAIL ' $T/l1-fail.out && grep -Eq '^tests/fuzz/[a-z0-9_-]+\.roc: FAILED \(exit 77, seed 1, [0-9]+ runs\)$' $T/l1-fail.out &&
     grep -q '^\[roc crashed\] R-EP6: boom$' $T/l1-fail.out && ! grep -q -e 'INFO: noise' -e '#9 NEW' $T/l1-fail.out &&
-    grep -Eq "^replay: $W/l1/[a-z0-9_-]+/target replay $W/l1/[a-z0-9_-]+/art/crash-abc$" $T/l1-fail.out; then ok
+    grep -Eq "^replay: $W/l1/[a-z0-9_-]+/target replay $W/l1/[a-z0-9_-]+/rep/failures/crash-abc$" $T/l1-fail.out; then ok
 else bad "l1: a target that exits 77 fails the step: exit 1, 'l1 FAIL', 'FAILED (exit 77, seed 1, <count> runs)', the crash line, no libFuzzer noise, the replay line"; cat $T/l1-fail.out; fi
 # A failing build: exit 1, the build log, no run.
 fx l1-build env L1_HOST=Linux-x86_64 FAKE_ROC_BUILD=fail "$ROOT/scripts/test.sh" l1

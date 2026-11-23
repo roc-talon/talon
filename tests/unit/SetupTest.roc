@@ -191,7 +191,7 @@ expect {
 	dbg (missing(bash), missing(zsh), missing(fish))
 	missing(bash) == [] and missing(zsh) == [] and missing(fish) == []
 		and bash.contains("complete -F _tln tln") and zsh.starts_with("#compdef tln\n") and fish.contains("complete -c tln")
-			and Setup.completion(Bash) == bash and bash != zsh and zsh != fish
+		and Setup.completion(Bash) == bash and bash != zsh and zsh != fish
 }
 
 # R-HF11, R-ST4, R-LY9: the Windows `Path` edit as a command line. `powershell -NoProfile -NonInteractive -Command <script>`. The dir is in the variable `TALON_BIN_DIR`, not in the script: a dir with a space, a quote, `$` or `%` needs no quoting, and the script
@@ -211,8 +211,8 @@ expect {
 	dbg (add.argv.len(), add.env, remove.env)
 	add.argv.len() == 5 and script(add) != "" and has_all(script(add)) and registry(script(add))
 		and !script(add).contains("setx") and !script(add).contains(dir) and !script(add).contains("A B")
-			and add.env == [("TALON_BIN_DIR", dir)] and remove.env == [("TALON_BIN_DIR", dir)]
-				and script(add) == script(other) and script(add) != script(remove) and has_all(script(remove))
+		and add.env == [("TALON_BIN_DIR", dir)] and remove.env == [("TALON_BIN_DIR", dir)]
+		and script(add) == script(other) and script(add) != script(remove) and has_all(script(remove))
 }
 
 # R-ST1, R-ST11, R-TF1, R-TF2, R-TF3, R-TF6: the tool names in `tools.json` (question Q1: the form is a proposal). The names are the keys of the object `tools`, in the order of the text. No `tools` field gives no tool. A field that Talon does not know

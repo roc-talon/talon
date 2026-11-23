@@ -36,13 +36,13 @@ PickOptional :: [].{
 
 	step! : Fx, ResolveBase.Request, PickOptional.Round, PickOptional.State => Try(PickOptional.Stepped, Fail)
 	step! = |fx, request, round, state| {
-		wanted = round.pairs.map(|p| p.nightly).keep_if(|id| state.open.contains(id)).fold([], |found, id| if found.contains(id) found else found.append(id))
-		if wanted.is_empty() return Ok({ state, pairs: round.pairs })
+		wanted = round.pairs.map(|p| p.nightly).keep_if(|id| state.open.contains(id)).fold([], |found, id| if (found.contains(id)) found else found.append(id))
+		if (wanted.is_empty()) return Ok({ state, pairs: round.pairs })
 		cap = round.settings.max_toolchains
-		left = if cap > state.tried cap - state.tried else 0
+		left = if (cap > state.tried) cap - state.tried else 0
 		plan = Consent.optional_round({ ids: wanted, installed: [], left, sizes: round.sizes })
 		# R-LF4: a dry run answers No, so the opt-in is ignored.
-		want = Consent.optional_want({ count: plan.fetch.len(), mode: request.prompt.mode, yes: !request.dry_run and request.prompt.yes, flag: if request.dry_run Err(NoFlag) else request.downloads.probe })
+		want = Consent.optional_want({ count: plan.fetch.len(), mode: request.prompt.mode, yes: !request.dry_run and request.prompt.yes, flag: if (request.dry_run) Err(NoFlag) else request.downloads.probe })
 		match want {
 			Nothing => Ok(left_out(round, state, { gone: state.open, dropped: state.dropped + plan.dropped.len() }))
 			Skip => {

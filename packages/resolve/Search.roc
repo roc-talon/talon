@@ -41,7 +41,7 @@ below : U64 -> List(U64)
 below = |n| List.repeat(0, n).map_with_index(|_, i| i)
 
 set_at : List(List(U64)), U64, List(U64) -> List(List(U64))
-set_at = |state, v, left| state.map_with_index(|s, k| if k == v left else s)
+set_at = |state, v, left| state.map_with_index(|s, k| if (k == v) left else s)
 
 # The state after the entries of the trail.
 state_of : List(List(U64)), List(Entry) -> List(List(U64))
@@ -116,7 +116,7 @@ satisfier = |trail, l| trail.find_first_index(|e| e.v == l.v and e.left.all(|x| 
 # Conflict resolution of the row `cur`, which is a conflict for this trail.
 resolve : List(Search.Row), List(Entry), List(List(U64)), U64 -> Resolved
 resolve = |rows, trail, init, cur| match rows.get(cur) {
-	Ok(row) => if row.lits.is_empty() Lost({ rows, last: cur }) else resolve_row(rows, trail, init, cur, row.lits)
+	Ok(row) => if (row.lits.is_empty()) Lost({ rows, last: cur }) else resolve_row(rows, trail, init, cur, row.lits)
 	Err(_) => Lost({ rows, last: cur })
 }
 
@@ -159,11 +159,11 @@ merge : List(List(U64)), List(Search.Lit), Search.Lit, Search.Lit -> List(Search
 merge = |init, rest, t, s| {
 	all = below((init.get(t.v) ?? []).len())
 	union = all.keep_if(|x| t.set.contains(x) or s.set.contains(x))
-	extra = if union.len() == all.len() [] else [{ v: t.v, set: union }]
+	extra = if (union.len() == all.len()) [] else [{ v: t.v, set: union }]
 	rest.concat(extra).fold(
 		[],
 		|acc, l| match acc.find_first_index(|a| a.v == l.v) {
-			Ok(j) => acc.map_with_index(|a, k| if k == j { v: a.v, set: a.set.keep_if(|x| l.set.contains(x)) } else a)
+			Ok(j) => acc.map_with_index(|a, k| if (k == j) { v: a.v, set: a.set.keep_if(|x| l.set.contains(x)) } else a)
 			Err(_) => acc.append(l)
 		},
 	).sort_with(|a, b| a.v.order_relative_to(b.v))

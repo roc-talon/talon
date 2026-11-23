@@ -90,10 +90,10 @@ expect {
 	dbg none
 	two_days.named == all_named
 		and two_days.auto == ["nightly-2026-10-09-258ab27", "nightly-2026-10-12-2664a27"]
-			and none.named == all_named
-				and none.auto == all_named
-					and empty == { named: [], auto: [] }
-						and off == { named: all_named, auto: [] }
+		and none.named == all_named
+		and none.auto == all_named
+		and empty == { named: [], auto: [] }
+		and off == { named: all_named, auto: [] }
 }
 
 # R-ST16, R-RU1, R-NS3, R-C7, R-SO14 (slice 072): `latest`, the compiler that `tln setup` writes as `default-roc` and that R-SO14 downloads outside a project: the newest release that the `nightly` switch and `min-release-age`
@@ -117,10 +117,10 @@ expect {
 	dbg none
 	two_days == Ok("nightly-2026-10-12-2664a27")
 		and none == Ok("nightly-2026-10-13-91fa0c2")
-			and latest(list, 9 * day, Bool.True) == Ok("nightly-2026-10-09-258ab27")
-				and latest(young, 2 * day, Bool.True) == Err(Empty)
-					and latest([], 0, Bool.True) == Err(Empty)
-						and latest(list, 0, Bool.False) == Err(Empty)
+		and latest(list, 9 * day, Bool.True) == Ok("nightly-2026-10-09-258ab27")
+		and latest(young, 2 * day, Bool.True) == Err(Empty)
+		and latest([], 0, Bool.True) == Err(Empty)
+		and latest(list, 0, Bool.False) == Err(Empty)
 }
 
 # R-CV2, R-SC10, R-NS2 (review of slice 021, Q6): why `pick` found no compiler. The exact id of a nightly that has no asset for the host names the host: `<id> has no asset for <target>` (kind `Usage`, exit 2).
@@ -144,17 +144,17 @@ expect {
 	dbg prefix
 	exact == Fail.new(Usage, "nightly-2026-10-08-0badc0d has no asset for linux_x86_64")
 		and exact.kind.code() == 2
-			and on_windows == Fail.new(Usage, "nightly-2026-10-08-0badc0d has no asset for windows_arm64")
-				and prefix == Fail.new(Usage, "no compiler matches nightly-2026-10-08")
-					and unknown == Fail.new(Usage, "no compiler matches nightly-2030")
-						and has_asset == Fail.new(Usage, "no compiler matches nightly-2026-10-09-258ab27")
-							and ambiguous == Nightlies.failure(Ambiguous({ text: "nightly-2026-10", ids: ["nightly-2026-10-09-258ab27"] }))
-								and failed(LinuxX64, Empty) == Nightlies.failure(Empty)
-									and off(Env) == Fail.new(NoTuple, "no compiler release is known, and nightly is false (set by TALON_NIGHTLY)")
-										and off(Config) == Fail.new(NoTuple, "no compiler release is known, and nightly is false (set by nightly in config.toml)")
-											and off(Default) == Fail.new(NoTuple, "no compiler release is known, and nightly is false (set by the default)")
-												and off(Env).kind.code() == 10
-													and other_off == Fail.new(Usage, "no compiler matches nightly-2030")
+		and on_windows == Fail.new(Usage, "nightly-2026-10-08-0badc0d has no asset for windows_arm64")
+		and prefix == Fail.new(Usage, "no compiler matches nightly-2026-10-08")
+		and unknown == Fail.new(Usage, "no compiler matches nightly-2030")
+		and has_asset == Fail.new(Usage, "no compiler matches nightly-2026-10-09-258ab27")
+		and ambiguous == Nightlies.failure(Ambiguous({ text: "nightly-2026-10", ids: ["nightly-2026-10-09-258ab27"] }))
+		and failed(LinuxX64, Empty) == Nightlies.failure(Empty)
+		and off(Env) == Fail.new(NoTuple, "no compiler release is known, and nightly is false (set by TALON_NIGHTLY)")
+		and off(Config) == Fail.new(NoTuple, "no compiler release is known, and nightly is false (set by nightly in config.toml)")
+		and off(Default) == Fail.new(NoTuple, "no compiler release is known, and nightly is false (set by the default)")
+		and off(Env).kind.code() == 10
+		and other_off == Fail.new(Usage, "no compiler matches nightly-2030")
 }
 
 # R-CC4 step 6, R-LY1, R-DA4, R-CC1, R-CC3: the paths of one install. The lock item is the install dir. The archive is in the temp dir. A Windows host has `roc.exe`.
@@ -175,10 +175,10 @@ expect {
 		probe_file: "/c/roc/talon/tmp/0123456789abcdef/empty.roc",
 	}
 		and windows.roc == "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/roc.exe"
-			and windows.meta == "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/.talon.json"
-				and windows.probe_file == "/c/roc/talon/tmp/00000000000000ff/empty.roc"
-					and release.item == "/c/roc/toolchains/0.1.0"
-						and release.roc == "/c/roc/toolchains/0.1.0.0123456789abcdef.tmp/roc"
+		and windows.meta == "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/.talon.json"
+		and windows.probe_file == "/c/roc/talon/tmp/00000000000000ff/empty.roc"
+		and release.item == "/c/roc/toolchains/0.1.0"
+		and release.roc == "/c/roc/toolchains/0.1.0.0123456789abcdef.tmp/roc"
 }
 
 # R-HF5, R-SE9, R-HF2: the command of `tar` (the same line for `.tar.gz` and `.zip`, with the top dir of the archive cut) and of `chmod` (none on Windows).
@@ -190,7 +190,7 @@ expect {
 	dbg chmod
 	tar == ["tar", "-xf", "/t/a.tar.gz", "-C", "/t", "--strip-components=1"]
 		and zip == ["tar", "-xf", "/t/a.zip", "-C", "/t", "--strip-components=1"]
-			and chmod == [Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Err(NotNeeded), Err(NotNeeded)]
+		and chmod == [Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Err(NotNeeded), Err(NotNeeded)]
 }
 
 # R-CV4, R-SE11, R-DA7, R-SE9, R-HF5, R-DI12, R-HF12: the checks of the digest and the failures with their kinds (exit codes 16, 15, 18).
@@ -281,9 +281,9 @@ expect {
 	dbg unknown
 	ok == "{\"format\":1,\"id\":\"nightly-2026-10-09-258ab27\",\"url\":\"http://127.0.0.1:1/dl/a.tar.gz\",\"sha256\":\"${sha_a}\",\"sha256_source\":\"github-digest\",\"typed\":\"@latest\",\"compat\":\"c0ffee\",\"installed_at\":\"2026-10-22T12:00:00Z\",\"published_at\":\"2026-10-09T15:01:06Z\"}\n"
 		and unknown == ok.replace_each("\"compat\":\"c0ffee\"", "\"compat\":null")
-			and several == unknown
-				and quoted == ok.replace_each("\"typed\":\"@latest\"", "\"typed\":\"a\\\"b\"")
-					and JsonDoc.parse(ok.trim()).is_ok()
+		and several == unknown
+		and quoted == ok.replace_each("\"typed\":\"@latest\"", "\"typed\":\"a\\\"b\"")
+		and JsonDoc.parse(ok.trim()).is_ok()
 }
 
 # R-SO15, R-LY4, R-CC6, R-TF4: the edit of `config.toml` for the first default. The key in any form is "set": no write. Else one line, and every other byte stays.
@@ -322,22 +322,22 @@ expect {
 	dbg p.question
 	bad_sizes == []
 		and p.id == "roc-install"
-			and p.kind == Default
-				and p.shape == YesNo
-					and p.default == Yes
-						and p.question == "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27?"
-							and p.subject == "the download of nightly-2026-10-09-258ab27"
-								and (p.answer_line)(Yes) == "downloading nightly-2026-10-09-258ab27 (73.9 MB)"
-									and (p.answer_line)(No) == "no download of nightly-2026-10-09-258ab27"
-										and Prompt.text(p) == "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27? [Y/n] "
-											and Prompt.reply(p, "") == Ok(Yes)
-												and Prompt.reply(p, "n") == Ok(No)
-													and decide(NonInteractive, Bool.False) == Use(Yes)
-														and decide(NonInteractive, Bool.True) == Use(Yes)
-															and decide(Interactive, Bool.False) == Ask
-																and decide(NeedsTty, Bool.False) == NeedTty
-																	and declined == Fail.new(Consent, "nightly-2026-10-09-258ab27 is not installed. Nothing was downloaded.")
-																		and declined.kind.code() == 13
+		and p.kind == Default
+		and p.shape == YesNo
+		and p.default == Yes
+		and p.question == "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27?"
+		and p.subject == "the download of nightly-2026-10-09-258ab27"
+		and (p.answer_line)(Yes) == "downloading nightly-2026-10-09-258ab27 (73.9 MB)"
+		and (p.answer_line)(No) == "no download of nightly-2026-10-09-258ab27"
+		and Prompt.text(p) == "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27? [Y/n] "
+		and Prompt.reply(p, "") == Ok(Yes)
+		and Prompt.reply(p, "n") == Ok(No)
+		and decide(NonInteractive, Bool.False) == Use(Yes)
+		and decide(NonInteractive, Bool.True) == Use(Yes)
+		and decide(Interactive, Bool.False) == Ask
+		and decide(NeedsTty, Bool.False) == NeedTty
+		and declined == Fail.new(Consent, "nightly-2026-10-09-258ab27 is not installed. Nothing was downloaded.")
+		and declined.kind.code() == 13
 }
 
 # R-OUT2, R-J3, R-J4, R-FL4, R-SO15, R-GC10: the text and the `data` of a finished run. The compat warning is only for a new install.
@@ -354,12 +354,12 @@ expect {
 	dbg many
 	installed_set == { stdout: ["installed ${id}\n", "${id} is now the default compiler\n"], stderr: [] }
 		and installed_kept == { stdout: ["installed ${id}\n"], stderr: [] }
-			and present == { stdout: ["${id} is already installed\n"], stderr: [] }
-				and none == { stdout: ["installed ${id}\n"], stderr: ["warning: the compat id of ${id} is not known: roc check touched no compat dir\n"] }
-					and many == { stdout: ["installed ${id}\n", "${id} is now the default compiler\n"], stderr: ["warning: the compat id of ${id} is not known: roc check touched 2 compat dirs (a, b)\n"] }
-						and data(Installed, Set) == "{\"id\":\"${id}\",\"path\":\"${item}\",\"installed\":true,\"default\":true}"
-							and data(Installed, Kept) == "{\"id\":\"${id}\",\"path\":\"${item}\",\"installed\":true,\"default\":false}"
-								and data(Present, Kept) == "{\"id\":\"${id}\",\"path\":\"${item}\",\"installed\":false,\"default\":false}"
+		and present == { stdout: ["${id} is already installed\n"], stderr: [] }
+		and none == { stdout: ["installed ${id}\n"], stderr: ["warning: the compat id of ${id} is not known: roc check touched no compat dir\n"] }
+		and many == { stdout: ["installed ${id}\n", "${id} is now the default compiler\n"], stderr: ["warning: the compat id of ${id} is not known: roc check touched 2 compat dirs (a, b)\n"] }
+		and data(Installed, Set) == "{\"id\":\"${id}\",\"path\":\"${item}\",\"installed\":true,\"default\":true}"
+		and data(Installed, Kept) == "{\"id\":\"${id}\",\"path\":\"${item}\",\"installed\":true,\"default\":false}"
+		and data(Present, Kept) == "{\"id\":\"${id}\",\"path\":\"${item}\",\"installed\":false,\"default\":false}"
 }
 
 # R-SO13, R-NS1, R-NS2, R-NS3, R-NS7, R-C7 (slice 025b): the compiler that rank 4 downloads when no installed compiler is in the range. It is the newest release of the list that the range, the `nightly` switch,
@@ -432,9 +432,9 @@ expect {
 	off = |source| Toolchain.range_failed({ req_text: "*", switch: { nightly: Bool.False, source } })
 	on == Fail.new(NoTuple, "no compiler release is in [toolchain] roc (>=nightly-2026-10-09-258ab27)")
 		and on.kind.code() == 10
-			and off(Env) == Fail.new(NoTuple, "no compiler release is in [toolchain] roc (*), and nightly is false (set by TALON_NIGHTLY)")
-				and off(Toml) == Fail.new(NoTuple, "no compiler release is in [toolchain] roc (*), and nightly is false (set by [toolchain] nightly in talon.toml)")
-					and off(Config) == Fail.new(NoTuple, "no compiler release is in [toolchain] roc (*), and nightly is false (set by nightly in config.toml)")
+		and off(Env) == Fail.new(NoTuple, "no compiler release is in [toolchain] roc (*), and nightly is false (set by TALON_NIGHTLY)")
+		and off(Toml) == Fail.new(NoTuple, "no compiler release is in [toolchain] roc (*), and nightly is false (set by [toolchain] nightly in talon.toml)")
+		and off(Config) == Fail.new(NoTuple, "no compiler release is in [toolchain] roc (*), and nightly is false (set by nightly in config.toml)")
 }
 
 # R-SL7, R-PD16 (slice 026): only a relative step needs the base (the compiler that Resolution 13 selects for `main.roc` of the current directory): one `@`, a sign and decimal digits. Every other form needs no base, so a command that is given one makes no call to find it. A step with no `@` is a prefix text (`Nightlies.pick`).

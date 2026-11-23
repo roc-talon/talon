@@ -55,7 +55,7 @@ RunEach :: [].{
 	## when that directory is neither the root nor a node, `Ok(dir)` is the standalone directory, and `--each` there is as with no workspace (exit 2). `Err(None)`: the nearest file is the root or a node (or there is none): the command works on the workspace.
 	standalone : { toml_dirs : List(Str), root : Str, nodes : List(Str) } -> Try(Str, [None])
 	standalone = |facts| match facts.toml_dirs {
-		[nearest, ..] => if nearest != facts.root and !facts.nodes.contains(nearest) Ok(nearest) else Err(None)
+		[nearest, ..] => if (nearest != facts.root and !facts.nodes.contains(nearest)) Ok(nearest) else Err(None)
 		[] => Err(None)
 	}
 
@@ -131,17 +131,17 @@ RunEach :: [].{
 	## The name of a node in the output: its directory relative to the root (`workers/web`). The root itself is `.`.
 	label : { root : Str, dir : Str } -> Str
 	label = |facts| {
-		prefix = if facts.root.ends_with("/") facts.root else "${facts.root}/"
-		if facts.dir == facts.root "." else if facts.dir.starts_with(prefix) facts.dir.drop_prefix(prefix) else facts.dir
+		prefix = if (facts.root.ends_with("/")) facts.root else "${facts.root}/"
+		if (facts.dir == facts.root) "." else if (facts.dir.starts_with(prefix)) facts.dir.drop_prefix(prefix) else facts.dir
 	}
 
 	## R-EA8: the text of `tln run --each` with no name (a proposal, TW24): the line `order of <file>:`, one line for each node 2 spaces in (`  none` for no node), then the line `edges:` with one line for each edge 2 spaces in (`<from> -<kind>-> <to>`), or the line `edges: none`.
 	## The nodes are named with `label`. A line end after each line.
 	list_text : { file : Str, root : Str, order : List(Str), edges : List(RunEach.Edge) } -> Str
 	list_text = |facts| {
-		lines = if facts.order.is_empty() ["  none\n"] else facts.order.map(|dir| "  ${RunEach.label({ root: facts.root, dir })}\n")
+		lines = if (facts.order.is_empty()) ["  none\n"] else facts.order.map(|dir| "  ${RunEach.label({ root: facts.root, dir })}\n")
 		links = facts.edges.map(|e| "  ${edge_text(facts.root, e)}\n")
-		tail = if links.is_empty() "edges: none\n" else "edges:\n${Str.join_with(links, "")}"
+		tail = if (links.is_empty()) "edges: none\n" else "edges:\n${Str.join_with(links, "")}"
 		"order of ${facts.file}:\n${Str.join_with(lines, "")}${tail}"
 	}
 
@@ -339,8 +339,8 @@ loop_from = |links, start, frontier, seen| {
 	match steps.find_first(|s| s.at == start) {
 		Ok(done) => done.via
 		Err(_) => {
-			fresh = steps.fold([], |kept, s| if seen.contains(s.at) or kept.any(|k| k.at == s.at) kept else kept.append(s))
-			if fresh.is_empty() [] else loop_from(links, start, fresh, seen.concat(fresh.map(|s| s.at)))
+			fresh = steps.fold([], |kept, s| if (seen.contains(s.at) or kept.any(|k| k.at == s.at)) kept else kept.append(s))
+			if (fresh.is_empty()) [] else loop_from(links, start, fresh, seen.concat(fresh.map(|s| s.at)))
 		}
 	}
 }

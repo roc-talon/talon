@@ -62,7 +62,7 @@ expect {
 # R-RM7 R-RM8 R-RM9 R-RM10 R-RM3 R-NI10: the table of the groups. Talon goes with each option. The tools go only with option 2 (`--remove-tools`). The compilers and the Talon data go with options 1 and 2, and stay with option 3 (`--keep-all`).
 # The answer of the prompt: options 1 to 3 are the 3 choices, option 4 is the cancel, and so is any other answer (`Yes`, `No`, option 0, option 5).
 expect {
-	cell = |choice, group| if TalonRemove.removes({ choice, group }) "R" else "-"
+	cell = |choice, group| if (TalonRemove.removes({ choice, group })) "R" else "-"
 	row = |choice| "${cell(choice, Talon)}${cell(choice, Tools)}${cell(choice, Compilers)}${cell(choice, Data)}"
 	table = [
 		("option 1", row(Default), "R-RR"),
@@ -150,7 +150,7 @@ expect {
 			"Compilers: 1 nightly, 1 git build, zig 0.17.0: 420",
 			"Data: index, x cache, compat.db, config: 1005",
 		]
-			and show(windows_asks).first() == Ok("Talon /h/.local/share/talon/bin/tln.exe")
+		and show(windows_asks).first() == Ok("Talon /h/.local/share/talon/bin/tln.exe")
 }
 
 # R-NI10 R-NR2 R-NR3 R-NM4: the screen and the prompt. The screen is the text of the design (CLI 6.5 "Remove Talon"): the question with the version, the 3 groups with their sizes (`Toolchain.size_text`: a proposal for the form of the size), the note on `roc`, the 4 options, the word `Choose`. `Prompt.text` adds the range and the default.
@@ -311,7 +311,7 @@ expect {
 	script_one = "for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q \"%TALON_DEL_1%\" >nul 2>&1 & if not exist \"%TALON_DEL_1%\" exit /b 0)"
 	bad == []
 		and three.argv == ["cmd.exe", "/d", "/c", script_three]
-			and three.env == [("TALON_DEL_1", "/a/roc.1.del"), ("TALON_DEL_2", "/a/tln.1.del"), ("TALON_DEL_3", "/d/tln.1.del")]
-				and one.argv == ["cmd.exe", "/d", "/c", script_one]
-					and one.env == [("TALON_DEL_1", "C:\\u\\tln.1.del")]
+		and three.env == [("TALON_DEL_1", "/a/roc.1.del"), ("TALON_DEL_2", "/a/tln.1.del"), ("TALON_DEL_3", "/d/tln.1.del")]
+		and one.argv == ["cmd.exe", "/d", "/c", script_one]
+		and one.env == [("TALON_DEL_1", "C:\\u\\tln.1.del")]
 }

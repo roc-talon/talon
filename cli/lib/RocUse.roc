@@ -87,7 +87,7 @@ RocUse :: [].{
 	upgrade_user! = |fx, args, start, run| {
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
-		flag = if args.options.any(|(name, _)| name == "--allow-downloads") Ok(Yes) else Err(NoFlag)
+		flag = if (args.options.any(|(name, _)| name == "--allow-downloads")) Ok(Yes) else Err(NoFlag)
 		mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
 		auto = Consent.auto_install(start.env)
 		request = request_of(args, start, { compiler, toolchain, flag, mode, auto })
@@ -99,7 +99,7 @@ RocUse :: [].{
 		settings = ResolveBase.settings_of(request, loaded)
 		system = Toolchain.host(fx.platform!())?
 		listed = Nightlies.list_channel!(fx, { net: start.net, roots: start.roots, now: start.real, offline: args.offline, host: system, channel: table })?
-		if listed.source == Missing return Err(Toolchain.offline_no_list({}))
+		if (listed.source == Missing) return Err(Toolchain.offline_no_list({}))
 		times = listed.releases.map(|r| { id: r.id, published_at: r.published_at })
 		picked = Toolchain.range_pick({ releases: listed.releases, req: AtLeast(run.held), now: start.now, min_age: settings.min_age, snapshot: Err(None), nightly: settings.nightly, exclude: settings.exclude })
 		_ = match picked {
@@ -122,7 +122,7 @@ RocUse :: [].{
 			},
 		)
 		candidates = by_newest.take_first(try_limit)
-		if candidates.is_empty() return Ok(Newest(run.held))
+		if (candidates.is_empty()) return Ok(Newest(run.held))
 		root = toml_path(request.project, loaded)
 		installed = Launch.toolchains_all!(fx, start.roots)
 		rows = loaded.members.map(|m| { file: m.file, baseline: run.held, previous: Err(NoPin), op: Err(Same) })
@@ -138,7 +138,7 @@ RocUse :: [].{
 			$downloads = $downloads + installs
 			match Ladder.use!(fx, { roots: start.roots, now: start.now, path_roc: compiler, held: id, members, owners: [], downloads: ResolveBase.ladder_downloads(request), probe: { max: 100, timeout: 30, slots: 12, max_toolchains: 10 } }) {
 				Ok(ran) => {
-					$probes = $probes + members.fold(0, |total, m| total + if m.kind == App 3 else 2)
+					$probes = $probes + members.fold(0, |total, m| total + if (m.kind == App) 3 else 2)
 					$won = Ok({ id, notes: ran.notes })
 					break
 				}
@@ -164,7 +164,7 @@ RocUse :: [].{
 			Ok(plan) => plan
 			Err(Same) => return Ok(Newest(run.held))
 		}
-		written = if run.dry_run [] else write!(fx, loaded, { id: chosen.id, rows: [], toml: Ok(toml) })?
+		written = if (run.dry_run) [] else write!(fx, loaded, { id: chosen.id, rows: [], toml: Ok(toml) })?
 		skipped = Err(None)
 		Ok(
 			Moved({
@@ -197,7 +197,7 @@ flow! = |fx, args, text| {
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 	toolchain = Compiler.toolchain_of(start.env)?
 	compiler = Install.compiler!(fx, start.roots, Bool.False)
-	flag = if args.options.any(|(name, _)| name == "--allow-downloads") Ok(Yes) else Err(NoFlag)
+	flag = if (args.options.any(|(name, _)| name == "--allow-downloads")) Ok(Yes) else Err(NoFlag)
 	mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
 	auto = Consent.auto_install(start.env)
 	request = request_of(args, start, { compiler, toolchain, flag, mode, auto })
@@ -228,13 +228,13 @@ flow! = |fx, args, text| {
 	root = toml_path(request.project, loaded)
 	toml = toml_plan(loaded, { path: root, id, user })
 	# A user build is a change for every member (the compiler of the project changes), a nightly only for a member with an edit.
-	changes = if user.is_ok() rows else rows.keep_if(|r| r.op.is_ok())
+	changes = if (user.is_ok()) rows else rows.keep_if(|r| r.op.is_ok())
 	if rows.keep_if(|r| r.op.is_ok()).is_empty() and toml.is_err() {
 		return Ok({ id, written: [], toml: Err(None), probes: 0, downloads: 0, built: Bool.False, notes: [], toolchain })
 	}
 	# R-C16 (slice 084): `roc use` writes a pin, so a young compiler that only a pattern kept is a new choice, also when it is installed. A pin that equals it changes nothing (the return above): no note.
 	RocInstall.print_note!(fx, args.quiet, noted.note)
-	ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler, registry: if listed Later(args.registry) else First(args.registry) }
+	ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler, registry: if (listed) Later(args.registry) else First(args.registry) }
 	installs = install_all!(fx, args, ctx, { target, id, rows: changes, picked: fallback.picked })?
 	members = changes.map(|r| use_member(loaded, r))
 	ran = Ladder.use!(fx, { roots: start.roots, now: start.now, path_roc: compiler, held: id, members, owners: [], downloads: ResolveBase.ladder_downloads(request), probe: { max: 100, timeout: 30, slots: 12, max_toolchains: 10 } })?
@@ -247,7 +247,7 @@ flow! = |fx, args, text| {
 			Ok(plan) if written.contains(root) => Ok({ file: root, old: plan.old, added: plan.added, removed: plan.removed, user: user.is_ok() })
 			_ => Err(None)
 		},
-		probes: members.fold(0, |total, m| total + if m.kind == App 3 else 2),
+		probes: members.fold(0, |total, m| total + if (m.kind == App) 3 else 2),
 		downloads: installs,
 		built: members.any(|m| m.kind == App),
 		notes: ran.notes,
@@ -318,7 +318,7 @@ toml_plan = |loaded, run| {
 				_ => Err(None)
 			}
 			match edited {
-				Ok(new) if new != text => Ok({ old, added: if tables.contains(table.name) Err(None) else Ok(table.name), removed, table: run.user, path: run.path })
+				Ok(new) if new != text => Ok({ old, added: if (tables.contains(table.name)) Err(None) else Ok(table.name), removed, table: run.user, path: run.path })
 				_ => Err(Same)
 			}
 		}
@@ -403,7 +403,7 @@ gate! : Fx, ResolveBase.Request, ResolveBase.Loaded, { target : Offered, id : St
 gate! = |fx, request, loaded, run| {
 	toolchain = loaded.intent.toolchain
 	settings = ResolveBase.settings_of(request, loaded)
-	known = if toolchain.roc.is_ok() and !run.installed.is_empty() Base.times!(fx, request.roots, run.installed) else []
+	known = if (toolchain.roc.is_ok() and !run.installed.is_empty()) Base.times!(fx, request.roots, run.installed) else []
 	times = match run.target {
 		Download(offer) => known.append({ id: offer.id, published_at: offer.ctx.published_at })
 		Present(_) => known
@@ -484,7 +484,7 @@ no_offers = []
 # has no source: the failure of `Compiler.require` (R-NS2).
 missing_baselines : Context, { target : Offered, id : Str, rows : List(ManageUse.UseRow), picked : Try(Str, [None]) } -> Try(List(Str), Fail)
 missing_baselines = |ctx, run| {
-	distinct = run.rows.map(|r| r.baseline).fold([], |found, id| if found.any(|seen| Pin.same_id(seen, id)) found else found.append(id))
+	distinct = run.rows.map(|r| r.baseline).fold([], |found, id| if (found.any(|seen| Pin.same_id(seen, id))) found else found.append(id))
 	missing = distinct.keep_if(|id| !Pin.same_id(id, run.id) and Compiler.find({ id, installed: ctx.installed, path: ctx.path_roc }).is_err())
 	match missing.find_first(|id| !Pin.is_nightly(id)) {
 		Ok(id) => Compiler.require({ id, installed: ctx.installed, path: ctx.path_roc }).map_ok(|_| missing)

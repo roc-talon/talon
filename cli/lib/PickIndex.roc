@@ -58,7 +58,7 @@ PickIndex :: [].{
 		for name in names {
 			match request.index {
 				Answer(a) => {
-					$found = $found.append({ name, list: ClosureIndex.drop_labels({ list: ClosureIndex.candidates({ releases: if filter ClosureIndex.live({ releases: a.answer.releases, held: known }) else a.answer.releases, artifacts: a.answer.artifacts, name }), known }), missing: Bool.False, missing_forms: [], pages: [] })
+					$found = $found.append({ name, list: ClosureIndex.drop_labels({ list: ClosureIndex.candidates({ releases: if (filter) ClosureIndex.live({ releases: a.answer.releases, held: known }) else a.answer.releases, artifacts: a.answer.artifacts, name }), known }), missing: Bool.False, missing_forms: [], pages: [] })
 				}
 				Offline(origin) => {
 					got = ClosureIndex.offline!(fx, { roots: request.roots, origin, version: Help.version, now: request.now, name, forms: forms_of(name, known), held: known, filter })?
@@ -110,7 +110,7 @@ PickIndex :: [].{
 				cands = match v.name {
 					Ok(name) => {
 						c = candidates_of(name)
-						group = if s.any_series c.list.keep_if(|x| x.ident.group.form == v.group.form) else Index.in_group({ list: c.list, group: v.group })
+						group = if (s.any_series) c.list.keep_if(|x| x.ident.group.form == v.group.form) else Index.in_group({ list: c.list, group: v.group })
 						{ list: group, missing: c.missing or c.missing_forms.contains(v.group.form) }
 					}
 					Err(NoName) => { list: [], missing: Bool.True }
@@ -124,13 +124,13 @@ PickIndex :: [].{
 					is_platform: v.is_platform,
 					ranges: v.ranges.map(|r| r.range),
 					current: highest_use(v.uses),
-					hold: if s.free and !cands.missing Free else if s.movable Movable else Held,
+					hold: if (s.free and !cands.missing) Free else if (s.movable) Movable else Held,
 					named: match named.selector {
 						Exact(version) if s.any_series => Ok(version)
 						_ => named_by_entry(v, fresh)
 					},
 					candidates: cands.list,
-					files: v.uses.map(|u| u.file).fold([], |found_files, file| if found_files.contains(file) found_files else found_files.append(file)),
+					files: v.uses.map(|u| u.file).fold([], |found_files, file| if (found_files.contains(file)) found_files else found_files.append(file)),
 				}
 			},
 		)
@@ -183,7 +183,7 @@ PickIndex :: [].{
 			cands = match found.find_first(|c| c.name == f.name) {
 				Ok(c) => {
 					# R-DI12: a new group with no cached page fails with exit 15, not as "no release".
-					if c.missing return Err(Github.no_page_failure(f.name))
+					if (c.missing) return Err(Github.no_page_failure(f.name))
 					c.list
 				}
 				Err(_) => []
@@ -198,7 +198,7 @@ PickIndex :: [].{
 			}
 			read = ResolveBase.read_releases!(fx, request, [first.url])?
 			kind = match read {
-				[fact] => if fact.release.kind == Platform Platform else Package
+				[fact] => if (fact.release.kind == Platform) Platform else Package
 				_ => Package
 			}
 			_ = Add.decide({ selector: f.selector, chosen: { name: f.name, url: first.url, kind }, platform_flag: f.is_platform, no_pin: request.add.no_pin, as_alias: request.add.as_alias, header })?
@@ -227,7 +227,7 @@ forms_of = |name, known| {
 		.keep_oks(Ident.of_url)
 		.keep_if(|ident| (ident.name.map_ok(|n| n.with_ascii_lowercased() == lower) ?? Bool.False))
 		.map(|ident| ident.group.form)
-		.fold([], |found, form| if found.contains(form) found else found.append(form))
+		.fold([], |found, form| if (found.contains(form)) found else found.append(form))
 }
 
 # D7, R-C7: a version that `add X@1.2.3` names for a new entry is named for the variable of that group too: it may move to it, and `min-release-age` does not hide it.
@@ -245,7 +245,7 @@ highest_use = |uses| match uses {
 		rest.fold(
 			first,
 			|best, u| match (Semver.parse(u.version), Semver.parse(best.version)) {
-				(Ok(a), Ok(b)) => if a.order_relative_to(b) == After u else best
+				(Ok(a), Ok(b)) => if (a.order_relative_to(b) == After) u else best
 				_ => best
 			},
 		).url,
@@ -256,7 +256,7 @@ highest_use = |uses| match uses {
 newest : List(Index.Candidate) -> Try(Index.Candidate, [ListWasEmpty])
 newest = |list| match list {
 	[] => Err(ListWasEmpty)
-	[first, .. as rest] => Ok(rest.fold(first, |best, c| if c.published_at > best.published_at c else best))
+	[first, .. as rest] => Ok(rest.fold(first, |best, c| if (c.published_at > best.published_at) c else best))
 }
 
 no_rows : List(ResolveBase.FreshRow)

@@ -56,8 +56,8 @@ QueueSend :: [].{
 	## of the request. `Stop` when the elapsed time is `budget_s` or more.
 	remaining : { started : U64, now : U64 } -> [Send(U64), Stop]
 	remaining = |times| {
-		used = if times.now > times.started times.now - times.started else 0
-		if used >= QueueSend.budget_s Stop else Send(QueueSend.budget_s - used)
+		used = if (times.now > times.started) times.now - times.started else 0
+		if (used >= QueueSend.budget_s) Stop else Send(QueueSend.budget_s - used)
 	}
 
 	## R-AP10, R-AP23, R-AP45, R-CT1, R-CT2: the request of one batch. A `POST` to `<origin>/v1/compat`. The headers, in this order (Q5, proposal): `Registry.headers` for `{ version: talon_version, body: Json }`

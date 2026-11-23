@@ -17,7 +17,7 @@ cand = |url, days| match Ident.of_url(url) {
 	Err(_) => crash "bad test URL"
 }
 
-slot = |id, ranges, current, free, candidates| { id, is_platform: Bool.False, ranges, current: Ok(current), hold: if free Free else Held, named: Err(None), candidates, files: [] }
+slot = |id, ranges, current, free, candidates| { id, is_platform: Bool.False, ranges, current: Ok(current), hold: if (free) Free else Held, named: Err(None), candidates, files: [] }
 
 fact = |url, deps| { url, release: { kind: Package, pf: Err(None), deps } }
 

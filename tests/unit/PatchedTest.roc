@@ -220,7 +220,7 @@ expect {
 		),
 		row(
 			"a changed line in a hunk, a deleted file with other content and a binary file with other bytes: all 3 are listed, in the order of the changes, and no file is done",
-			Patched.rebase({ base, copy, target: changed_line.map(|f| if f.path == "Old.roc" utf8("Old.roc", "# changed\n") else if f.path == "data.bin" bin("data.bin", "cc") else f) }),
+			Patched.rebase({ base, copy, target: changed_line.map(|f| if (f.path == "Old.roc") utf8("Old.roc", "# changed\n") else if (f.path == "data.bin") bin("data.bin", "cc") else f) }),
 			Err(["Json.roc", "Old.roc", "data.bin"]),
 		),
 		row("only one file fails: only that one is listed", Patched.rebase({ base, copy, target: changed_line }), Err(["Json.roc"])),

@@ -31,7 +31,7 @@ Lock := { item : Str, token : Str }.{
 			Ok(beat) => beat
 			Err(NoBeat) => facts.dir
 		}
-		if facts.now > stamp and facts.now - stamp > 30 Stale else Live
+		if (facts.now > stamp and facts.now - stamp > 30) Stale else Live
 	}
 
 	## The text of the file `owner` (R-CC12): the token, a newline, the start time in seconds, a newline.

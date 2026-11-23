@@ -26,7 +26,7 @@ BotFlow :: [].{
 			for problem in problems {
 				fx.err!("tln: error[internal]: ${problem}\n")
 			}
-			if problems.is_empty() 0 else 1
+			if (problems.is_empty()) 0 else 1
 		}
 	}
 }
@@ -71,7 +71,7 @@ flow! = |fx| {
 		Err(Unset) => Err(Off)
 	}
 	run = { origin, oidc, dir, stats }
-	tags = if operands.is_empty() listed!(fx)? else named(operands)?
+	tags = if (operands.is_empty()) listed!(fx)? else named(operands)?
 	finished = sweeps!(fx, run, tags)
 	acc = match finished {
 		Ok(out) => out.acc
@@ -163,7 +163,7 @@ listed! = |fx| {
 		Err(Timeout) => Err(failed(Err(NoAnswer("no answer in 20 s"))))
 		Err(Failed(why)) => Err(failed(Err(NoAnswer(why))))
 		Ok(answer) => {
-			if answer.status != 200 return Err(failed(Ok({ status: answer.status, body: answer.body })))
+			if (answer.status != 200) return Err(failed(Ok({ status: answer.status, body: answer.body })))
 			match Bot.tags(answer.body) {
 				Err(BadJson(_)) => Err(failed(Ok({ status: answer.status, body: answer.body })))
 				Ok([]) => Err(Fail.new(Network, "the list of nightlies at api.github.com has no nightly tag (${count_text(releases_in(answer.body), "release")} read). The bot stops, and the next run starts again."))
@@ -182,7 +182,7 @@ sweep_tag! = |fx, run, tag, before| {
 		fx.err!("warning: skipping ${tag}: the registry refused the nightly (422). ${put.body}\n")
 		return Ok({ acc, problems: [] })
 	}
-	fx.out!("put ${tag}: ${if put.status == 201 "new" else "known"}\n")
+	fx.out!("put ${tag}: ${if (put.status == 201) "new" else "known"}\n")
 	work = read_work!(fx, run, tag).map_err(halt(acc))?
 	if Bot.done(work) {
 		fx.out!("sweep ${tag}: done\n")
@@ -203,7 +203,7 @@ round! = |fx, run, tag, state| {
 	nofact = state.nofact + probed.nofact
 	sweep = Bot.sweep({ tag, work: state.work, rowed: rows.map(|row| row.hash) })
 	posted = post_all!(fx, run, { tag, audit: Bool.False, posts: Bot.chunks({ rows, sweep }) }).map_err(halt(acc))?
-	missing_text = if nofact == 0 [] else ["${count_text(nofact, "probe")} gave no fact, so there is no sweep for ${tag}"]
+	missing_text = if (nofact == 0) [] else ["${count_text(nofact, "probe")} gave no fact, so there is no sweep for ${tag}"]
 	match posted {
 		Done => Ok({ acc, problems: missing_text })
 		Stale => if state.n >= 2 {
@@ -297,7 +297,7 @@ probe! = |fx, run, tag, hashes, first| {
 	)
 	probes = batch!(fx, jobs)
 	times = match run.stats {
-		Ok(_) => if $ready.is_empty() [] else fx.read_files!($ready.map(|item| Bot.time_file({ dir: run.dir, hash: item.hash })))
+		Ok(_) => if ($ready.is_empty()) [] else fx.read_files!($ready.map(|item| Bot.time_file({ dir: run.dir, hash: item.hash })))
 		Err(Off) => []
 	}
 	var $rows = []
@@ -313,7 +313,7 @@ probe! = |fx, run, tag, hashes, first| {
 					Ok(Ok(text)) => Bot.time_stats(text)
 					_ => Err("no time file")
 				}
-				if timed.is_err() fx.err!("warning: no time stats for ${hash} on ${tag}\n")
+				if (timed.is_err()) fx.err!("warning: no time stats for ${hash} on ${tag}\n")
 				$stats = $stats.append(timed)
 				result_text = match verdict {
 					Ok(row) => row.result
@@ -349,7 +349,7 @@ ended_text = |ended| match ended {
 
 # One `spawn_all!` call, up to 4 at the same time. An empty batch makes no call (R-MX18 item 1).
 batch! : Fx, List(List(Str)) => List({ ended : [Exited(I32), Signaled(I32), NotStarted(Str)], stdout : Str, stderr_last : Str })
-batch! = |fx, argvs| if argvs.is_empty() [] else fx.spawn_all!({ jobs: argvs.map(|argv| { argv, cwd: Err(Inherit) }), limit: 4 })
+batch! = |fx, argvs| if (argvs.is_empty()) [] else fx.spawn_all!({ jobs: argvs.map(|argv| { argv, cwd: Err(Inherit) }), limit: 4 })
 
 # The URL of the first release that is not withdrawn (R-AP2). `Warn` has the reason of the warning for that hash (a 4xx other than 429, R-MX18 item 14); `Stop` ends the run.
 release! : Fx, Run, Str => Try({ url : Str, repo : Str }, [Warn(Str), Stop(Fail)])
@@ -418,15 +418,15 @@ read! = |fx, run, request| match get!(fx, run, request) {
 post_all! : Fx, Run, { tag : Str, audit : Bool, posts : List(Compat.Post) } => Try([Done, Stale], Fail)
 post_all! = |fx, run, job| {
 	for post in job.posts {
-		step = if job.audit PostAudit(job.tag) else Post(job.tag)
+		step = if (job.audit) PostAudit(job.tag) else Post(job.tag)
 		sent = write!(fx, run, { step, method: Post, url: Bot.url({ origin: run.origin, route: Compat }), body: Compat.encode_post(post), soft: post.sweep.is_ok() })?
-		if sent.status == 422 return Ok(Stale)
+		if (sent.status == 422) return Ok(Stale)
 		rows = count_text(post.rows.len(), "row")
 		text = match post.sweep {
 			Ok(sweep) => "${rows}, sweep up to ${sweep.upto_log_index.to_str()}"
-			Err(None) => if job.audit rows else "${rows}, no sweep"
+			Err(None) => if (job.audit) rows else "${rows}, no sweep"
 		}
-		fx.out!("posted ${if job.audit "audit " else ""}${job.tag}: ${text}\n")
+		fx.out!("posted ${if (job.audit) "audit " else ""}${job.tag}: ${text}\n")
 	}
 	Ok(Done)
 }
@@ -438,7 +438,7 @@ releases_in = |text| match JsonDoc.parse(text) {
 }
 
 count_text : U64, Str -> Str
-count_text = |n, word| if n == 1 "1 ${word}" else "${n.to_str()} ${word}s"
+count_text = |n, word| if (n == 1) "1 ${word}" else "${n.to_str()} ${word}s"
 
 # R-TP2: the OIDC token of one write.
 token! : Fx, Run => Try(Str, Fail)
@@ -454,7 +454,7 @@ write! = |fx, run, request| {
 send! : Fx, Run, Write, State => Try(Sent, Fail)
 send! = |fx, run, request, state| {
 	has_body = request.method == Post
-	headers = Registry.headers({ version: Help.version, body: if has_body Json else None }).append(("Authorization", "Bearer ${state.token}"))
+	headers = Registry.headers({ version: Help.version, body: if (has_body) Json else None }).append(("Authorization", "Bearer ${state.token}"))
 	reply = fx.http_send!({ method: request.method, url: request.url, headers, body: request.body, timeout_s: 20 })
 	tries = state.tries + 1
 	failed = |answer| Bot.failure({ origin: run.origin, step: request.step, reply: answer })

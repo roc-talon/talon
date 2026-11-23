@@ -69,7 +69,7 @@ Facts :: [].{
 	first_seen : { recorded : List(Db.Pinned), listed : Db.Pinned } -> [New, Same, Changed({ first : Db.Pinned, now : Db.Pinned })]
 	first_seen = |facts| match facts.recorded.find_first(|row| row.tag == facts.listed.tag and row.target == facts.listed.target) {
 		Err(_) => New
-		Ok(first) => if first.sha256 == facts.listed.sha256 Same else Changed({ first, now: facts.listed })
+		Ok(first) => if (first.sha256 == facts.listed.sha256) Same else Changed({ first, now: facts.listed })
 	}
 
 	## R-CV6 (slice 030b): the first-seen decision for a whole list. `listed` are the rows of the list (one for each asset), `recorded` are the rows that a query for their keys gave.
@@ -79,7 +79,7 @@ Facts :: [].{
 	first_seen_all = |facts| {
 		same_key = |a, b| a.tag == b.tag and a.target == b.target
 		fold = |acc, listed| match Facts.first_seen({ recorded: facts.recorded, listed }) {
-			New => if acc.new.any(|seen| same_key(seen, listed)) acc else { new: acc.new.append(listed), changed: acc.changed }
+			New => if (acc.new.any(|seen| same_key(seen, listed))) acc else { new: acc.new.append(listed), changed: acc.changed }
 			Same => acc
 			Changed(change) => { new: acc.new, changed: acc.changed.append(change) }
 		}
@@ -227,7 +227,7 @@ failing_modules : Str, List(Probe.Err) -> List(Str)
 failing_modules = |hash, errors| Text.sorted_unique(
 	errors.keep_oks(
 		|err| match err.file {
-			Package(found) => if found.hash == hash Ok(found.path) else Err(NotThis)
+			Package(found) => if (found.hash == hash) Ok(found.path) else Err(NotThis)
 			_ => Err(NotThis)
 		},
 	),

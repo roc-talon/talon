@@ -90,7 +90,7 @@ PickLoop :: [].{
 	run! = |fx, request, input, setup, state| {
 		probed = state.probed
 		compat = { compiler: probed.compiler, checks: probed.checks, looked: probed.looked, probes: setup.probes, conflicts: probed.tried, used: probed.used, domain: probed.domain, inferred: probed.inferred, failed: Explain.failed_command({ command: request.command, names: request.names }) }
-		if wants_domain(setup, probed) return match wide!(fx, request, input, probed) {
+		if (wants_domain(setup, probed)) return match wide!(fx, request, input, probed) {
 			Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
 			Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
 		}
@@ -98,7 +98,7 @@ PickLoop :: [].{
 		wants = BuildTarget.wanted({ slots: input.slots.map(|s| { is_platform: s.is_platform, urls: slot_urls(s), files: s.files }), members: setup.members.map(|m| { file: m.file, target: m.target }) })
 		# The platform that the header has now is read first, so the gate knows it before the solver asks (R-C10, R-TG1 rule 1).
 		unread = unread_current(input.slots, wants, state.facts)
-		if !unread.is_empty() return match read_all!(fx, request, unread, state.facts, state.paths) {
+		if (!unread.is_empty()) return match read_all!(fx, request, unread, state.facts, state.paths) {
 			Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
 			Ok(read) => run!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } })
 		}
@@ -142,7 +142,7 @@ PickLoop :: [].{
 			rows = Matrix.rows({ runs: a.answer.runs, nearest: a.answer.nearest, domain: on })
 			chosen
 				.map(|c| c.url)
-				.fold([], |found, url| if found.contains(url) found else found.append(url))
+				.fold([], |found, url| if (found.contains(url)) found else found.append(url))
 				.join_map(
 					|url| match Ident.of_url(url) {
 						Ok(ident) => {
@@ -180,7 +180,7 @@ PickLoop :: [].{
 		Answer(a) => pairs
 			.map(|pair| pair.id)
 			.keep_if(|id| Ident.of_url(id).is_ok())
-			.fold([], |found, id| if found.contains(id) found else found.append(id))
+			.fold([], |found, id| if (found.contains(id)) found else found.append(id))
 			.keep_oks(|id| ClosureIndex.hint(a.answer, id).map_ok(|compiler| { id, hint: Ok(compiler) }))
 		Offline(_) => []
 	}
@@ -215,7 +215,7 @@ scan_rows! = |fx, request, input, setup, state, scan| {
 		}
 	}
 	used = $used
-	scan.ids.map(|id| { id, modules: used.keep_if(|u| u.hash == hash_of(id)).map(|u| u.path).fold([], |found, path| if found.contains(path) found else found.append(path)) })
+	scan.ids.map(|id| { id, modules: used.keep_if(|u| u.hash == hash_of(id)).map(|u| u.path).fold([], |found, path| if (found.contains(path)) found else found.append(path)) })
 }
 
 hash_of : Str -> Str
@@ -273,7 +273,7 @@ unread_current = |slots, wants, facts| slots
 	.keep_if(|slot| slot.is_platform)
 	.keep_oks(|slot| slot.current)
 	.keep_if(|url| wants.any(|w| w.url == url) and Ident.of_url(url).is_ok() and !facts.any(|f| f.url == url))
-	.fold(ResolveBase.no_names, |found, url| if found.contains(url) found else found.append(url))
+	.fold(ResolveBase.no_names, |found, url| if (found.contains(url)) found else found.append(url))
 
 # R-C10, OP10: when the gate left a platform slot with no release, the failure of the solver (R-C4) is the failure of the build target (exit 10). Another failure stays as it is.
 no_target : List(Pick.Slot), { wants : List(BuildTarget.Want), seen : List(BuildTarget.Seen), before : List(ResolveBase.Fact), after : List(ResolveBase.Fact) }, Fail -> Fail
@@ -347,12 +347,12 @@ probe_round! = |fx, request, setup, probed, known, pairs| {
 		Ok(done) => done
 		Err(Spent) => return Err(Units.spent({ max, left: 0 }))
 	}
-	if budget.run == 0 return Err(Units.spent({ max, left: 0 }))
+	if (budget.run == 0) return Err(Units.spent({ max, left: 0 }))
 	# Slice 039b (R-P5): a download is for a probe that can start, so the step runs after the budget and before the compiler starts.
 	# Slice 068b (R-AL4, R-DI8): a cut round asks for the `.roc-version` hints and runs the hinted pairs first. A round that the budget does not cut asks for none: all its pairs run.
-	ordered = if budget.cut hinted!(fx, request, pairs) else pairs
+	ordered = if (budget.cut) hinted!(fx, request, pairs) else pairs
 	stepped = PickOptional.step!(fx, request, { settings: setup.settings, sizes: setup.optional.sizes, pairs: ordered.take_first(budget.run) }, probed.optional)?
-	if stepped.pairs.is_empty() return Ok({ ..probed, optional: stepped.state })
+	if (stepped.pairs.is_empty()) return Ok({ ..probed, optional: stepped.state })
 	begun = begin!(fx, request, setup, { ..probed, optional: stepped.state })?
 	started = { ..begun.started, installed: begun.started.installed.concat(stepped.state.got) }
 	run = stepped.pairs
@@ -360,20 +360,20 @@ probe_round! = |fx, request, setup, probed, known, pairs| {
 	var $groups = no_groups
 	var $specs = []
 	# One compiler can have 2 spellings (R-CV1): the started compiler keeps its id.
-	of = |p| if Pin.same_id(p.nightly, started.id) started.id else p.nightly
-	for id in run.map(of).fold([], |found, nightly| if found.contains(nightly) found else found.append(nightly)) {
+	of = |p| if (Pin.same_id(p.nightly, started.id)) started.id else p.nightly
+	for id in run.map(of).fold([], |found, nightly| if (found.contains(nightly)) found else found.append(nightly)) {
 		nodes = run.keep_if(|p| of(p) == id).map(node_of)
 		on = on_compiler!(fx, request, started, id)?
 		$groups = $groups.append({ id, nodes })
 		$specs = $specs.concat(Units.specs({ nodes, compiler: id, program: on.program, env: on.env, pkgs, timeout: setup.settings.timeout }))
 	}
 	outputs = UnitFlow.probes!(fx, { roots: request.roots, now: request.now, pool: setup.settings.slots, started, base: started, specs: $specs })
-	if outputs.len() != $specs.len() return Err(Fail.new(Internal, "the probes gave no result for each probe"))
+	if (outputs.len() != $specs.len()) return Err(Fail.new(Internal, "the probes gave no result for each probe"))
 	var $facts = []
 	var $failure = Err(None)
 	var $at = 0
 	for g in $groups {
-		results = Units.results({ nodes: g.nodes, outputs: outputs.drop_first($at).take_first(g.nodes.len()), nightly: g.id, compiler: if g.id == started.id setup.held ?? started.id else g.id, pkgs })
+		results = Units.results({ nodes: g.nodes, outputs: outputs.drop_first($at).take_first(g.nodes.len()), nightly: g.id, compiler: if (g.id == started.id) setup.held ?? started.id else g.id, pkgs })
 		$facts = $facts.concat(results.facts)
 		$at = $at + g.nodes.len()
 		match ($failure, results.failure) {
@@ -413,7 +413,7 @@ no_groups = []
 # Slice 039: the program and the variables of a compiler of the probes. The compiler that started keeps its own. Another compiler is installed (the command downloaded it), so it needs no start: its `.last-use` is written (R-CC9).
 on_compiler! : Fx, ResolveBase.Request, Start.Started, Str => Try({ program : Str, env : List((Str, Str)) }, Fail)
 on_compiler! = |fx, request, started, id| {
-	if id == started.id return Ok({ program: started.program, env: started.env })
+	if (id == started.id) return Ok({ program: started.program, env: started.env })
 	program = Launch.program!(fx, { roots: request.roots, id, installed: started.installed, path: request.compiler })?
 	if started.installed.contains(id) {
 		Launch.touch!(fx, request.roots, { id, now: request.now })
@@ -429,7 +429,7 @@ begin! = |fx, request, setup, probed| match probed.started {
 		held = setup.held ?? ""
 		run = { roots: request.roots, path_roc: request.compiler, held, downloads: ResolveBase.ladder_downloads(request) }
 		# R-SO14, R-SO19: `request.selected` is empty when no compiler was selected before the pick. The held compiler is then the pick (`HeldRoc.picked!`).
-		started = if request.selected == "" and !held.is_empty() Start.run_picked!(fx, run)? else Start.run!(fx, run)?
+		started = if (request.selected == "" and !held.is_empty()) Start.run_picked!(fx, run)? else Start.run!(fx, run)?
 		Ok({ started, probed: rekey({ ..probed, started: Ok(started) }, held, started.id) })
 	}
 }
@@ -441,8 +441,8 @@ rekey = |probed, old, id| if old == id {
 	{
 		..probed,
 		compiler: Ok(id),
-		checks: probed.checks.map(|f| if f.nightly == old { ..f, nightly: id } else f),
-		looked: probed.looked.map(|k| if k.nightly == old { ..k, nightly: id } else k),
+		checks: probed.checks.map(|f| if (f.nightly == old) { ..f, nightly: id } else f),
+		looked: probed.looked.map(|k| if (k.nightly == old) { ..k, nightly: id } else k),
 	}
 }
 
@@ -487,7 +487,7 @@ listed_via! = |fx, request, source| match Toolchain.host(fx.platform!()) {
 domain_keys : PickLoop.Input, List(Nightlies.Release), List(Db.Key) -> List(Db.Key)
 domain_keys = |input, releases, looked| input.slots
 	.join_map(|slot| slot.candidates.map(|c| c.url).concat(slot.current.map_ok(|url| [url]) ?? []))
-	.fold([], |found, url| if found.contains(url) found else found.append(url))
+	.fold([], |found, url| if (found.contains(url)) found else found.append(url))
 	.join_map(|url| releases.map(|r| { hash: hash_of(url), nightly: r.id, target: "any" }))
 	.keep_if(|key| !looked.contains(key))
 
@@ -513,6 +513,6 @@ round_domain = |probed, pairs| {
 	known = probed.listed ?? []
 	pairs
 		.map(|p| p.nightly)
-		.fold([], |found, id| if found.contains(id) found else found.append(id))
+		.fold([], |found, id| if (found.contains(id)) found else found.append(id))
 		.map(|id| known.find_first(|r| PinOrder.same_id(r.id, id)).map_ok(|r| { ..r, id }) ?? { id, published_at: 0, asset: Err(NoAsset) })
 }

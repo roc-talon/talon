@@ -36,7 +36,7 @@ Consent :: [].{
 				default: Yes,
 				question: "Rename ${what}?",
 				subject: what,
-				answer_line: |answer| if answer == Yes "renamed ${what}" else "kept ${what}",
+				answer_line: |answer| if (answer == Yes) "renamed ${what}" else "kept ${what}",
 			},
 			report: Str.join_with(stale.map(|s| "talon.toml: key \"${s.key}\" is \"${s.name}\", which the header names \"${s.alias}\"\n"), ""),
 		}
@@ -59,7 +59,7 @@ Consent :: [].{
 		default: No,
 		question: "${facts.path} is a roc that Talon did not write. Move it to ${facts.old} and install the roc launcher?",
 		subject: "the replace of ${facts.path}",
-		answer_line: |answer| if answer == Yes "moving ${facts.path} to ${facts.old}" else "keeping ${facts.path}",
+		answer_line: |answer| if (answer == Yes) "moving ${facts.path} to ${facts.old}" else "keeping ${facts.path}",
 	}
 
 	## R-NI14 (`setup`; CLI 6.7 R-ST4): add the bin dir to `PATH`. Kind `Default`, yes/no, the interactive default is `Yes`. The answer flag `--no-modify-path` is `flag: Ok(No)`. `dir` is the bin dir, `target` is the file that gets the line
@@ -79,7 +79,7 @@ Consent :: [].{
 		default: Yes,
 		question: "Add ${facts.dir} to PATH in ${facts.target}?",
 		subject: "the change of PATH in ${facts.target}",
-		answer_line: |answer| if answer == Yes "adding ${facts.dir} to PATH in ${facts.target}" else "not adding ${facts.dir} to PATH",
+		answer_line: |answer| if (answer == Yes) "adding ${facts.dir} to PATH in ${facts.target}" else "not adding ${facts.dir} to PATH",
 	}
 
 	## R-NI7, R-NR2, R-NR3, R-GC14 (slice 029, `cache clean`): confirm the removal and its size. Kind `Default` (R-NR3: the command names what it removes: the index, the `x` builds, with `--all` the packages and the build caches),
@@ -102,7 +102,7 @@ Consent :: [].{
 			default: Yes,
 			question: "Remove ${what}, ${size}?",
 			subject: "the removal of ${what}",
-			answer_line: |answer| if answer == Yes "removing ${what} (${size})" else "no removal of ${what}",
+			answer_line: |answer| if (answer == Yes) "removing ${what} (${size})" else "no removal of ${what}",
 		}
 	}
 
@@ -135,7 +135,7 @@ Consent :: [].{
 				default: No,
 				question: "Move ${what}?",
 				subject: "moving ${what}",
-				answer_line: |answer| if answer == Yes "moved ${what}" else "kept ${what}",
+				answer_line: |answer| if (answer == Yes) "moved ${what}" else "kept ${what}",
 			},
 			report: Str.join_with(moves.map(|m| "~ ${m.alias}: ${m.name} ${m.from} -> ${m.to} (held): ${m.why}\n  writes ${Str.join_with(m.members, ", ")}\n"), ""),
 			details: details_of(moves),
@@ -147,7 +147,7 @@ Consent :: [].{
 	## It has the `details` of `move_held`.
 	declined : List(Consent.Move) -> Fail
 	declined = |moves| {
-		stay = if moves.len() == 1 "stays" else "stay"
+		stay = if (moves.len() == 1) "stays" else "stay"
 		{ ..Fail.new(Consent, "${held_text(moves)} ${stay}. Nothing was written."), details: Ok(details_of(moves)) }
 	}
 
@@ -179,7 +179,7 @@ Consent :: [].{
 			default: Yes,
 			question: "Download 1 compiler, ${size}: ${facts.id}?",
 			subject: "the download of ${facts.id}",
-			answer_line: |answer| if answer == Yes "downloading ${facts.id} (${size})" else "no download of ${facts.id}",
+			answer_line: |answer| if (answer == Yes) "downloading ${facts.id} (${size})" else "no download of ${facts.id}",
 		}
 	}
 
@@ -189,7 +189,7 @@ Consent :: [].{
 	roc_install_default = |facts| {
 		plain = Consent.roc_install(facts)
 		size = Toolchain.size_text(facts.size)
-		{ ..plain, question: "${plain.question} It becomes the default compiler.", answer_line: |answer| if answer == Yes "downloading ${facts.id} (${size}), the default compiler" else "no download of ${facts.id}" }
+		{ ..plain, question: "${plain.question} It becomes the default compiler.", answer_line: |answer| if (answer == Yes) "downloading ${facts.id} (${size}), the default compiler" else "no download of ${facts.id}" }
 	}
 
 	## R-CC4 step 2: the failure when the person answers No to `roc_install`. Kind `Consent` (exit 13), `<id> is not installed. Nothing was downloaded.`
@@ -216,7 +216,7 @@ Consent :: [].{
 			default: Yes,
 			question: "Install zig ${facts.version} (${size}) for Talon builds?",
 			subject: "the download of zig ${facts.version}",
-			answer_line: |answer| if answer == Yes "installing zig ${facts.version} (${size})" else "no install of zig ${facts.version}",
+			answer_line: |answer| if (answer == Yes) "installing zig ${facts.version} (${size})" else "no install of zig ${facts.version}",
 		}
 	}
 
@@ -244,7 +244,7 @@ Consent :: [].{
 			default: Yes,
 			question: "${facts.id} (${facts.source}) is not installed. Download 1 compiler, ${size}?",
 			subject: "the download of ${facts.id}",
-			answer_line: |answer| if answer == Yes "downloading ${facts.id} (${size})" else "no download of ${facts.id}",
+			answer_line: |answer| if (answer == Yes) "downloading ${facts.id} (${size})" else "no download of ${facts.id}",
 		}
 	}
 
@@ -263,7 +263,7 @@ Consent :: [].{
 	command_download : { id : Str, count : U64, size : U64 } -> Prompt
 	command_download = |facts| {
 		size = Toolchain.size_text(facts.size)
-		what = if facts.count == 1 facts.id else "${facts.count.to_str()} compilers"
+		what = if (facts.count == 1) facts.id else "${facts.count.to_str()} compilers"
 		Prompt.{
 			id: "command-download",
 			kind: Required(["--allow-downloads", "TALON_AUTO_INSTALL=yes"]),
@@ -271,7 +271,7 @@ Consent :: [].{
 			default: No,
 			question: "${facts.id} is not installed. Download ${facts.count.to_str()} ${plural(facts.count, "compiler", "compilers")}, ${size}?",
 			subject: "the download of ${facts.id}",
-			answer_line: |answer| if answer == Yes "downloading ${what} (${size})" else "no download of ${what}",
+			answer_line: |answer| if (answer == Yes) "downloading ${what} (${size})" else "no download of ${what}",
 		}
 	}
 
@@ -297,7 +297,7 @@ Consent :: [].{
 			default: Yes,
 			question: "Download ${what}, ${size}: ${Str.join_with(facts.ids, ", ")}?",
 			subject: "the download of ${what}",
-			answer_line: |answer| if answer == Yes "downloading ${what} (${size})" else "no download of ${what}",
+			answer_line: |answer| if (answer == Yes) "downloading ${what} (${size})" else "no download of ${what}",
 		}
 	}
 
@@ -473,4 +473,4 @@ ways : Str -> Str
 ways = |id| "Run: tln roc install ${id}, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes."
 
 plural : U64, Str, Str -> Str
-plural = |count, one, many| if count == 1 one else many
+plural = |count, one, many| if (count == 1) one else many

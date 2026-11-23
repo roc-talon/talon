@@ -87,9 +87,9 @@ ToolFlow :: [].{
 	selected_for! : Fx, ToolBuild.Facts => Str
 	selected_for! = |fx, facts| {
 		env = toolchain_env(facts.env)
-		newest = if env.is_empty() and facts.selected.is_empty() newest_of!(fx, facts) else ""
-		path = if env.is_empty() and facts.selected.is_empty() and newest.is_empty() OnPath.file!(fx, facts.roots).map_ok(|found| found.id) else Err(NoCompiler)
-		ToolCompiler.selected_of({ env, default: if newest.is_empty() facts.selected else newest, path })
+		newest = if (env.is_empty() and facts.selected.is_empty()) newest_of!(fx, facts) else ""
+		path = if (env.is_empty() and facts.selected.is_empty() and newest.is_empty()) OnPath.file!(fx, facts.roots).map_ok(|found| found.id) else Err(NoCompiler)
+		ToolCompiler.selected_of({ env, default: if (newest.is_empty()) facts.selected else newest, path })
 	}
 
 	gather_for! : Fx, ToolInstall.Plan => Try(ToolBuild.Facts, Fail)
@@ -245,7 +245,7 @@ full_name! = |fx, plan, entries| match Lookup.find(Scope.Tool, plan.ref, ToolsJs
 	Ok(Lookup.Existing(found)) => Ok(found.name)
 	Ok(Lookup.New(name)) => Ok(name)
 	Err({ fail, block }) => {
-		if !block.is_empty() fx.err!(block)
+		if (!block.is_empty()) fx.err!(block)
 		Err(fail)
 	}
 }
@@ -324,7 +324,7 @@ selector_text : Selector -> Str
 selector_text = |selector| match selector {
 	Exact(text) | Range(text) | Nightly(text) | GitSha(text) | GitRef(text) => text
 	Latest => "latest"
-	Step(n) => if n >= 0 "+${n.to_str()}" else n.to_str()
+	Step(n) => if (n >= 0) "+${n.to_str()}" else n.to_str()
 }
 
 # Step 7 (R-T9, R-C16): the notes on stderr for a build. The note of a release that only a pattern kept is hidden by `--quiet` (R-FL4).

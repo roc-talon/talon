@@ -39,10 +39,10 @@ FakeDb :: [].{
 						Facts(keys) => Facts(store.facts.keep_if(|f| keys.contains({ hash: f.hash, nightly: f.nightly, target: f.target })))
 						FactsOf(hash) => Facts(store.facts.keep_if(|f| f.hash == hash))
 						Pinned(keys) => Pinned(store.pinned.keep_if(|p| keys.contains({ tag: p.tag, target: p.target })))
-						QueueCount => QueueCount(if exists!(open) queue_rows!(open).len() else 0)
-						QueueRows => QueueRows(if exists!(open) queue_rows!(open).keep_oks(Db.queue_of).sort_by(|item| item.seq) else [])
+						QueueCount => QueueCount(if (exists!(open)) queue_rows!(open).len() else 0)
+						QueueRows => QueueRows(if (exists!(open)) queue_rows!(open).keep_oks(Db.queue_of).sort_by(|item| item.seq) else [])
 						# Slice 218 (R-SM3 row 3, R-TF7): the lines of `smoke.tsv` whose key is asked for. A file that does not exist gives no row.
-						Smoke(keys) => Smoke(if exists!(open) smoke_rows!(open).keep_if(|r| keys.contains({ hash: r.hash, nightly: r.nightly, target: r.target })) else [])
+						Smoke(keys) => Smoke(if (exists!(open)) smoke_rows!(open).keep_if(|r| keys.contains({ hash: r.hash, nightly: r.nightly, target: r.target })) else [])
 					},
 				)
 			}
@@ -52,7 +52,7 @@ FakeDb :: [].{
 	write! : Str, Db.Open, Db.Write => Try({}, Db.Err)
 	write! = |w, open, write| {
 		summary = match write {
-			Facts({ rows, existing }) => "facts=${rows.len().to_str()} existing=${if existing == Replace "replace" else "keep"}"
+			Facts({ rows, existing }) => "facts=${rows.len().to_str()} existing=${if (existing == Replace) "replace" else "keep"}"
 			Pinned(rows) => "pinned=${rows.len().to_str()}"
 			ClearQueue => "clear_queue"
 			Queue({ rows, cap }) => "queue=${rows.len().to_str()} cap=${cap.to_str()}"
@@ -105,7 +105,7 @@ load! = |open| {
 	text = FakeBase.read_or_empty!(FakeDb.store_path(open.path))
 	match Db.parse_file(text) {
 		Err(BadLine) => Err(Failed("the store file is not valid"))
-		Ok(store) => if store.format > open.format Err(TooNew(store.format)) else Ok({ facts: store.facts, pinned: store.pinned })
+		Ok(store) => if (store.format > open.format) Err(TooNew(store.format)) else Ok({ facts: store.facts, pinned: store.pinned })
 	}
 }
 
@@ -129,12 +129,12 @@ add_queue! = |open, rows, cap| {
 		}
 		same_key = |a, b| a.hash == b.hash and a.nightly == b.nightly and a.target == b.target and a.talon_version == b.talon_version
 		have = queue_rows!(open).keep_oks(Db.queue_of)
-		next = have.fold(0, |top, item| if item.seq > top item.seq else top) + 1
+		next = have.fold(0, |top, item| if (item.seq > top) item.seq else top) + 1
 		added = rows.fold(
 			{ items: have, next },
-			|acc, row| if acc.items.any(|item| same_key(item.row, row)) acc else { items: acc.items.append({ seq: acc.next, row }), next: acc.next + 1 },
+			|acc, row| if (acc.items.any(|item| same_key(item.row, row))) acc else { items: acc.items.append({ seq: acc.next, row }), next: acc.next + 1 },
 		)
-		over = if added.items.len() > cap added.items.len() - cap else 0
+		over = if (added.items.len() > cap) added.items.len() - cap else 0
 		text = added.items.drop_first(over).fold("", |t, item| "${t}${Db.queue_line(item)}\n")
 		_ = FakeBase.write_with_parents!(queue_path(open), text)
 		Ok({})
@@ -159,7 +159,7 @@ add_smoke! = |open, rows| {
 			_ = FakeBase.write_with_parents!(FakeDb.store_path(open.path), Db.file_text({ format: open.format, facts: [], pinned: [] }))
 		}
 		same_key = |a, b| a.hash == b.hash and a.nightly == b.nightly and a.target == b.target
-		all = rows.fold(smoke_rows!(open), |have, row| if have.any(|x| same_key(x, row)) have else have.append(row))
+		all = rows.fold(smoke_rows!(open), |have, row| if (have.any(|x| same_key(x, row))) have else have.append(row))
 		_ = FakeBase.write_with_parents!(smoke_path(open), all.fold("", |t, row| "${t}${Db.smoke_line(row)}\n"))
 		Ok({})
 	}
@@ -214,7 +214,7 @@ rule_err = |rule, format| {
 		Err(Failed(rule.drop_prefix("failed ")))
 	} else if rule.starts_with("version ") {
 		found = U64.from_str(rule.drop_prefix("version ")) ?? 0
-		if found > format Err(TooNew(found)) else Ok({})
+		if (found > format) Err(TooNew(found)) else Ok({})
 	} else {
 		Ok({})
 	}

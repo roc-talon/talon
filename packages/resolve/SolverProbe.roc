@@ -61,7 +61,7 @@ spans = |kinds| {
 					Ok(s) => acc.done.append({ from: s, to: j - 1, kind: Fail })
 					Err(_) => acc.done
 				}
-				{ done: if k == Fault closed.append({ from: j, to: j, kind: Fault }) else closed, open: Err(None) }
+				{ done: if (k == Fault) closed.append({ from: j, to: j, kind: Fault }) else closed, open: Err(None) }
 			}
 		},
 	)
@@ -87,8 +87,8 @@ span_inc = |env, roc, i, p, id, span| {
 		kind: span.kind,
 		from: members.first() ?? "",
 		to: members.last() ?? "",
-		modules: if fault [] else SolverBase.dedupe(members.join_map(|n| (cell(n).map_ok(|c| c.modules) ?? []).keep_if(|m| used.contains(m)))),
-		inferred: if fault [] else members.keep_if(|n| cell(n).map_ok(|c| c.source == Inferred) ?? Bool.False),
+		modules: if (fault) [] else SolverBase.dedupe(members.join_map(|n| (cell(n).map_ok(|c| c.modules) ?? []).keep_if(|m| used.contains(m)))),
+		inferred: if (fault) [] else members.keep_if(|n| cell(n).map_ok(|c| c.source == Inferred) ?? Bool.False),
 	})
 	SolverBase.mk(env.sizes, [{ v: i, set: [p] }, { v: env.ri, set }], cause)
 }

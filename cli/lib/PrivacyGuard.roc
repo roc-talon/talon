@@ -35,7 +35,7 @@ PrivacyGuard :: [].{
 			|acc, source| match acc {
 				Err(e) => Err(e)
 				Ok(found) => match repo_of(source) {
-					Ok(name) => Ok(if found.contains(name) found else found.append(name))
+					Ok(name) => Ok(if (found.contains(name)) found else found.append(name))
 					Err(NoRepo) => Ok(found)
 					Err(BadName(text)) => Err(BadName(text))
 				}
@@ -135,7 +135,7 @@ guard! = |fx, facts, collect| {
 		}
 		# The clock is read only when the reset time can come from `retry-after` alone.
 		has_reset = reply.headers.any(|(name, _)| name.with_ascii_lowercased() == "x-ratelimit-reset")
-		now = if (reply.status == 403 or reply.status == 429) and !has_reset fx.clock!() else 0
+		now = if ((reply.status == 403 or reply.status == 429) and !has_reset) fx.clock!() else 0
 		match Github.rate_limit({ status: reply.status, headers: reply.headers, now }) {
 			Ok(limited) => return Err(Github.rate_limit_failure(limited))
 			Err(NotLimited) => {}
@@ -197,5 +197,5 @@ checked : Str, Str -> Try({ owner : Str, repo : Str }, [NoRepo])
 checked = |owner, repo| {
 	o = owner.with_ascii_lowercased()
 	r = repo.with_ascii_lowercased()
-	if Ident.safe_part(o) and Ident.safe_part(r) Ok({ owner: o, repo: r }) else Err(NoRepo)
+	if (Ident.safe_part(o) and Ident.safe_part(r)) Ok({ owner: o, repo: r }) else Err(NoRepo)
 }

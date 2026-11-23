@@ -144,7 +144,7 @@ list_flow! = |fx, args| {
 	# Slice 242 (R-CH13): the user-channel builds are rows too.
 	ids = Launch.toolchains_all!(fx, roots)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
-	reads = if ids.is_empty() [] else fx.read_files!(paths)
+	reads = if (ids.is_empty()) [] else fx.read_files!(paths)
 	found = Manage.found_of(ids, reads)
 	facts = { rows: Manage.rows({ found, default: config.default_roc }), origins: Manage.origins(found), default: config.default_roc, users: Manage.users({ found, channels: config.channels }) }
 	report = Manage.ls_report(facts)
@@ -228,7 +228,7 @@ write_config! = |fx, path, decide| {
 		Same => Ok({ previous: done.previous, changed: Bool.False })
 		Set(_) => {
 			second = RocInstall.read_text!(fx, path)?
-			last = if second == first done else decide(second)?
+			last = if (second == first) done else decide(second)?
 			match last.edit {
 				Same => Ok({ previous: last.previous, changed: Bool.False })
 				Set(content) => match fx.write_atomic!([{ path, content }]) {
@@ -349,7 +349,7 @@ print_default! : Fx, Args, Defaulted => {}
 print_default! = |fx, args, done| {
 	shown = Common.shown_fx(fx, args)
 	edit : [Same, Set]
-	edit = if done.edited.changed Set else Same
+	edit = if (done.edited.changed) Set else Same
 	for line in Manage.default_report({ id: done.id, installed: done.installed, edit }) {
 		shown.out!(line)
 	}
@@ -410,7 +410,7 @@ remove_flow! = |fx, text| {
 			}
 		}
 	}
-	after = if was_default next else config.default_roc.map_err(|Unset| None)
+	after = if (was_default) next else config.default_roc.map_err(|Unset| None)
 	Ok({ id, item, was_default, default: after, projects })
 }
 

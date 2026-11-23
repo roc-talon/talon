@@ -26,7 +26,7 @@ Guard :: [].{
 	check_all = |files| {
 		conflicts = files.keep_if(|f| f.read != f.now and f.spans_read != f.spans_now).map(|f| f.path)
 		if conflicts.is_empty() {
-			Ok(write_order(files).map(|f| { path: f.path, how: if f.read == f.now Same else Reapply }))
+			Ok(write_order(files).map(|f| { path: f.path, how: if (f.read == f.now) Same else Reapply }))
 		} else {
 			Err(Fail.new(Conflict, "${Str.join_with(conflicts, ", ")} changed while tln ran. Nothing was written. Run the command again."))
 		}

@@ -48,7 +48,7 @@ RemoveFlow :: [].{
 		plans = removal_plans!(fx, loaded, member, facts.names)?
 		aliases = plans.map(|p| p.alias)
 		imported = import_hits!(fx, loaded, member, aliases)
-		if !imported.is_empty() and !facts.force return Err(Fail.new(AppError, imports_text(imported)))
+		if (!imported.is_empty() and !facts.force) return Err(Fail.new(AppError, imports_text(imported)))
 		forced = !imported.is_empty()
 		skip_check = request.no_check or forced
 		settings = ResolveBase.settings_of(request, loaded)
@@ -66,10 +66,10 @@ RemoveFlow :: [].{
 		# R-SO19, R-SO23 (slice 072e): no compiler is selected and the check runs: the compiler is picked as an id, before any write. The first probe downloads it.
 		picked = match first.held {
 			Ok(_) => loaded
-			Err(NoCompiler) => if skip_check loaded else ResolveLoad.with_pick(loaded, HeldRoc.picked!(fx, request, loaded)?)
+			Err(NoCompiler) => if (skip_check) loaded else ResolveLoad.with_pick(loaded, HeldRoc.picked!(fx, request, loaded)?)
 		}
 		decision = decide(picked)?
-		ResolveBase.check_pin(picked, settings, decision, if skip_check LockNoCheck else Lock)?
+		ResolveBase.check_pin(picked, settings, decision, if (skip_check) LockNoCheck else Lock)?
 		pin_notes = ResolveBase.pin_notes(decision)
 		for note in pin_notes {
 			fx.out!("note: ${note}\n")
@@ -82,7 +82,7 @@ RemoveFlow :: [].{
 		ops : List(Locked.Op)
 		ops = aliases.map(|alias| Remove(alias)).concat(pins.map(|w| Pin(w.id)))
 		ran = if skip_check {
-			if request.no_check fx.out!("check: skipped\n")
+			if (request.no_check) fx.out!("check: skipped\n")
 			{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }
 		} else {
 			removal_ladder!(fx, { ..request, selected: Fetch.selected({ held: first.held ?? "", default: loaded.config.default_roc ?? "" }) }, picked, member, { aliases, ops, decision })?
@@ -145,7 +145,7 @@ removal_plans! = |fx, loaded, member, names| {
 		found = match Lookup.find(Scope.Project, ref, entities) {
 			Ok(f) => f
 			Err({ fail, block }) => {
-				if !block.is_empty() fx.err!(block)
+				if (!block.is_empty()) fx.err!(block)
 				return Err(fail)
 			}
 		}
@@ -170,7 +170,7 @@ row_fact = |r| {
 		Release(ident) => Release({ name: ident.name ?? ident.group.form, series: ident.series, version: ident.version })
 		_ => Unmanaged
 	}
-	{ alias: r.alias, what, role: if r.is_platform Platform else Direct }
+	{ alias: r.alias, what, role: if (r.is_platform) Platform else Direct }
 }
 
 # R-WS14: the nearest `talon.toml` of the member, with its text.
@@ -185,7 +185,7 @@ shared_alias : Loaded, Vars.Member, Try({ path : Str, text : Str }, [NoToml]), S
 shared_alias = |loaded, member, toml, alias| match toml {
 	Ok(file) => {
 		dir = Text.dir_of(file.path)
-		prefix = if dir.ends_with("/") dir else "${dir}/"
+		prefix = if (dir.ends_with("/")) dir else "${dir}/"
 		loaded.members.any(|m| m.file != member.file and m.file.starts_with(prefix) and m.locked.rows.any(|r| r.alias == alias))
 	}
 	Err(NoToml) => Bool.False
@@ -201,8 +201,8 @@ import_hits! = |fx, loaded, member, aliases| {
 	}
 	roots = Scan.roots({ kind: member.locked.kind, file: member.file, exposed })
 	is_app = member.locked.kind == App
-	var $sources = if is_app [{ path: member.file, text }] else []
-	var $todo = if is_app [] else roots.keep_if(|file| file != member.file)
+	var $sources = if (is_app) [{ path: member.file, text }] else []
+	var $todo = if (is_app) [] else roots.keep_if(|file| file != member.file)
 	var $seen = [member.file]
 	var $found = aliases.map(|alias| { alias, hits: [] })
 	while !$sources.is_empty() or !$todo.is_empty() {
@@ -232,7 +232,7 @@ imports_text = |imported| {
 still_imported : Imported -> Str
 still_imported = |i| {
 	count = i.hits.len()
-	lines = if count == 1 "1 line" else "${count.to_str()} lines"
+	lines = if (count == 1) "1 line" else "${count.to_str()} lines"
 	"${i.alias} is still imported in ${lines}. The app cannot check until you change the imports."
 }
 
@@ -254,7 +254,7 @@ removal_ladder! = |fx, request, loaded, member, facts| {
 	held = facts.decision.held ?? ""
 	downloads = ResolveBase.ladder_downloads(request)
 	# R-SO19, R-SO24 (slice 072e): `request.selected` is empty when the compiler is a pick. Its first probe is then the start of the pick (`Start.run_picked!`), which makes it the default.
-	loop = if request.selected == "" and !held.is_empty() { ..Ladder.no_loop, started: Ok(Start.run_picked!(fx, { roots: request.roots, path_roc: request.compiler, held, downloads })?) } else Ladder.no_loop
+	loop = if (request.selected == "" and !held.is_empty()) { ..Ladder.no_loop, started: Ok(Start.run_picked!(fx, { roots: request.roots, path_roc: request.compiler, held, downloads })?) } else Ladder.no_loop
 	result = Ladder.run!(
 		fx,
 		{ roots: request.roots, now: request.now, path_roc: request.compiler, held, members: [candidate], owners, moved: [], downloads, probe: ResolveBase.probe_settings(request, loaded), no_probe: request.probe.no_probe, closures, loop },
@@ -264,7 +264,7 @@ removal_ladder! = |fx, request, loaded, member, facts| {
 			probes: done.probes,
 			downloads: done.downloads,
 			check: Passed,
-			build: BuildSkip.state({ apps: if member.locked.kind == App 1 else 0, skipped: done.skipped }),
+			build: BuildSkip.state({ apps: if (member.locked.kind == App) 1 else 0, skipped: done.skipped }),
 			notes: done.notes,
 		})
 		Err(fail) => if fail.kind == NoTuple {
@@ -278,7 +278,7 @@ removal_ladder! = |fx, request, loaded, member, facts| {
 # Step 9, R-CC7, R-CC1: the second read, the check, and one `write_atomic!` call (the `talon.toml` first). With `--dry-run` there is no read and no write.
 write_removal! : Fx, ResolveBase.Request, Loaded, { file : Str, ops : List(Locked.Op), toml : Try({ path : Str, text : Str }, [NoToml]), keys : List({ table : IntentEdit.Table, key : Str }) } => Try(List(Str), Fail)
 write_removal! = |fx, request, loaded, facts| {
-	if request.dry_run return Ok([])
+	if (request.dry_run) return Ok([])
 	toml_paths = match facts.toml {
 		Ok(t) if !facts.keys.is_empty() => [t.path]
 		_ => []
@@ -308,7 +308,7 @@ write_removal! = |fx, request, loaded, facts| {
 		|f| {
 			is_header = f.path == facts.file
 			read = ResolveBase.loaded_text(loaded, f.path)
-			spans = |text| if is_header Locked.spans({ text, ops: facts.ops }) else IntentEdit.table_spans({ text, keys: facts.keys })
+			spans = |text| if (is_header) Locked.spans({ text, ops: facts.ops }) else IntentEdit.table_spans({ text, keys: facts.keys })
 			{ path: f.path, read, now: f.now, spans_read: spans(read), spans_now: spans(f.now) }
 		},
 	)

@@ -31,7 +31,7 @@ other_app = "J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr"
 host = "x64musl"
 
 yn : Bool -> Str
-yn = |x| if x "y" else "n"
+yn = |x| if (x) "y" else "n"
 
 digest : Str
 digest = ToolCompiler.digest({ bundle: tool_app, hashes: [pf, dep] })

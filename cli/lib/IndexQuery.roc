@@ -75,7 +75,7 @@ IndexQuery :: [].{
 		|s| match s.variable.name {
 			Ok(_) if s.free => Ok({
 				group: s.variable.group.form,
-				series: if s.any_series Err(None) else Ok(s.variable.group.series),
+				series: if (s.any_series) Err(None) else Ok(s.variable.group.series),
 				range: ClosureRequest.join_ranges(s.variable.ranges.map(|r| r.range)),
 			})
 			_ => Err(NoGroup)
@@ -90,7 +90,7 @@ IndexQuery :: [].{
 	## | 2 | Each other variable stays as it is. The order of `scoped` stays. |
 	held_anchors : { scoped : List(Vars.Scoped), anchors : List(Str) } -> List(Vars.Scoped)
 	held_anchors = |facts| facts.scoped.map(
-		|s| if s.variable.uses.any(|u| facts.anchors.contains(u.url)) { ..s, movable: Bool.False } else s,
+		|s| if (s.variable.uses.any(|u| facts.anchors.contains(u.url))) { ..s, movable: Bool.False } else s,
 	)
 
 	## Slice 206d2 (Registry R-AP16 second query, R-AP74 row 3; Resolution 9 R-SP23, R-SP24; CLI R-DI1): the `groups` of the second closure query of a held move.
@@ -118,7 +118,7 @@ IndexQuery :: [].{
 				_ => Err(NoGroup)
 			},
 		)
-		.fold([], |seen, form| if seen.contains(form) seen else seen.append(form))
+		.fold([], |seen, form| if (seen.contains(form)) seen else seen.append(form))
 		.map(|form| { group: form, series: Err(None), range: Err(None) })
 
 	## R-RG4: what the first closure query carries, as the sources of `PrivacyGuard.check!`: `Group(group)` for each group of the request, in order, then `Url(entry)` for each entry whose hash goes in `hashes` (an entry that `Ident.of_url` reads), in the order of `entries`.
@@ -165,7 +165,7 @@ forms = "Use direct, an https:// URL, or an http:// URL of 127.0.0.1, [::1] or l
 
 # The text `direct`, or a registry URL in the base URL form.
 read_setting : Str -> Try([Direct, Registry(Str)], [BadRegistry])
-read_setting = |text| if text == "direct" Ok(Direct) else Registry.base(text).map_ok(|origin| Registry(origin))
+read_setting = |text| if (text == "direct") Ok(Direct) else Registry.base(text).map_ok(|origin| Registry(origin))
 
 # The flag or the variable that wins: a bad text is a usage failure (exit 2) that names the source.
 read_named : Str, Str -> Try([Direct, Registry(Str)], Fail)

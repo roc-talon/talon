@@ -89,10 +89,10 @@ expect {
 	}
 	bad_value.config.default_roc == Err(Unset)
 		and bad_value.config.nightly == Ok(Bool.True)
-			and bad_value.config.min_release_age == Ok(86400)
-				and bad_value.warnings == ["/c/config.toml:2: default-roc: must be a full compiler id (ignored)"]
-					and two_bad.config == empty
-						and two_bad.warnings == ["/c/config.toml:1: default-roc: must be a full compiler id (ignored)", "/c/config.toml:2: nightly: must be true or false (ignored)", "/c/config.toml:3: unknown key foo"]
-							and syntax == { config: empty, warnings: ["/c/config.toml:1: not valid TOML (ignored)"] }
-								and same
+		and bad_value.config.min_release_age == Ok(86400)
+		and bad_value.warnings == ["/c/config.toml:2: default-roc: must be a full compiler id (ignored)"]
+		and two_bad.config == empty
+		and two_bad.warnings == ["/c/config.toml:1: default-roc: must be a full compiler id (ignored)", "/c/config.toml:2: nightly: must be true or false (ignored)", "/c/config.toml:3: unknown key foo"]
+		and syntax == { config: empty, warnings: ["/c/config.toml:1: not valid TOML (ignored)"] }
+		and same
 }

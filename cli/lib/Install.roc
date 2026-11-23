@@ -136,7 +136,7 @@ Install :: [].{
 	# Step 7, R-SO22: the `roc` on `PATH` (not for `--frozen`). `ROC_TOOLCHAIN` is read apart (`Compiler.toolchain_of`, no `Fx` call) and needs no installed compiler here:
 	# the first probe checks it (`Compiler.require`).
 	compiler! : Fx, Roots, Bool => Try({ id : Str, path : Str }, [NoCompiler])
-	compiler! = |fx, roots, frozen| if frozen Err(NoCompiler) else Install.on_path_file!(fx, roots)
+	compiler! = |fx, roots, frozen| if (frozen) Err(NoCompiler) else Install.on_path_file!(fx, roots)
 }
 
 # Steps 2 to 8: the environment, the project, the record, the compiler, and `Resolve.install!`.
@@ -174,7 +174,7 @@ flow! = |fx, args, opts| {
 			none: Stop,
 			index: Direct,
 			# Slice 206e (R-AL2, R-DI1), slice 206f (R-AD35): `install` and `add` read the registry setting, with names or none. `--frozen` makes no index call (R-AU6, R-RG7 row 6): `Off`.
-			registry: if opts.frozen Off else Setting(args.registry),
+			registry: if (opts.frozen) Off else Setting(args.registry),
 			toolchain,
 			snapshot: opts.snapshot,
 			dry_run: opts.dry_run,

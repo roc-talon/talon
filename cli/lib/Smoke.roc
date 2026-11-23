@@ -42,7 +42,7 @@ Smoke :: [].{
 	## The key of `done`, `bot` and `hints` rows is compared by hash and target, and the compiler with `PinOrder.same_id` (R-CV1).
 	choose : { built : List(Db.Key), installed : List(Str), done : List(Db.SmokeRow), recorded : List(Str), answers : List(Wire.Answer), domain : List(Nightlies.Release) } -> List(Smoke.Choice)
 	choose = |x| {
-		keys = x.built.fold([], |found, k| if found.contains(k) found else found.append(k))
+		keys = x.built.fold([], |found, k| if (found.contains(k)) found else found.append(k))
 		hashes = x.answers.join_map(|a| a.artifacts.map(|r| r.hash).concat(a.releases.map(|r| r.hash)))
 		bots = x.answers
 			.join_map(|a| Matrix.rows({ runs: a.runs, nearest: a.nearest, domain: x.domain }))

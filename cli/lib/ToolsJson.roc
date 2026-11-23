@@ -112,7 +112,7 @@ ToolsJson :: [].{
 	## The decision of the table of `Clash`. `entries` are the tools of the file, `key` is the binary name that the install wants, `name` is the full name of the app.
 	clash : { entries : List(Entry), key : Str, name : Str } -> Clash
 	clash = |facts| match facts.entries.find_first(|e| e.key == facts.key) {
-		Ok(e) => if e.name == facts.name Same(e) else Taken(e)
+		Ok(e) => if (e.name == facts.name) Same(e) else Taken(e)
 		Err(_) => match facts.entries.find_first(|e| e.name == facts.name) {
 			Ok(e) => Elsewhere(e)
 			Err(_) => Free
@@ -201,7 +201,7 @@ ToolsJson :: [].{
 				Err(NoTools) => Ok(text)
 				Ok(pairs) => if pairs.any(|(key, _)| key == facts.key) {
 					without = pairs.keep_if(|(key, _)| key != facts.key)
-					Ok(render_fields(file.fields.map(|(name, doc)| if name == "tools" (name, Obj(without)) else (name, doc))))
+					Ok(render_fields(file.fields.map(|(name, doc)| if (name == "tools") (name, Obj(without)) else (name, doc))))
 				} else {
 					Ok(text)
 				}
@@ -399,11 +399,11 @@ with_doc = |fields, tools, key, doc| match tools {
 	Err(NoTools) => fields.append(("tools", Obj([(key, doc)])))
 	Ok(pairs) => {
 		merged = if pairs.any(|(name, _)| name == key) {
-			pairs.map(|(name, old)| if name == key (name, merge(old, doc)) else (name, old))
+			pairs.map(|(name, old)| if (name == key) (name, merge(old, doc)) else (name, old))
 		} else {
 			pairs.append((key, doc))
 		}
-		fields.map(|(name, old)| if name == "tools" (name, Obj(merged)) else (name, old))
+		fields.map(|(name, old)| if (name == "tools") (name, Obj(merged)) else (name, old))
 	}
 }
 

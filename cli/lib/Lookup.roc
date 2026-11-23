@@ -98,7 +98,7 @@ Lookup := [
 		|built, fact| {
 			entity = entity_of(fact)
 			repeat = fact.alias != "" and built.any(|o| o.alias == entity.alias and o.name == entity.name and o.series == entity.series)
-			if repeat built else built.append(entity)
+			if (repeat) built else built.append(entity)
 		},
 	)
 
@@ -228,7 +228,7 @@ existing = |e| Existing({ alias: e.alias, name: e.name, series: e.series })
 # R-SC6 to R-SC8: the forms in order, first match wins. An alias is form 1, a full name form 2, a short name form 3.
 candidates : Ref, List(Lookup.Entity) -> List(Lookup.Entity)
 candidates = |ref, entities| {
-	by_alias = if ref.form == Bare entities.keep_if(|e| e.alias == ref.name) else []
+	by_alias = if (ref.form == Bare) entities.keep_if(|e| e.alias == ref.name) else []
 	if !by_alias.is_empty() {
 		by_alias
 	} else if ref.form == Bare {
@@ -263,9 +263,9 @@ install_missing = |ref| match ref.form {
 find_local : Scope, Ref, List(Lookup.Entity) -> Try(Lookup, Failed)
 find_local = |scope, ref, entities| {
 	all = candidates(ref, entities)
-	matches = if scope == Project all.keep_if(|e| in_selector(ref, e)) else all
+	matches = if (scope == Project) all.keep_if(|e| in_selector(ref, e)) else all
 	match matches {
-		[] => if all.is_empty() missing(scope, ref) else Err(failure("'${typed(ref)}' is not in the project"))
+		[] => if (all.is_empty()) missing(scope, ref) else Err(failure("'${typed(ref)}' is not in the project"))
 		[one] => Ok(existing(one))
 		_ => Err(tie(ref.name, entities, matches, "Use a name from the list."))
 	}
@@ -410,7 +410,7 @@ registry_install = |ref, found| match found.outcome {
 		Err({ fail: Fail.new(Usage, "\"${ref.name}\" matches ${count} packages. Use a name from the list."), block: "\"${ref.name}\" matches ${count} packages:\n${ShortNames.list_lines(items)}" })
 	}
 	NoMatch => {
-		similar = if found.suggest.is_empty() "" else "Similar names:\n${Str.join_with(found.suggest.map(|hit| "  ${hit.name}\n"), "")}"
+		similar = if (found.suggest.is_empty()) "" else "Similar names:\n${Str.join_with(found.suggest.map(|hit| "  ${hit.name}\n"), "")}"
 		Err({ fail: Fail.new(Usage, "\"${ref.name}\" matches no indexed package. Use the full name (owner/repo)."), block: similar })
 	}
 }
@@ -423,6 +423,6 @@ registry_listed = |ref, found| {
 		Many(items) => ShortNames.list_lines(items)
 		NoMatch => ""
 	}
-	block = if listed.is_empty() "" else "Registry matches for \"${ref.name}\":\n${listed}"
+	block = if (listed.is_empty()) "" else "Registry matches for \"${ref.name}\":\n${listed}"
 	{ fail: Fail.new(Usage, "'${ref.name}' matches no installed tool or cached app. Use the full name (owner/repo)."), block }
 }

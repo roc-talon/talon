@@ -43,7 +43,7 @@ size_of = |key| match key {
 }
 
 archive_of : Str, Str -> Str
-archive_of = |version, key| if key.ends_with("windows") "zig-${key}-${version}.zip" else "zig-${key}-${version}.tar.xz"
+archive_of = |version, key| if (key.ends_with("windows")) "zig-${key}-${version}.zip" else "zig-${key}-${version}.tar.xz"
 
 url_of : Str, Str -> Str
 url_of = |version, key| "https://ziglang.org/download/${version}/${archive_of(version, key)}"
@@ -78,11 +78,11 @@ expect {
 	dbg Zig.index_url(moved)
 	Zig.env_zig(env) == Ok("/opt/zig/zig")
 		and Zig.env_zig([("HOME", "/h")]) == Err(NotSet)
-			and Zig.env_zig([("ZIG_HOME", "/x"), ("zig", "/y")]) == Err(NotSet)
-				and Zig.index_url(env) == "https://ziglang.org/download/index.json"
-					and Zig.index_url([]) == "https://ziglang.org/download/index.json"
-						and Zig.index_url(moved) == "http://127.0.0.1:8080/zig/index.json"
-							and Zig.index_url([("TALON_ZIG_INDEXX", "http://x/")]) == "https://ziglang.org/download/index.json"
+		and Zig.env_zig([("ZIG_HOME", "/x"), ("zig", "/y")]) == Err(NotSet)
+		and Zig.index_url(env) == "https://ziglang.org/download/index.json"
+		and Zig.index_url([]) == "https://ziglang.org/download/index.json"
+		and Zig.index_url(moved) == "http://127.0.0.1:8080/zig/index.json"
+		and Zig.index_url([("TALON_ZIG_INDEXX", "http://x/")]) == "https://ziglang.org/download/index.json"
 }
 
 # R-D4: the Zig version of a commit is `minimum_zig_version` of `build.zig.zon`. A comment line is not read. The series is the `major.minor`.
@@ -106,14 +106,14 @@ expect {
 	dbg bad
 	bad == []
 		and Zig.minimum(real) == Ok("0.15.2")
-			and Zig.minimum(tight) == Ok("0.17.0-dev.31+abc")
-				and Zig.minimum(two) == Ok("0.17.0")
-					and Zig.minimum(only_comment) == Err(NoKey)
-						and Zig.minimum("") == Err(NoKey)
-							and Zig.wanted("0.17.0") == "0.17.x"
-								and Zig.wanted("0.17.0-dev.31+abc") == "0.17.x"
-									and Zig.wanted("0.9.1") == "0.9.x"
-										and Zig.wanted("master") == "master"
+		and Zig.minimum(tight) == Ok("0.17.0-dev.31+abc")
+		and Zig.minimum(two) == Ok("0.17.0")
+		and Zig.minimum(only_comment) == Err(NoKey)
+		and Zig.minimum("") == Err(NoKey)
+		and Zig.wanted("0.17.0") == "0.17.x"
+		and Zig.wanted("0.17.0-dev.31+abc") == "0.17.x"
+		and Zig.wanted("0.9.1") == "0.9.x"
+		and Zig.wanted("master") == "master"
 }
 
 # R-D1: the search order is `$ZIG`, then `zig` on `PATH` with a matching version, then a Zig that Talon installed. A version matches with the same major and minor (R-D4). The order does not depend on the order of the list.
@@ -199,7 +199,7 @@ expect {
 			{ source: Installed, path: "/c/roc/toolchains/zig-0.16.2/zig.exe", version: Ok("0.16.2") },
 			{ source: Installed, path: "/c/roc/toolchains/zig-0.17.0/zig.exe", version: Ok("0.17.0") },
 		]
-			and Zig.installed({ roots, host: MacosApple, entries: [] }) == []
+		and Zig.installed({ roots, host: MacosApple, entries: [] }) == []
 }
 
 # R-D2, Q2 (review): with 2 or more releases of the series the newest wins in the order of the numbers (0.17.10 over 0.17.9, in any order of the keys). R-D2: the key of each host, and the archive that the index gives. The release of the series is chosen, not `master` (also when `master` has the series: its version is `0.17.1-dev`), and the patch of `need` does not count.
@@ -217,14 +217,14 @@ expect {
 	dbg bad_picks
 	bad_keys == []
 		and bad_picks == []
-			and Zig.pick({ index: newest_last, need: "0.17.0", host: LinuxX64 }) == Ok(entry_of("0.17.10", "x86_64-linux"))
-				and Zig.pick({ index: newest_first, need: "0.17.0", host: LinuxX64 }) == Ok(entry_of("0.17.10", "x86_64-linux"))
-					and Zig.pick({ index: newest_middle, need: "0.17.3", host: MacosApple }) == Ok(entry_of("0.17.10", "aarch64-macos"))
-						and Zig.pick({ index: full_index, need: "0.16.1", host: LinuxArm64 }) == Ok(entry_of("0.16.2", "aarch64-linux"))
-							and Zig.pick({ index: full_index, need: "0.15.0", host: MacosApple }) == Ok(entry_of("0.15.1", "aarch64-macos"))
-								and Zig.pick({ index: full_index, need: "0.17.0-dev.31+abc", host: WindowsX64 }) == Ok(entry_of("0.17.0", "x86_64-windows"))
-									and Zig.pick({ index: same_series_master, need: "0.17.0", host: LinuxX64 }) == Ok(entry_of("0.17.0", "x86_64-linux"))
-										and Zig.pick({ index: numeric_size, need: "0.17.0", host: LinuxX64 }) == Ok({ version: "0.17.0", url: "https://z/zig-x86_64-linux-0.17.0.tar.xz", sha256: sha_of("x86_64-linux"), size: 12345, archive: "zig-x86_64-linux-0.17.0.tar.xz" })
+		and Zig.pick({ index: newest_last, need: "0.17.0", host: LinuxX64 }) == Ok(entry_of("0.17.10", "x86_64-linux"))
+		and Zig.pick({ index: newest_first, need: "0.17.0", host: LinuxX64 }) == Ok(entry_of("0.17.10", "x86_64-linux"))
+		and Zig.pick({ index: newest_middle, need: "0.17.3", host: MacosApple }) == Ok(entry_of("0.17.10", "aarch64-macos"))
+		and Zig.pick({ index: full_index, need: "0.16.1", host: LinuxArm64 }) == Ok(entry_of("0.16.2", "aarch64-linux"))
+		and Zig.pick({ index: full_index, need: "0.15.0", host: MacosApple }) == Ok(entry_of("0.15.1", "aarch64-macos"))
+		and Zig.pick({ index: full_index, need: "0.17.0-dev.31+abc", host: WindowsX64 }) == Ok(entry_of("0.17.0", "x86_64-windows"))
+		and Zig.pick({ index: same_series_master, need: "0.17.0", host: LinuxX64 }) == Ok(entry_of("0.17.0", "x86_64-linux"))
+		and Zig.pick({ index: numeric_size, need: "0.17.0", host: LinuxX64 }) == Ok({ version: "0.17.0", url: "https://z/zig-x86_64-linux-0.17.0.tar.xz", sha256: sha_of("x86_64-linux"), size: 12345, archive: "zig-x86_64-linux-0.17.0.tar.xz" })
 }
 
 # R-D2, R-CV4, slice 045 review Q4: a dev `minimum_zig_version` is read as the series before `-dev`, and an index with no release of that series gives the normal no-release failure. The failures of the index. No sha256 (missing, short or not hex) is `Integrity` (exit 16): Talon does not install a Zig that it cannot check. The kinds and the texts are proposals (TW24).
@@ -241,24 +241,24 @@ expect {
 	dbg pick("[1, 2]", "0.17.0", LinuxX64)
 	pick("", "0.17.0", LinuxX64) == Err(not_json)
 		and pick("[1, 2]", "0.17.0", LinuxX64) == Err(not_json)
-			and pick("{ \"0.17.0\": ", "0.17.0", LinuxX64) == Err(not_json)
-				and pick("\"text\"", "0.17.0", LinuxX64) == Err(not_json)
-					and pick(no_release, "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no release of zig 0.17.x"))
-						and pick("{}", "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no release of zig 0.17.x"))
-							and pick(no_release, "0.17.0-dev.31+abc", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no release of zig 0.17.x"))
-								and pick(no_windows_arm, "0.17.0", WindowsArm64) == Err(Fail.new(Environment, "the Zig index has no archive of zig 0.17.0 for aarch64-windows"))
-									and pick(no_windows_arm, "0.17.0", WindowsX64) == Ok(entry_of("0.17.0", "x86_64-windows"))
-										and pick(no_tarball, "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no archive of zig 0.17.0 for x86_64-linux"))
-											and pick(null_target, "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no archive of zig 0.17.0 for x86_64-linux"))
-												and pick(no_sha, "0.17.0", LinuxX64) == Err(integrity)
-													and pick(with_sha("\"${"a".repeat(63)}\""), "0.17.0", LinuxX64) == Err(integrity)
-														and pick(with_sha("\"${"a".repeat(65)}\""), "0.17.0", LinuxX64) == Err(integrity)
-															and pick(with_sha("\"${"z".repeat(64)}\""), "0.17.0", LinuxX64) == Err(integrity)
-																and pick(with_sha("null"), "0.17.0", LinuxX64) == Err(integrity)
-																	and pick(with_sha("\"\""), "0.17.0", LinuxX64) == Err(integrity)
-																		and integrity.kind.code() == 16
-																			and Fail.new(Environment, "x").kind.code() == 18
-																				and not_json.kind.code() == 15
+		and pick("{ \"0.17.0\": ", "0.17.0", LinuxX64) == Err(not_json)
+		and pick("\"text\"", "0.17.0", LinuxX64) == Err(not_json)
+		and pick(no_release, "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no release of zig 0.17.x"))
+		and pick("{}", "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no release of zig 0.17.x"))
+		and pick(no_release, "0.17.0-dev.31+abc", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no release of zig 0.17.x"))
+		and pick(no_windows_arm, "0.17.0", WindowsArm64) == Err(Fail.new(Environment, "the Zig index has no archive of zig 0.17.0 for aarch64-windows"))
+		and pick(no_windows_arm, "0.17.0", WindowsX64) == Ok(entry_of("0.17.0", "x86_64-windows"))
+		and pick(no_tarball, "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no archive of zig 0.17.0 for x86_64-linux"))
+		and pick(null_target, "0.17.0", LinuxX64) == Err(Fail.new(Environment, "the Zig index has no archive of zig 0.17.0 for x86_64-linux"))
+		and pick(no_sha, "0.17.0", LinuxX64) == Err(integrity)
+		and pick(with_sha("\"${"a".repeat(63)}\""), "0.17.0", LinuxX64) == Err(integrity)
+		and pick(with_sha("\"${"a".repeat(65)}\""), "0.17.0", LinuxX64) == Err(integrity)
+		and pick(with_sha("\"${"z".repeat(64)}\""), "0.17.0", LinuxX64) == Err(integrity)
+		and pick(with_sha("null"), "0.17.0", LinuxX64) == Err(integrity)
+		and pick(with_sha("\"\""), "0.17.0", LinuxX64) == Err(integrity)
+		and integrity.kind.code() == 16
+		and Fail.new(Environment, "x").kind.code() == 18
+		and not_json.kind.code() == 15
 }
 
 # R-D2, R-CC1, R-CC4: the paths of one install, the program name of a host, the check for `xz` (R-EC18), and the text of `.talon.json` (R-TF1). The program is `zig.exe` on Windows.
@@ -288,13 +288,13 @@ expect {
 		meta: "${temp}/.talon.json",
 	}
 		and windows.zig == "/c/roc/toolchains/zig-0.17.0.00000000000000ff.tmp/zig.exe"
-			and windows.archive == "/c/roc/toolchains/zig-0.17.0.00000000000000ff.tmp/zig-x86_64-windows-0.17.0.zip"
-				and windows.item == "/c/roc/toolchains/zig-0.17.0"
-					and Zig.exe(LinuxArm64) == "zig"
-						and Zig.exe(MacosApple) == "zig"
-							and Zig.exe(WindowsArm64) == "zig.exe"
-								and bad_xz == []
-									and meta == "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"${sha_of("x86_64-linux")}\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
+		and windows.archive == "/c/roc/toolchains/zig-0.17.0.00000000000000ff.tmp/zig-x86_64-windows-0.17.0.zip"
+		and windows.item == "/c/roc/toolchains/zig-0.17.0"
+		and Zig.exe(LinuxArm64) == "zig"
+		and Zig.exe(MacosApple) == "zig"
+		and Zig.exe(WindowsArm64) == "zig.exe"
+		and bad_xz == []
+		and meta == "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"${sha_of("x86_64-linux")}\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
 }
 
 # R-D3: the dependency list. `[x]` is found, `[ ]` with a reason is missing. The LLVM bundle line is always `[ ]` and has the target and the size of the asset. The first 2 rows are the example of CLI 6.6
@@ -311,9 +311,9 @@ expect {
 	dbg missing
 	missing == lines(["  [ ] zig 0.17.x            found zig 0.16.0 on PATH", llvm_row])
 		and found_path == lines(["  [x] zig 0.17.x            found zig 0.17.2 on PATH", llvm_row])
-			and found_env == lines(["  [x] zig 0.17.x            found zig 0.17.1 in $ZIG", llvm_row])
-				and found_inst == lines(["  [x] zig 0.15.x            found zig 0.15.1 installed by Talon", llvm_row])
-					and none == lines(["  [ ] zig 0.17.x            zig not found", "  [ ] LLVM bundle           aarch64-macos, zig gets it during the build"])
+		and found_env == lines(["  [x] zig 0.17.x            found zig 0.17.1 in $ZIG", llvm_row])
+		and found_inst == lines(["  [x] zig 0.15.x            found zig 0.15.1 installed by Talon", llvm_row])
+		and none == lines(["  [ ] zig 0.17.x            zig not found", "  [ ] LLVM bundle           aarch64-macos, zig gets it during the build"])
 }
 
 # R-NI6, R-DL1, R-DL3, R-DL4: the prompt of the Zig install. It is a Default prompt: interactive, the default is Yes (R-DL3: "the Zig of `roc install`"). Non-interactive, and with `--yes`, the answer is Yes with no prompt (the command
@@ -325,22 +325,22 @@ expect {
 	dbg p.question
 	p.id == "zig-install"
 		and p.kind == Default
-			and p.shape == YesNo
-				and p.default == Yes
-					and p.question == "Install zig 0.17.0 (54.2 MB) for Talon builds?"
-						and p.subject == "the download of zig 0.17.0"
-							and (p.answer_line)(Yes) == "installing zig 0.17.0 (54.2 MB)"
-								and (p.answer_line)(No) == "no install of zig 0.17.0"
-									and Prompt.text(p) == "Install zig 0.17.0 (54.2 MB) for Talon builds? [Y/n] "
-										and Prompt.reply(p, "") == Ok(Yes)
-											and Prompt.reply(p, "N") == Ok(No)
-												and decide(NonInteractive, Bool.False, Err(NoFlag)) == Use(Yes)
-													and decide(NonInteractive, Bool.True, Err(NoFlag)) == Use(Yes)
-														and decide(Interactive, Bool.False, Err(NoFlag)) == Ask
-															and decide(Interactive, Bool.True, Err(NoFlag)) == Use(Yes)
-																and decide(NeedsTty, Bool.False, Err(NoFlag)) == NeedTty
-																	and declined == Fail.new(Consent, "zig 0.17.0 is not installed. Nothing was downloaded.")
-																		and declined.kind.code() == 13
+		and p.shape == YesNo
+		and p.default == Yes
+		and p.question == "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+		and p.subject == "the download of zig 0.17.0"
+		and (p.answer_line)(Yes) == "installing zig 0.17.0 (54.2 MB)"
+		and (p.answer_line)(No) == "no install of zig 0.17.0"
+		and Prompt.text(p) == "Install zig 0.17.0 (54.2 MB) for Talon builds? [Y/n] "
+		and Prompt.reply(p, "") == Ok(Yes)
+		and Prompt.reply(p, "N") == Ok(No)
+		and decide(NonInteractive, Bool.False, Err(NoFlag)) == Use(Yes)
+		and decide(NonInteractive, Bool.True, Err(NoFlag)) == Use(Yes)
+		and decide(Interactive, Bool.False, Err(NoFlag)) == Ask
+		and decide(Interactive, Bool.True, Err(NoFlag)) == Use(Yes)
+		and decide(NeedsTty, Bool.False, Err(NoFlag)) == NeedTty
+		and declined == Fail.new(Consent, "zig 0.17.0 is not installed. Nothing was downloaded.")
+		and declined.kind.code() == 13
 }
 
 # Slice 061, R-D2, R-D1: the Zig installs in the store. `Gc.zig_dirs` takes the listing of `<cache>/toolchains` and gives the ids `zig-<X.Y.Z>` of the Zig installs that Talon makes (R-D2: a dir `zig-<version>`

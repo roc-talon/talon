@@ -52,7 +52,7 @@ ProbeCmd :: [].{
 		share = args.options.any(|(name, _)| name == "--share")
 		target = match args.operands {
 			[] => Project
-			[one] => if one.ends_with(".tar.zst") Bundle(one) else Alias(one)
+			[one] => if (one.ends_with(".tar.zst")) Bundle(one) else Alias(one)
 			_ => return Err(Fail.new(Usage, "tln probe takes one name or one bundle file"))
 		}
 		if share {
@@ -82,7 +82,7 @@ ProbeCmd :: [].{
 	entry : { text : Str, rows : List(Locked.Row) } -> Try(Units.Node, { fail : Fail, block : Str })
 	entry = |x| {
 		ref = Ref.parse(x.text, Scope.Project, Bool.False).map_err(|fail| { fail, block: "" })?
-		rows = x.rows.fold([], |found, row| if found.any(|r| r.alias == row.alias and r.value == row.value) found else found.append(row))
+		rows = x.rows.fold([], |found, row| if (found.any(|r| r.alias == row.alias and r.value == row.value)) found else found.append(row))
 		(alias, name, series) = match Lookup.find(Scope.Project, ref, Lookup.build(rows.map(fact_of)))? {
 			Existing(e) => (e.alias, e.name, e.series)
 			New(n) => ("", n, "")
@@ -137,7 +137,7 @@ ProbeCmd :: [].{
 	stop = |x| match x.cut {
 		Ok(fail) => Ok(fail)
 		Err(None) => match x.found {
-			NoPass => if x.unseen > 0 Ok(Fail.new(Budget, "no installed compiler gave a real pass, and no real fact exists for ${ProbeShow.plural(x.unseen, "release")} of the list. Run tln roc install for more compilers.")) else Err(None)
+			NoPass => if (x.unseen > 0) Ok(Fail.new(Budget, "no installed compiler gave a real pass, and no real fact exists for ${ProbeShow.plural(x.unseen, "release")} of the list. Run tln roc install for more compilers.")) else Err(None)
 			Range({ from, to }) => match [from, to].count_if(|end| !end.real) {
 				0 => Err(None)
 				1 => Ok(Fail.new(Budget, "the range has 1 end that is not a real fact (unknown): no installed compiler can show it. Run tln roc install for more compilers."))
@@ -158,7 +158,7 @@ ProbeCmd :: [].{
 		Unit({ node, compiler, fact, .. }) => {
 			end = match fact.outcome {
 				Pass => "pass"
-				Fail => if fact.modules.is_empty() "fail (no module is named)" else "fail (${Str.join_with(fact.modules, ", ")})"
+				Fail => if (fact.modules.is_empty()) "fail (no module is named)" else "fail (${Str.join_with(fact.modules, ", ")})"
 				Hang => "hang"
 				Crash => "crash"
 			}
@@ -234,7 +234,7 @@ ProbeCmd :: [].{
 # The fact of a header row for `Lookup.build`: a release is a direct entry or the platform, a path or a foreign URL is unmanaged (R-SC6).
 fact_of : Locked.Row -> Lookup.Fact
 fact_of = |row| match row.what {
-	Release(ident) => { alias: row.alias, what: Release({ name: name_of(ident), series: ident.series, version: ident.version }), role: if row.is_platform Platform else Direct }
+	Release(ident) => { alias: row.alias, what: Release({ name: name_of(ident), series: ident.series, version: ident.version }), role: if (row.is_platform) Platform else Direct }
 	_ => { alias: row.alias, what: Unmanaged, role: Direct }
 }
 

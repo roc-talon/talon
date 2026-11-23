@@ -83,7 +83,7 @@ event_of = |facts, source, line| match line.from {
 		file = Scan.local_file({ project_dir: root, file: source.path, name: line.name })
 		used = match source.owner {
 			App => Err(None)
-			Package(hash) => if file.starts_with("${root}/") Ok({ hash, path: file.drop_prefix("${root}/") }) else Err(None)
+			Package(hash) => if (file.starts_with("${root}/")) Ok({ hash, path: file.drop_prefix("${root}/") }) else Err(None)
 		}
 		Ok({ used, next: { owner: source.owner, path: file } })
 	}
@@ -100,9 +100,9 @@ event_of = |facts, source, line| match line.from {
 step : List(Str), { used : List(Used), next : List(Uses.Todo) }, Event -> { used : List(Used), next : List(Uses.Todo) }
 step = |seen, acc, event| {
 	used = match event.used {
-		Ok(row) => if acc.used.contains(row) acc.used else acc.used.append(row)
+		Ok(row) => if (acc.used.contains(row)) acc.used else acc.used.append(row)
 		Err(None) => acc.used
 	}
 	known = seen.contains(event.next.path) or acc.next.any(|todo| todo.path == event.next.path)
-	{ used, next: if known acc.next else acc.next.append(event.next) }
+	{ used, next: if (known) acc.next else acc.next.append(event.next) }
 }

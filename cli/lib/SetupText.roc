@@ -76,7 +76,7 @@ SetupText :: [].{
 				_ => Err(NotMade)
 			},
 		)
-		moved = if done.moved ["moved ${done.roc} to ${done.old}, linked as link-system\n"] else []
+		moved = if (done.moved) ["moved ${done.roc} to ${done.old}, linked as link-system\n"] else []
 		path = match done.path {
 			Added({ target }) => ["PATH: added ${done.bin} to ${target}\n"]
 			Declined({ target, line }) => ["PATH: not changed. To add ${done.bin}, put this line in ${target}: ${line}\n"]
@@ -94,7 +94,7 @@ SetupText :: [].{
 		}
 		lines = made.concat(moved).concat(path).concat(files).concat(chosen)
 		skipped = done.entries.any(|e| e.act == Skipped)
-		if lines.is_empty() and !skipped ["nothing to do: the entries, the PATH line and the completions are in place\n"] else lines
+		if (lines.is_empty() and !skipped) ["nothing to do: the entries, the PATH line and the completions are in place\n"] else lines
 	}
 
 	## R-J3, R-OUT4: the `data` of `--json`, the keys in this order: `bin_dir`, `entries` (`name`, `action`, `form`), `roc_old`, `path`, `completion`, and (slice 072a, a proposal, TW24) `default_roc`: an object with
@@ -152,13 +152,13 @@ SetupText :: [].{
 
 	# The text without the `ch` at its end (all of them).
 	strip_end : Str, Str -> Str
-	strip_end = |text, ch| if text.ends_with(ch) strip_end(text.drop_suffix(ch), ch) else text
+	strip_end = |text, ch| if (text.ends_with(ch)) strip_end(text.drop_suffix(ch), ch) else text
 
 	# A part of `PATH` without the `/` at its end. A part that is only `/` stays.
 	clean_part : Str -> Str
 	clean_part = |part| {
 		stripped = strip_end(part, "/")
-		if stripped.is_empty() and !part.is_empty() "/" else stripped
+		if (stripped.is_empty() and !part.is_empty()) "/" else stripped
 	}
 
 	# The parts of `PATH`: no empty part, no `/` at the end of a part.
@@ -167,7 +167,7 @@ SetupText :: [].{
 
 	# The old text, a line end when it lacks one, the new line, and a line end.
 	appended : Str, Str -> Str
-	appended = |text, line| if text.is_empty() or text.ends_with("\n") "${text}${line}\n" else "${text}\n${line}\n"
+	appended = |text, line| if (text.is_empty() or text.ends_with("\n")) "${text}${line}\n" else "${text}\n${line}\n"
 
 	## The value of an environment variable, or the empty text.
 	var_of : List((Str, Str)), Str -> Str

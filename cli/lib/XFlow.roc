@@ -132,7 +132,7 @@ offline! = |fx, args, plan, run| {
 			key = Text.last_segment(facts.name)
 			prompt = XCmd.unchecked_prompt({ via: Run, key, version })
 			mode = Mode.from_env({ env: Dict.from_list(facts.env), json: Bool.False })
-			asked = Prompt.ask!(fx, prompt, { mode, yes: args.yes, quiet: args.quiet, flag: if plan.unchecked Ok(Yes) else Err(NoFlag) })?
+			asked = Prompt.ask!(fx, prompt, { mode, yes: args.yes, quiet: args.quiet, flag: if (plan.unchecked) Ok(Yes) else Err(NoFlag) })?
 			match asked.answer {
 				Yes => {
 					XCacheIo.touch!(fx, hit, Clock.format_utc(facts.now))?
@@ -172,7 +172,7 @@ full_name! = |fx, plan, machine, found| {
 		Ok(Lookup.Existing(hit)) => Ok(hit.name)
 		Ok(Lookup.New(typed)) => Ok(typed)
 		Err({ fail, block }) => {
-			if !block.is_empty() fx.err!(block)
+			if (!block.is_empty()) fx.err!(block)
 			Err(fail)
 		}
 	}

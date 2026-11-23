@@ -46,7 +46,7 @@ expect {
 	dbg (got_projects, got_toolchains, got_none)
 	got_projects == ["/c/roc/talon/projects.json.0123456789abcdef.tmp", "/c/roc/talon/projects.json.fedcba9876543210.tmp"]
 		and got_toolchains == ["/c/roc/toolchains/nightly-1.0123456789abcdef.tmp"]
-			and got_none == []
+		and got_none == []
 }
 
 # R-CC2 R-GC6 R-LY1 R-EV22: `tln cache gc` deletes the temps, the `.trash` directories and the probe copies

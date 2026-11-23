@@ -1,7 +1,7 @@
 app [main!] {
 	http: "https://github.com/roc-lang/http/releases/download/1.0.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst",
 	lib: "lib/main.roc",
-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
+	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
 }
 
 import lib.Db
@@ -178,7 +178,7 @@ probe! = |fx, call, rest| match (call, rest) {
 		for (dir, result) in dirs.map2(results, |d, r| (d, r)) {
 			match result {
 				Ok(entries) => for e in entries {
-					say!(fx, "entry ${if e.is_dir "dir" else "file"} ${e.mtime.to_str()} ${e.name}")
+					say!(fx, "entry ${if (e.is_dir) "dir" else "file"} ${e.mtime.to_str()} ${e.name}")
 				}
 				Err(err) => say!(fx, "err ${dir} ${Str.inspect(err)}")
 			}
@@ -309,11 +309,11 @@ probe! = |fx, call, rest| match (call, rest) {
 	("programs", names) => {
 		found = fx.programs!(names)
 		for (name, here) in names.map2(found, |n, f| (n, f)) {
-			say!(fx, "${name} ${if here "yes" else "no"}")
+			say!(fx, "${name} ${if (here) "yes" else "no"}")
 		}
 	}
 	("spawn", [limit, cwd, .. as words]) => {
-		jobs = split_jobs(words).map(|argv| { argv, cwd: if cwd == "-" Err(Inherit) else Ok(cwd) })
+		jobs = split_jobs(words).map(|argv| { argv, cwd: if (cwd == "-") Err(Inherit) else Ok(cwd) })
 		results = fx.spawn_all!({ jobs, limit: U64.from_str(limit) ?? 1 })
 		for (i, result) in results.map_with_index(|r, i| (i, r)) {
 			say!(fx, "job ${i.to_str()} ${Str.inspect(result.ended)} stdout=${Str.inspect(result.stdout)} stderr_last=${Str.inspect(result.stderr_last)}")
@@ -330,7 +330,7 @@ probe! = |fx, call, rest| match (call, rest) {
 	("lockspawn", [item, cwd, .. as words]) => match fx.lock!(item, NoWait) {
 		Held(lock) => {
 			say!(fx, "held ${item}")
-			results = fx.spawn_all!({ jobs: [{ argv: words, cwd: if cwd == "-" Err(Inherit) else Ok(cwd) }], limit: 1 })
+			results = fx.spawn_all!({ jobs: [{ argv: words, cwd: if (cwd == "-") Err(Inherit) else Ok(cwd) }], limit: 1 })
 			for result in results {
 				say!(fx, "job 0 ${Str.inspect(result.ended)} stdout=${Str.inspect(result.stdout)} stderr_last=${Str.inspect(result.stderr_last)}")
 			}
@@ -359,7 +359,7 @@ probe! = |fx, call, rest| match (call, rest) {
 		Ok(_) => say!(fx, "linked")
 		Err(err) => say!(fx, "err ${Str.inspect(err)}")
 	}
-	("windows", _) => say!(fx, "windows ${if fx.windows!() "true" else "false"}")
+	("windows", _) => say!(fx, "windows ${if (fx.windows!()) "true" else "false"}")
 	("platform", _) => {
 		found = fx.platform!()
 		say!(
@@ -496,7 +496,7 @@ probe! = |fx, call, rest| match (call, rest) {
 				_ => Err(BadSpec)
 			},
 		)
-		write = Facts({ rows, existing: if mode == "keep" Keep else Replace })
+		write = Facts({ rows, existing: if (mode == "keep") Keep else Replace })
 		match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, write) {
 			Ok(_) => say!(fx, "ok")
 			Err(err) => say!(fx, "err ${Str.inspect(err)}")
@@ -584,12 +584,12 @@ probe! = |fx, call, rest| match (call, rest) {
 			Err(err) => say!(fx, "err ${Str.inspect(err)}")
 		}
 	}
-	("random", _) => if fx.random!() != fx.random!() say!(fx, "random ok") else say!(fx, "random same")
+	("random", _) => if (fx.random!() != fx.random!()) say!(fx, "random ok") else say!(fx, "random same")
 	_ => fx.err!("unknown call\n")
 }
 
 lock_mode : Str -> [Wait, NoWait]
-lock_mode = |text| if text == "wait" Wait else NoWait
+lock_mode = |text| if (text == "wait") Wait else NoWait
 
 # Takes the items in order and then releases them in the reverse order. It stops at the first `Busy`.
 lockseq! : Fx, [Wait, NoWait], List(Str) => {}

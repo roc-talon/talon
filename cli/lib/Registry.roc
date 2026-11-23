@@ -27,7 +27,7 @@ Registry :: [].{
 		if scheme == "http" and !Registry.is_loopback(parts.host) {
 			Err(BadRegistry)
 		} else {
-			default = if scheme == "https" 443 else 80
+			default = if (scheme == "https") 443 else 80
 			port = match parts.port {
 				Ok(n) if n != default => ":${n.to_str()}"
 				_ => ""
@@ -61,7 +61,7 @@ Registry :: [].{
 			}
 		}
 		{ host, tail, v6 } = split?
-		host_ok = if v6 Registry.all_bytes(host.drop_prefix("[").drop_suffix("]"), Registry.is_v6_byte) else Registry.all_bytes(host, Registry.is_host_byte)
+		host_ok = if (v6) Registry.all_bytes(host.drop_prefix("[").drop_suffix("]"), Registry.is_v6_byte) else Registry.all_bytes(host, Registry.is_host_byte)
 		if !host_ok or host.is_empty() or host == "[]" {
 			Err(BadRegistry)
 		} else if tail.is_empty() {
@@ -103,7 +103,7 @@ Registry :: [].{
 	}
 
 	hex : U8 -> Str
-	hex = |n| Str.from_utf8([if n < 10 '0' + n else 'A' + (n - 10)]) ?? ""
+	hex = |n| Str.from_utf8([if (n < 10) '0' + n else 'A' + (n - 10)]) ?? ""
 
 	## R-AP1: `<origin>/v1/packages/<owner>/<repo>/releases`. `owner` and `repo` are written in lower case (ASCII), as the cache key of R-AP69 row 3 needs, and then encoded with `encode`.
 	releases_of_repo_url : { origin : Str, owner : Str, repo : Str } -> Str
@@ -177,13 +177,13 @@ Registry :: [].{
 			}
 			Ok(body) => {
 				details = Obj([("status", Num(status.to_i64())), ("type", Text(body.type_text))])
-				what = if body.type_text == Problem.type_uri(Busy) "the registry is busy" else if body.detail.is_empty() body.title else body.detail
+				what = if (body.type_text == Problem.type_uri(Busy)) "the registry is busy" else if (body.detail.is_empty()) body.title else body.detail
 				message = if stops {
 					Registry.stop_text({ origin: facts.origin, source, what: "answered ${status.to_str()}: ${what}", needs: facts.?needs ?? Bool.False })
 				} else {
 					Registry.problem_fail(facts, body).message
 				}
-				cause = if body.type_text == Problem.type_uri(Busy) "${status.to_str()} busy" else status.to_str()
+				cause = if (body.type_text == Problem.type_uri(Busy)) "${status.to_str()} busy" else status.to_str()
 				{ ..Registry.problem_fail(facts, body), message, details: Ok(details), fallback: Registry.fallback_of({ stops, source, cause }) }
 			}
 		}
@@ -192,7 +192,7 @@ Registry :: [].{
 	problem_fail : { origin : Str, version : Str, method : Registry.Method, reply : Registry.Reply, retry_after ?: Str, source ?: Str, needs ?: Bool }, Problem.Body -> Fail
 	problem_fail = |facts, body| {
 		status = facts.reply.status
-		what = if body.detail.is_empty() body.title else body.detail
+		what = if (body.detail.is_empty()) body.title else body.detail
 		refused = "the registry ${facts.origin} refused the request"
 		internal = Fail.new(Internal, "${refused} (${body.type_text}): ${what}. This is a fault of tln ${facts.version} or a version skew.")
 		is_write = facts.method == Post or facts.method == Put or facts.method == Delete
@@ -212,7 +212,7 @@ Registry :: [].{
 	operator_text : Problem.Body -> Try(Str, [None])
 	operator_text = |body| match body.extra {
 		IssuesUrl(url) if body.type_text == Problem.type_uri(RepositoryChanged) => {
-			what = if body.detail.is_empty() body.title else body.detail
+			what = if (body.detail.is_empty()) body.title else body.detail
 			Ok("${what}. Only the registry operator can change this. Open an issue: ${url}")
 		}
 		_ => Err(None)
@@ -254,7 +254,7 @@ Registry :: [].{
 
 	## R-RG9 (Design Q601): `Ok(cause)` when the failure is of the built-in default and is a stop of a 5xx.
 	fallback_of : { stops : Bool, source : Str, cause : Str } -> Try(Str, [None])
-	fallback_of = |facts| if facts.stops and facts.source == Help.default_source Ok(facts.cause) else Err(None)
+	fallback_of = |facts| if (facts.stops and facts.source == Help.default_source) Ok(facts.cause) else Err(None)
 
 	## R-RG9 (Design Q600, proposal, R-OUT2): the one text of a stop for a registry that gives no answer or a 5xx. `what` is the end of the first sentence.
 	stop_text : { origin : Str, source : Str, what : Str, needs : Bool } -> Str

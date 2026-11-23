@@ -9,7 +9,7 @@ JsonDoc := [Null, Flag(Bool), Num(I64), Real(Str), Text(Str), Arr(List(JsonDoc))
 	render : JsonDoc -> Str
 	render = |doc| match doc {
 		Null => "null"
-		Flag(b) => if b "true" else "false"
+		Flag(b) => if (b) "true" else "false"
 		Num(n) => n.to_str()
 		Real(text) => text
 		Text(t) => quote(t)
@@ -35,7 +35,7 @@ JsonDoc := [Null, Flag(Bool), Num(I64), Real(Str), Text(Str), Arr(List(JsonDoc))
 	parse = |text| {
 		bytes = text.to_utf8()
 		match parse_value(bytes, skip_ws(bytes, 0)) {
-			Ok(found) => if skip_ws(bytes, found.next) == bytes.len() Ok(found.val) else Err(BadJson)
+			Ok(found) => if (skip_ws(bytes, found.next) == bytes.len()) Ok(found.val) else Err(BadJson)
 			Err(BadJson) => Err(BadJson)
 		}
 	}
@@ -60,7 +60,7 @@ escape_control = |text, code| match Str.from_utf8([code]) {
 }
 
 hex : U8 -> Str
-hex = |digit| match Str.from_utf8([if digit < 10 48 + digit else 87 + digit]) {
+hex = |digit| match Str.from_utf8([if (digit < 10) 48 + digit else 87 + digit]) {
 	Ok(char) => char
 	Err(_) => "0"
 }
@@ -70,7 +70,7 @@ Step(a) : Try({ val : a, next : U64 }, [BadJson])
 
 skip_ws : List(U8), U64 -> U64
 skip_ws = |bytes, i| match bytes.get(i) {
-	Ok(b) => if b == 32 or b == 9 or b == 10 or b == 13 skip_ws(bytes, i + 1) else i
+	Ok(b) => if (b == 32 or b == 9 or b == 10 or b == 13) skip_ws(bytes, i + 1) else i
 	Err(_) => i
 }
 
@@ -82,22 +82,22 @@ parse_value = |bytes, i| match bytes.get(i) {
 	Ok(116) => literal(bytes, i, "true", Flag(Bool.True))
 	Ok(102) => literal(bytes, i, "false", Flag(Bool.False))
 	Ok(110) => literal(bytes, i, "null", Null)
-	Ok(b) => if b == 45 or (b >= 48 and b <= 57) parse_number(bytes, i) else Err(BadJson)
+	Ok(b) => if (b == 45 or (b >= 48 and b <= 57)) parse_number(bytes, i) else Err(BadJson)
 	Err(_) => Err(BadJson)
 }
 
 literal : List(U8), U64, Str, JsonDoc -> Step(JsonDoc)
 literal = |bytes, i, word, doc| {
 	want = word.to_utf8()
-	if bytes.sublist({ start: i, len: want.len() }) == want Ok({ val: doc, next: i + want.len() }) else Err(BadJson)
+	if (bytes.sublist({ start: i, len: want.len() }) == want) Ok({ val: doc, next: i + want.len() }) else Err(BadJson)
 }
 
 # A JSON number: `-`, an integer part with no leading zero, an optional fraction, an optional exponent.
 parse_number : List(U8), U64 -> Step(JsonDoc)
 parse_number = |bytes, i| {
-	first = if bytes.get(i) == Ok(45) i + 1 else i
+	first = if (bytes.get(i) == Ok(45)) i + 1 else i
 	int_end = digits_end(bytes, first)
-	if int_end == first or (int_end - first > 1 and bytes.get(first) == Ok(48)) return Err(BadJson)
+	if (int_end == first or (int_end - first > 1 and bytes.get(first) == Ok(48))) return Err(BadJson)
 	frac_end = fraction_end(bytes, int_end)?
 	end = exponent_end(bytes, frac_end)?
 	text = Str.from_utf8_lossy(bytes.sublist({ start: i, len: end - i }))
@@ -115,7 +115,7 @@ parse_number = |bytes, i| {
 fraction_end : List(U8), U64 -> Try(U64, [BadJson])
 fraction_end = |bytes, i| if bytes.get(i) == Ok(46) {
 	end = digits_end(bytes, i + 1)
-	if end == i + 1 Err(BadJson) else Ok(end)
+	if (end == i + 1) Err(BadJson) else Ok(end)
 } else {
 	Ok(i)
 }
@@ -123,16 +123,16 @@ fraction_end = |bytes, i| if bytes.get(i) == Ok(46) {
 # `i` is the end of the fraction. An `e` or `E` needs an optional sign and one digit or more.
 exponent_end : List(U8), U64 -> Try(U64, [BadJson])
 exponent_end = |bytes, i| if bytes.get(i) == Ok(101) or bytes.get(i) == Ok(69) {
-	start = if bytes.get(i + 1) == Ok(43) or bytes.get(i + 1) == Ok(45) i + 2 else i + 1
+	start = if (bytes.get(i + 1) == Ok(43) or bytes.get(i + 1) == Ok(45)) i + 2 else i + 1
 	end = digits_end(bytes, start)
-	if end == start Err(BadJson) else Ok(end)
+	if (end == start) Err(BadJson) else Ok(end)
 } else {
 	Ok(i)
 }
 
 digits_end : List(U8), U64 -> U64
 digits_end = |bytes, i| match bytes.get(i) {
-	Ok(b) => if b >= 48 and b <= 57 digits_end(bytes, i + 1) else i
+	Ok(b) => if (b >= 48 and b <= 57) digits_end(bytes, i + 1) else i
 	Err(_) => i
 }
 
@@ -162,7 +162,7 @@ string_loop = |bytes, i, out| match bytes.get(i) {
 		}
 		_ => Err(BadJson)
 	}
-	Ok(b) => if b < 32 Err(BadJson) else string_loop(bytes, i + 1, out.append(b))
+	Ok(b) => if (b < 32) Err(BadJson) else string_loop(bytes, i + 1, out.append(b))
 }
 
 # `i` is the index after `\u`. A high surrogate needs a `\uXXXX` low surrogate after it.
@@ -205,16 +205,16 @@ hex4 = |bytes, i| {
 
 hex_value : U8 -> Try(U32, [BadJson])
 hex_value = |b|
-	if b >= 48 and b <= 57 Ok((b - 48).to_u32())
-	else if b >= 97 and b <= 102 Ok((b - 87).to_u32())
-	else if b >= 65 and b <= 70 Ok((b - 55).to_u32())
+	if (b >= 48 and b <= 57) Ok((b - 48).to_u32())
+	else if (b >= 97 and b <= 102) Ok((b - 87).to_u32())
+	else if (b >= 65 and b <= 70) Ok((b - 55).to_u32())
 	else Err(BadJson)
 
 utf8_of : U32 -> List(U8)
 utf8_of = |cp|
-	if cp < 0x80 [cp.to_u8_wrap()]
-	else if cp < 0x800 [(0xC0 + cp // 64).to_u8_wrap(), (0x80 + cp % 64).to_u8_wrap()]
-	else if cp < 0x10000 [(0xE0 + cp // 4096).to_u8_wrap(), (0x80 + cp // 64 % 64).to_u8_wrap(), (0x80 + cp % 64).to_u8_wrap()]
+	if (cp < 0x80) [cp.to_u8_wrap()]
+	else if (cp < 0x800) [(0xC0 + cp // 64).to_u8_wrap(), (0x80 + cp % 64).to_u8_wrap()]
+	else if (cp < 0x10000) [(0xE0 + cp // 4096).to_u8_wrap(), (0x80 + cp // 64 % 64).to_u8_wrap(), (0x80 + cp % 64).to_u8_wrap()]
 	else [(0xF0 + cp // 262144).to_u8_wrap(), (0x80 + cp // 4096 % 64).to_u8_wrap(), (0x80 + cp // 64 % 64).to_u8_wrap(), (0x80 + cp % 64).to_u8_wrap()]
 
 # `i` is the index of the first byte after `[` and the white space.
@@ -245,10 +245,10 @@ parse_object = |bytes, i| match bytes.get(i) {
 
 object_pairs : List(U8), U64, List((Str, JsonDoc)) -> Step(JsonDoc)
 object_pairs = |bytes, i, pairs| {
-	if bytes.get(i) != Ok(34) return Err(BadJson)
+	if (bytes.get(i) != Ok(34)) return Err(BadJson)
 	key = parse_string(bytes, i + 1)?
 	colon = skip_ws(bytes, key.next)
-	if bytes.get(colon) != Ok(58) return Err(BadJson)
+	if (bytes.get(colon) != Ok(58)) return Err(BadJson)
 	item = parse_value(bytes, skip_ws(bytes, colon + 1))?
 	after = skip_ws(bytes, item.next)
 	more = pairs.append((key.val, item.val))

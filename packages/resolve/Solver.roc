@@ -104,14 +104,14 @@ Solver :: [].{
 		places_of = req.slots.map_with_index(|slot, i| (slot, i))
 		order = places_of.keep_if(|(slot, _)| moved(slot)).concat(places_of.keep_if(|(slot, _)| !moved(slot))).map(|(_, i)| i)
 		any_moved = req.slots.any(moved)
-		back = |items| if any_moved in_slot_order(order, items) else items
+		back = |items| if (any_moved) in_slot_order(order, items) else items
 		facts = Dict.from_list(req.facts.map(|f| (f.id, f)))
-		vars = order.keep_oks(|i| req.slots.get(i)).map(|slot| if moved(slot) moved_var(req, facts, slot) else var_of(req, facts, slot))
+		vars = order.keep_oks(|i| req.slots.get(i)).map(|slot| if (moved(slot)) moved_var(req, facts, slot) else var_of(req, facts, slot))
 		sizes = vars.map(|v| v.vals.len())
 		pre = novalue_incs(vars).concat(fact_incs(sizes, vars, facts))
 		post = conflict_incs(sizes, vars, req.conflicts)
 		table = |mode| pre.concat(SolverProbe.probe_incs(sizes, vars, req.compat, mode)).concat(post)
-		ask = |asks| Need(if any_moved asks_in_slot_order(order, vars, asks) else asks)
+		ask = |asks| Need(if (any_moved) asks_in_slot_order(order, vars, asks) else asks)
 		finish = |t| match asks_of(vars, facts, req.compat, t) {
 			[] => Done(back(chosen(vars, t)))
 			asks => ask(asks)
@@ -129,10 +129,10 @@ Solver :: [].{
 				match solve(vars, incs) {
 					NoTuple(f) => Fail(SolverWhy.why_of(order, vars, incs, f.rows, f.last))
 					Found(tb) => {
-						a = if req.compat.checks.any(|c| c.source == Inferred) solve(vars, table(All)) else Found(tb)
+						a = if (req.compat.checks.any(|c| c.source == Inferred)) solve(vars, table(All)) else Found(tb)
 						match a {
 							Found(ta) => match asks_of(vars, facts, req.compat, ta) {
-								[] => if ta == tb Done(back(chosen(vars, tb))) else finish(tb)
+								[] => if (ta == tb) Done(back(chosen(vars, tb))) else finish(tb)
 								asks => ask(asks)
 							}
 							NoTuple(_) => finish(tb)
@@ -161,7 +161,7 @@ Env : SolverBase.Env
 var_of : Solver.Request, Dict(Str, Solver.Fact), Solver.Slot -> Var
 var_of = |req, facts, slot| match slot.kind {
 	Compiler => {
-		ordered = if req.rules.strategy == Highest req.compat.domain.rev() else req.compat.domain
+		ordered = if (req.rules.strategy == Highest) req.compat.domain.rev() else req.compat.domain
 		{ name: slot.name, group: slot.group, kind: slot.kind, vals: ordered.keep_oks(|id| slot.candidates.find_first(|c| c.id == id).map_ok(|c| { c, ver: Err(NoVer) })) }
 	}
 	_ => {
@@ -199,7 +199,7 @@ moved_package = |req, facts, slot| {
 	own = asc.vals.keep_if(|x| x.c.id == cur)
 	higher = asc.vals.keep_if(|x| x.c.id != cur and newer(x))
 	lower = desc.vals.keep_if(|x| x.c.id != cur and !newer(x))
-	{ ..asc, vals: if req.rules.strategy == Highest own.concat(higher).concat(lower) else own.concat(lower).concat(higher) }
+	{ ..asc, vals: if (req.rules.strategy == Highest) own.concat(higher).concat(lower) else own.concat(lower).concat(higher) }
 }
 
 # R-RP4, R-SP24: the values of a movable compiler follow the order of D, not a version. `Lowest` gives D oldest first, and `place` is the place of `current` in it.
@@ -220,7 +220,7 @@ moved_compiler = |req, facts, slot| {
 		Ok(at) => asc.vals.take_first(at).rev()
 		Err(_) => asc.vals.rev()
 	}
-	{ ..asc, vals: if req.rules.strategy == Highest own.concat(higher).concat(lower) else own.concat(lower).concat(higher) }
+	{ ..asc, vals: if (req.rules.strategy == Highest) own.concat(higher).concat(lower) else own.concat(lower).concat(higher) }
 }
 
 # R-DT2: puts the items of the search (one for each variable, in the order of the search) back in the order of the slots. `order` has the place of each variable in `req.slots`.
@@ -235,7 +235,7 @@ asks_in_slot_order = |order, vars, asks| {
 			Header(x) => x
 			Probe(p) => p.id
 		}
-		order.map2(vars, |i, v| (i, v)).keep_if(|(_, v)| v.vals.any(|x| x.c.id == id)).map(|(i, _)| i).fold(order.len(), |lowest, i| if i < lowest i else lowest)
+		order.map2(vars, |i, v| (i, v)).keep_if(|(_, v)| v.vals.any(|x| x.c.id == id)).map(|(i, _)| i).fold(order.len(), |lowest, i| if (i < lowest) i else lowest)
 	}
 	keyed = asks.map_with_index(|ask, k| (owner(ask), k, ask))
 	keyed.sort_with(
@@ -299,7 +299,7 @@ is_below = |x, need| match x.ver {
 pf_incs : List(U64), List(Var), List(U64), U64, U64, Str, Solver.Fact -> List(Inc)
 pf_incs = |sizes, vars, plats, i, p, id, f| match (f.pf, plats) {
 	(Ok(url), [pl]) => match vars.get(pl) {
-		Ok(pv) => if pl == i [] else SolverBase.mk(sizes, [{ v: i, set: [p] }, { v: pl, set: places(pv, |x| x.c.id != url) }], Pf({ id, pf: url }))
+		Ok(pv) => if (pl == i) [] else SolverBase.mk(sizes, [{ v: i, set: [p] }, { v: pl, set: places(pv, |x| x.c.id != url) }], Pf({ id, pf: url }))
 		Err(_) => []
 	}
 	_ => []
@@ -365,7 +365,7 @@ asks_of = |vars, facts, compat, at| {
 	heads = SolverBase.dedupe(rels.keep_if(|id| !facts.contains(id)))
 	if heads.is_empty() {
 		match picked.find_first(|(vr, _)| vr.kind == Compiler) {
-			Ok((_, roc)) => if compat.probes == Allowed SolverBase.dedupe(rels.keep_if(|id| !compat.checks.any(|c| c.id == id and c.nightly == roc.c.id and c.source == Real))).map(|id| Probe({ id, nightly: roc.c.id })) else []
+			Ok((_, roc)) => if (compat.probes == Allowed) SolverBase.dedupe(rels.keep_if(|id| !compat.checks.any(|c| c.id == id and c.nightly == roc.c.id and c.source == Real))).map(|id| Probe({ id, nightly: roc.c.id })) else []
 			Err(_) => []
 		}
 	} else {

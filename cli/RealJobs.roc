@@ -13,7 +13,7 @@ RealJobs :: [].{
 	run_jobs! : Str, { jobs : List(Job), limit : U64 } => List(JobResult)
 	run_jobs! = |token, batch| {
 		total = batch.jobs.len()
-		limit = if batch.limit == 0 1 else batch.limit
+		limit = if (batch.limit == 0) 1 else batch.limit
 		var $next = 0
 		var $running = no_running
 		var $done = no_results
@@ -75,7 +75,7 @@ RealJobs :: [].{
 	probes! = |token, round| {
 		specs = round.specs
 		total = specs.len()
-		pool = if round.pool == 0 1 else round.pool
+		pool = if (round.pool == 0) 1 else round.pool
 		var $next = 0
 		var $used = 0
 		var $running = no_probing
@@ -204,7 +204,7 @@ Probing : { index : U64, child : Cmd.Child, deadline : I128, need : U64 }
 
 # R-PP6, D10: the slots of a probe, at least 1 and at most the pool (a weight above the pool takes the whole pool).
 slots_of : Probe.Spec, U64 -> U64
-slots_of = |spec, pool| if spec.weight == 0 1 else if spec.weight > pool pool else spec.weight
+slots_of = |spec, pool| if (spec.weight == 0) 1 else if (spec.weight > pool) pool else spec.weight
 
 no_probing : List(Probing)
 no_probing = []

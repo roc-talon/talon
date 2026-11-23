@@ -35,7 +35,7 @@ Removal :: [].{
 		if read.names.is_empty() {
 			return Err(Fail.new(Usage, "tln remove needs one name or more"))
 		}
-		Ok({ names: read.names, force: has_flag(args, "--force"), dry_run: read.dry_run, no_check: read.no_check, allow_downloads: if has_flag(args, "--allow-downloads") Ok(Yes) else Err(NoFlag), no_probe: read.no_probe, slots: read.slots })
+		Ok({ names: read.names, force: has_flag(args, "--force"), dry_run: read.dry_run, no_check: read.no_check, allow_downloads: if (has_flag(args, "--allow-downloads")) Ok(Yes) else Err(NoFlag), no_probe: read.no_probe, slots: read.slots })
 	}
 
 	## The kind of the table in `talon.toml` that holds a key of the entry: `[dependencies]`, `[overrides]` (R-OV1), `[patch]` (R-PA12).

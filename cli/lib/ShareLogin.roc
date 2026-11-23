@@ -285,7 +285,7 @@ login_refused : Str, { status : U16, headers : List((Str, Str)), body : Str }, F
 login_refused = |origin, answer, fail| if fail.kind.name() == "rejected" {
 	match Registry.problem({ status: answer.status, body: answer.body }) {
 		Ok(body) => {
-			what = if body.detail.is_empty() body.title else body.detail
+			what = if (body.detail.is_empty()) body.title else body.detail
 			{ ..fail, message: "the registry ${origin} refused the login (${body.type_text}): ${what}. Run tln share login again." }
 		}
 		Err(NotProblem) => fail
@@ -354,5 +354,4 @@ poll_loop! = |fx, run| {
 			}
 		}
 	}
-	Err(Fail.new(Internal, "the poll loop ended"))
 }

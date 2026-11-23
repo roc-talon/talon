@@ -43,7 +43,7 @@ compat = |checks, looked, probes| { compiler: Ok(nightly), checks, looked, probe
 
 view = |r| match r {
 	Need(urls) => "need ${Str.join_with(urls.map(|url| url.drop_prefix("https://github.com/acme/")), " ")}"
-	Pairs(pairs) => "pairs ${Str.join_with(pairs.map(|p| "${p.id.drop_prefix("https://github.com/acme/")}@${p.nightly}${if p.is_platform "!" else ""}"), " ")}"
+	Pairs(pairs) => "pairs ${Str.join_with(pairs.map(|p| "${p.id.drop_prefix("https://github.com/acme/")}@${p.nightly}${if (p.is_platform) "!" else ""}"), " ")}"
 	Scan(s) => "scan ${Str.join_with(s.ids.map(|url| url.drop_prefix("https://github.com/acme/")), " ")}"
 	Wide => "wide"
 	Done(chosen) => "done ${Str.join_with(chosen.map(|c| "${c.id}=${c.version}"), " ")}"

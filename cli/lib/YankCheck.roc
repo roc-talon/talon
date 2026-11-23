@@ -131,18 +131,18 @@ YankCheck :: [].{
 	## and the end of the no-answer text after 2 or more requests is `The yank may be done. Run the command again.` (`The undo may be done.` when `undo`).
 	failure : { origin : Str, version : Str, tries : U64, renewed : Bool, reply : Publish.Reply, undo : Bool, source ?: Str } -> Fail
 	failure = |input| {
-		done = if input.undo "undo" else "yank"
-		method = if input.undo Delete else Put
+		done = if (input.undo) "undo" else "yank"
+		method = if (input.undo) Delete else Put
 		common = { origin: input.origin, version: input.version, tries: input.tries, renewed: input.renewed, reply: input.reply, source: input.?source ?? "" }
 		match input.reply {
 			Err(Timeout) => Publish.no_reply(common, "no answer in 20 s", done)
 			Err(Failed(why)) => Publish.no_reply(common, why, done)
-			Ok(answer) => {
-				retry_after = Registry.retry_after_of(answer.headers)
-				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: answer.status, body: answer.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
-				match Registry.problem({ status: answer.status, body: answer.body }) {
+			Ok(got) => {
+				retry_after = Registry.retry_after_of(got.headers)
+				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: got.status, body: got.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
+				match Registry.problem({ status: got.status, body: got.body }) {
 					Err(NotProblem) => refused
-					Ok(body) => match Publish.retry_text(common, { status: answer.status, retry_after, body }) {
+					Ok(body) => match Publish.retry_text(common, { status: got.status, retry_after, body }) {
 						Ok(message) => { ..refused, message }
 						Err(None) => refused
 					}

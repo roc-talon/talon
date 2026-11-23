@@ -1,7 +1,7 @@
 app [main!] {
 	http: "https://github.com/roc-lang/http/releases/download/1.0.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst",
 	lib: "lib/main.roc",
-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
+	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
 }
 
 import lib.Clock
@@ -159,13 +159,13 @@ registry_index! = |fx, words| {
 		Ok(o) => o
 		Err(_) => return Err(Fail.new(Usage, "registry-index needs --origin <url>"))
 	}
-	if !words.contains("--offline") return Err(Fail.new(Usage, "registry-index needs --offline"))
+	if (!words.contains("--offline")) return Err(Fail.new(Usage, "registry-index needs --offline"))
 	names = words.keep_if(|w| !w.starts_with("--") and !known.contains(w) and w != origin)
 	request = offline_request(roots, Net.from_env(env), fx.clock!(), origin)
 	found = PickIndex.index!(fx, request, names, known)?
 	for c in found {
 		for x in c.list {
-			tag = if x.tag.is_empty() "-" else x.tag
+			tag = if (x.tag.is_empty()) "-" else x.tag
 			fx.out!("candidate ${c.name} ${x.ident.version} ${tag} ${x.published_at.to_str()} ${x.size.to_str()} ${x.url}\n")
 		}
 		if c.missing {
@@ -248,7 +248,7 @@ fetch! = |fx, words| {
 		}
 	}
 	code = Exit.choose({ failures: $failures, child: Err(NoChild) })
-	if code == 0 Ok({}) else Err(Exit(code))
+	if (code == 0) Ok({}) else Err(Exit(code))
 }
 
 ## The value after an option (`--host linux_x86_64`).

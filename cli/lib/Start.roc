@@ -65,7 +65,7 @@ download! = |fx, run, listed, picked| {
 	facts = run.downloads
 	want = |mode| Consent.required_want({ id: run.held, auto: facts.auto, mode, yes: facts.yes, flag: facts.allow })
 	first = want(facts.mode)
-	mode = if first == NeedTty Mode.with_tty(facts.mode, fx.tty!()) else facts.mode
+	mode = if (first == NeedTty) Mode.with_tty(facts.mode, fx.tty!()) else facts.mode
 	decided = want(mode)
 	match decided {
 		Refuse => {
@@ -84,11 +84,11 @@ offered! = |fx, run, listed, how| {
 	match RocInstall.offer!(fx, { id: run.held, env: facts.env, offline: facts.offline, list: facts.?list ?? Direct })? {
 		Present(found) => Ok({ id: found.id, installed: listed.append(found.id), downloads: 0 })
 		Download(offer) => {
-			if how.decided == NeedsConsent return Err(Consent.download_stop({ count: 1, size: offer.size }))
-			prompt = if how.picked NoRankPure.prompt({ id: offer.id, size: offer.size }) else Consent.command_download({ id: offer.id, count: 1, size: offer.size })
-			flag = if how.decided == Install Ok(Yes) else Err(NoFlag)
+			if (how.decided == NeedsConsent) return Err(Consent.download_stop({ count: 1, size: offer.size }))
+			prompt = if (how.picked) NoRankPure.prompt({ id: offer.id, size: offer.size }) else Consent.command_download({ id: offer.id, count: 1, size: offer.size })
+			flag = if (how.decided == Install) Ok(Yes) else Err(NoFlag)
 			asked = Prompt.ask!(fx, prompt, { mode: how.mode, yes: facts.yes, quiet: facts.quiet, flag })?
-			if asked.answer != Yes return Err(Consent.command_declined(offer.id))
+			if (asked.answer != Yes) return Err(Consent.command_declined(offer.id))
 			done = RocInstall.install_offer!(fx, offer)?
 			Ok({ id: done.id, installed: listed.append(done.id), downloads: 1 })
 		}

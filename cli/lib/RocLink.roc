@@ -116,7 +116,7 @@ dropped! = |fx, temp, fail| {
 }
 
 kind_of : Link.Plan -> [Link, Copy]
-kind_of = |plan| if plan.copy Copy else Link
+kind_of = |plan| if (plan.copy) Copy else Link
 
 # Step 8: the text, or the envelope. `--quiet` and `--json` hide the stdout line (`Common.shown_fx`).
 print! : Fx, Args, Done => {}

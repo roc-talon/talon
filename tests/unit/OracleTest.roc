@@ -141,15 +141,15 @@ expect {
 					_ => []
 				}
 				listed = minors.keep_if(|m| (seed // 11 + i * 3 + m) % 5 != 0)
-				days = |m| if m == 3 and seed % 2 == 0 1 else 30
+				days = |m| if (m == 3 and seed % 2 == 0) 1 else 30
 				has_current = hold != Free or (seed + i) % 4 != 0
 				{
 					id: repos.get(i) ?? "p",
 					is_platform: platform_first and i == 0,
 					ranges,
-					current: if has_current Ok(url(i, at)) else Err(None),
+					current: if (has_current) Ok(url(i, at)) else Err(None),
 					hold,
-					named: if i == 0 and seed % 6 == 1 Ok("1.3.0") else Err(None),
+					named: if (i == 0 and seed % 6 == 1) Ok("1.3.0") else Err(None),
 					candidates: listed.map(|m| cand(url(i, m), days(m))),
 					files: [],
 				}
@@ -160,23 +160,23 @@ expect {
 				|m| if (seed + i + m) % 6 == 5 {
 					Err(NoFact)
 				} else {
-					kind = if s.is_platform Platform else if (seed + i + m) % 13 == 0 App else Package
-					pf = if !s.is_platform and platform_first and (seed + m) % 4 == 0 Ok(url(0, (m + seed) % 4)) else Err(None)
+					kind = if (s.is_platform) Platform else if ((seed + i + m) % 13 == 0) App else Package
+					pf = if (!s.is_platform and platform_first and (seed + m) % 4 == 0) Ok(url(0, (m + seed) % 4)) else Err(None)
 					other = (i + 1) % n
-					dep_other = if n > 1 and (seed + m + i) % 3 == 0 [url(other, (seed + m) % 4)] else []
-					dep_z = if (seed + i + m) % 7 == 0 [u("z", "1.0.0")] else []
+					dep_other = if (n > 1 and (seed + m + i) % 3 == 0) [url(other, (seed + m) % 4)] else []
+					dep_z = if ((seed + i + m) % 7 == 0) [u("z", "1.0.0")] else []
 					Ok({ url: url(i, m), release: { kind, pf, deps: dep_other.concat(dep_z) } })
 				},
 			),
 		)
-		z_fact = if seed % 2 == 0 [fact(u("z", "1.0.0"), [])] else []
+		z_fact = if (seed % 2 == 0) [fact(u("z", "1.0.0"), [])] else []
 		{
 			slots,
-			strategy: if seed % 2 == 0 Highest else Lowest,
+			strategy: if (seed % 2 == 0) Highest else Lowest,
 			now,
 			min_age: 2 * day,
 			exclude: [],
-			snapshot: if seed % 9 == 4 Ok(now - 10 * day) else Err(None),
+			snapshot: if (seed % 9 == 4) Ok(now - 10 * day) else Err(None),
 			facts: facts.concat(z_fact),
 			unmanaged: [],
 			paths: [],
@@ -191,7 +191,7 @@ expect {
 			want = view(Pick.step(w))
 			got = view(Oracle.step(w))
 			again = view(Oracle.step(flip(w)))
-			if got == want and again == want Err(Same) else Ok((seed, want, got, again))
+			if (got == want and again == want) Err(Same) else Ok((seed, want, got, again))
 		},
 	)
 	dbg rows.take_first(3)

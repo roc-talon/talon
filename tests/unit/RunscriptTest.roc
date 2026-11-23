@@ -51,9 +51,9 @@ expect {
 		"solo@6: in d: tool z",
 	])
 		and read_view("[dependencies]\njson = \"^1\"\n") == Ok([])
-			and good_names
-				and !other_names
-					and ScriptsToml.is_name("a".repeat(64))
+		and good_names
+		and !other_names
+		and ScriptsToml.is_name("a".repeat(64))
 }
 
 # R-RUN1 (exit code 19): a form that is not valid, by line. Each failure names the script. A table step needs the string `run`, and can have the string `in` and `ok-exit` (slice 087, R-RUN18), no other key. The first failure by line is the one that is shown.
@@ -61,12 +61,12 @@ expect {
 	step = "a table step needs the string run, and can have the string in and ok-exit, no other key"
 	read_view("scripts = 1\n") == Err("19 talon.toml:1: scripts: must be a table")
 		and read_view("[scripts]\n\"Bad Name\" = \"x\"\n") == Err("19 talon.toml:2: scripts.Bad Name: ${bad_name}")
-			and read_view("[scripts]\nn = 5\n") == Err("19 talon.toml:2: scripts.n: must be a step (a string, or a table with run) or an array of steps")
-				and read_view("[scripts]\nn = [\"a\", 5]\n") == Err("19 talon.toml:2: scripts.n[2]: must be a string or a table with run")
-					and read_view("[scripts]\nn = { in = \"x\" }\n") == Err("19 talon.toml:2: scripts.n: ${step}")
-						and read_view("[scripts]\nn = { in = 1, run = \"y\" }\n") == Err("19 talon.toml:2: scripts.n: ${step}")
-							and read_view("[scripts]\nn = [\"a\", { in = \"x\", run = \"y\", more = \"z\" }]\n") == Err("19 talon.toml:2: scripts.n[2]: ${step}")
-								and read_view("[scripts]\nok = \"x\"\na = 1\nb = 2\n") == Err("19 talon.toml:3: scripts.a: must be a step (a string, or a table with run) or an array of steps")
+		and read_view("[scripts]\nn = 5\n") == Err("19 talon.toml:2: scripts.n: must be a step (a string, or a table with run) or an array of steps")
+		and read_view("[scripts]\nn = [\"a\", 5]\n") == Err("19 talon.toml:2: scripts.n[2]: must be a string or a table with run")
+		and read_view("[scripts]\nn = { in = \"x\" }\n") == Err("19 talon.toml:2: scripts.n: ${step}")
+		and read_view("[scripts]\nn = { in = 1, run = \"y\" }\n") == Err("19 talon.toml:2: scripts.n: ${step}")
+		and read_view("[scripts]\nn = [\"a\", { in = \"x\", run = \"y\", more = \"z\" }]\n") == Err("19 talon.toml:2: scripts.n[2]: ${step}")
+		and read_view("[scripts]\nok = \"x\"\na = 1\nb = 2\n") == Err("19 talon.toml:3: scripts.a: must be a step (a string, or a table with run) or an array of steps")
 }
 
 # What `ScriptsToml.words` gives: the words, or the marker of a refusal.
@@ -80,29 +80,29 @@ words_view = |text| match ScriptsToml.words(text) {
 expect {
 	words_view("roc build  main.roc\tx") == ["roc", "build", "main.roc", "x"]
 		and words_view("  a  ") == ["a"]
-			and words_view("") == []
-				and words_view("tool \"two words\" 'three four' end") == ["tool", "two words", "three four", "end"]
-					and words_view("a \"q \\\" b \\\\ c \\n\" 'x\\y'") == ["a", "q \" b \\ c \\n", "x\\y"]
-						and words_view("echo $HOME ~ *.txt $") == ["echo", "$HOME", "~", "*.txt", "$"]
-							and words_view("C:\\dir\\x.exe --a=b") == ["C:\\dir\\x.exe", "--a=b"]
-								and words_view("x \"\" y") == ["x", "", "y"]
-									and words_view("a \"|\" \"&&\" '>' b") == ["a", "|", "&&", ">", "b"]
-										and words_view("a|b c;d e>f") == ["a|b", "c;d", "e>f"]
-											and words_view("a | b") == ["SHELL", "|"]
-												and words_view("a && b") == ["SHELL", "&&"]
-													and words_view("a || b") == ["SHELL", "||"]
-														and words_view("a ; b") == ["SHELL", ";"]
-															and words_view("a > out") == ["SHELL", ">"]
-																and words_view("a >> out") == ["SHELL", ">>"]
-																	and words_view("a < in") == ["SHELL", "<"]
-																		and words_view("a &") == ["SHELL", "&"]
-																			and words_view("a $(b) c") == ["SHELL", "$(b)"]
-																				and words_view("a `b` c") == ["SHELL", "`b`"]
-																					and words_view("a \"b") == ["UNCLOSED"]
-																						and words_view("a 'b c") == ["UNCLOSED"]
-																							and words_view("a \"b\\\" c") == ["UNCLOSED"]
-																								and words_view("a\"b c\"d e") == ["ab cd", "e"]
-																									and words_view("x 'a\"b' \"c'd\"") == ["x", "a\"b", "c'd"]
+		and words_view("") == []
+		and words_view("tool \"two words\" 'three four' end") == ["tool", "two words", "three four", "end"]
+		and words_view("a \"q \\\" b \\\\ c \\n\" 'x\\y'") == ["a", "q \" b \\ c \\n", "x\\y"]
+		and words_view("echo $HOME ~ *.txt $") == ["echo", "$HOME", "~", "*.txt", "$"]
+		and words_view("C:\\dir\\x.exe --a=b") == ["C:\\dir\\x.exe", "--a=b"]
+		and words_view("x \"\" y") == ["x", "", "y"]
+		and words_view("a \"|\" \"&&\" '>' b") == ["a", "|", "&&", ">", "b"]
+		and words_view("a|b c;d e>f") == ["a|b", "c;d", "e>f"]
+		and words_view("a | b") == ["SHELL", "|"]
+		and words_view("a && b") == ["SHELL", "&&"]
+		and words_view("a || b") == ["SHELL", "||"]
+		and words_view("a ; b") == ["SHELL", ";"]
+		and words_view("a > out") == ["SHELL", ">"]
+		and words_view("a >> out") == ["SHELL", ">>"]
+		and words_view("a < in") == ["SHELL", "<"]
+		and words_view("a &") == ["SHELL", "&"]
+		and words_view("a $(b) c") == ["SHELL", "$(b)"]
+		and words_view("a `b` c") == ["SHELL", "`b`"]
+		and words_view("a \"b") == ["UNCLOSED"]
+		and words_view("a 'b c") == ["UNCLOSED"]
+		and words_view("a \"b\\\" c") == ["UNCLOSED"]
+		and words_view("a\"b c\"d e") == ["ab cd", "e"]
+		and words_view("x 'a\"b' \"c'd\"") == ["x", "a\"b", "c'd"]
 }
 
 sc = |name, steps| { name, steps, line: 1 }
@@ -146,25 +146,25 @@ expect {
 	dir_miss = [{ dir: "/r/p", scripts: Ok(p_scripts) }, { dir: "/r/p/nodir", scripts: Err(NoFile) }]
 	plan_view(files_sub, "hi", []) == "/r/p: tool-a one; /r/p: tool-b"
 		and plan_view(files_sub, "chain", ["x", "y"]) == "/r/p: tool-a one; /r/p: tool-b; /r/p: tool-c x y"
-			and plan_view(files_sub, "tail", ["z"]) == "/r/p: tool-d; /r/p: tool-a one; /r/p: tool-b; /r/p: tool-c z"
-				and plan_view(files_sub, "lasthi", ["q"]) == "/r/p: tool-c; /r/p: tool-a one; /r/p: tool-b q"
-					and plan_view(files_sub, "all", []) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f"
-						and plan_view(files_sub, "all", ["z"]) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f z"
-							and plan_view([{ dir: "/r/p", scripts: Ok(p_scripts) }], "all", []) == "need /r/p/sub"
-								and plan_view(files_sub, "up", []) == "/r: q"
-									and plan_view(files_sub, "empty", ["z"]) == ""
-										and plan_view(files_sub, "loop-a", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
-											and plan_view(files_sub, "entry", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
-												and plan_view(files_sub, "cx", []) == "19 scripts call themselves: cx -> cy (/r/p/sub) -> cx"
-													and plan_view(files_sub, "nothere", []) == "19 /r/p/talon.toml: has no script 'nothere'"
-														and plan_view(files_sub, "self", []) == "19 scripts call themselves: self -> self"
-															and plan_view(files_sub, "gone", []) == "19 /r/p/talon.toml: script gone: the step '@nothere' names the script 'nothere', and /r/p/talon.toml has no such script"
-																and plan_view(files_sub, "sh", []) == "19 /r/p/talon.toml: script sh: the step 'b && c' has the word '&&': a step is one command; use 2 steps, or a .roc script"
-																	and plan_view(files_sub, "unc", []) == "19 /r/p/talon.toml: script unc: the step 'tool-b \"x' has a quote that is not closed"
-																		and plan_view(files_sub, "blank", []) == "19 /r/p/talon.toml: script blank: the step '  ' has no command"
-																			and plan_view(files_sub, "out", []) == "19 /r/p/talon.toml: script out: the step 'in ../..: z' has the directory '../..', which is outside the repository (/r)"
-																				and plan_view(dir_miss, "nofile", []) == "19 /r/p/talon.toml: script nofile: the step 'in nodir: @x' names the script 'x', and /r/p/nodir has no talon.toml"
-																					and plan_view(files_sub, "nofile", []) == "need /r/p/nodir"
+		and plan_view(files_sub, "tail", ["z"]) == "/r/p: tool-d; /r/p: tool-a one; /r/p: tool-b; /r/p: tool-c z"
+		and plan_view(files_sub, "lasthi", ["q"]) == "/r/p: tool-c; /r/p: tool-a one; /r/p: tool-b q"
+		and plan_view(files_sub, "all", []) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f"
+		and plan_view(files_sub, "all", ["z"]) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f z"
+		and plan_view([{ dir: "/r/p", scripts: Ok(p_scripts) }], "all", []) == "need /r/p/sub"
+		and plan_view(files_sub, "up", []) == "/r: q"
+		and plan_view(files_sub, "empty", ["z"]) == ""
+		and plan_view(files_sub, "loop-a", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
+		and plan_view(files_sub, "entry", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
+		and plan_view(files_sub, "cx", []) == "19 scripts call themselves: cx -> cy (/r/p/sub) -> cx"
+		and plan_view(files_sub, "nothere", []) == "19 /r/p/talon.toml: has no script 'nothere'"
+		and plan_view(files_sub, "self", []) == "19 scripts call themselves: self -> self"
+		and plan_view(files_sub, "gone", []) == "19 /r/p/talon.toml: script gone: the step '@nothere' names the script 'nothere', and /r/p/talon.toml has no such script"
+		and plan_view(files_sub, "sh", []) == "19 /r/p/talon.toml: script sh: the step 'b && c' has the word '&&': a step is one command; use 2 steps, or a .roc script"
+		and plan_view(files_sub, "unc", []) == "19 /r/p/talon.toml: script unc: the step 'tool-b \"x' has a quote that is not closed"
+		and plan_view(files_sub, "blank", []) == "19 /r/p/talon.toml: script blank: the step '  ' has no command"
+		and plan_view(files_sub, "out", []) == "19 /r/p/talon.toml: script out: the step 'in ../..: z' has the directory '../..', which is outside the repository (/r)"
+		and plan_view(dir_miss, "nofile", []) == "19 /r/p/talon.toml: script nofile: the step 'in nodir: @x' names the script 'x', and /r/p/nodir has no talon.toml"
+		and plan_view(files_sub, "nofile", []) == "need /r/p/nodir"
 }
 
 # What `RunPlan.program` gives, as text.
@@ -180,16 +180,16 @@ program_view = |words| match RunPlan.program({ words, keys: ["roc-cfw", "fmt", "
 expect {
 	program_view(["roc", "build", "x.roc"]) == "roc build x.roc"
 		and program_view(["tln", "install", "--frozen"]) == "tln install --frozen"
-			and program_view(["roc-cfw", "sync", "--check"]) == "tool roc-cfw sync --check"
-				and program_view(["fmt"]) == "tool fmt "
-					and program_view(["scripts/notes.roc", "--since", "v1"]) == "roc scripts/notes.roc -- --since v1"
-						and program_view(["notes.roc"]) == "roc notes.roc --"
-							and program_view(["x.roc", "a"]) == "tool x.roc a"
-								and program_view(["wrangler", "dev", "--local"]) == "path wrangler dev --local"
-									and program_view(["./run.sh"]) == "path ./run.sh "
-										and program_view([]) == "none"
-											and RunPlan.program({ words: ["roc", "a"], keys: ["roc", "tln"] }) == Ok(Roc(["a"]))
-												and RunPlan.program({ words: ["tln"], keys: ["roc", "tln"] }) == Ok(Tln([]))
+		and program_view(["roc-cfw", "sync", "--check"]) == "tool roc-cfw sync --check"
+		and program_view(["fmt"]) == "tool fmt "
+		and program_view(["scripts/notes.roc", "--since", "v1"]) == "roc scripts/notes.roc -- --since v1"
+		and program_view(["notes.roc"]) == "roc notes.roc --"
+		and program_view(["x.roc", "a"]) == "tool x.roc a"
+		and program_view(["wrangler", "dev", "--local"]) == "path wrangler dev --local"
+		and program_view(["./run.sh"]) == "path ./run.sh "
+		and program_view([]) == "none"
+		and RunPlan.program({ words: ["roc", "a"], keys: ["roc", "tln"] }) == Ok(Roc(["a"]))
+		and RunPlan.program({ words: ["tln"], keys: ["roc", "tln"] }) == Ok(Tln([]))
 }
 
 # R-RUN9, R-RUN7, R-RUN11: the 2 variables of a step, the failure of a step that cannot start (exit 18), the list with no name (text and `data`) and the note for a key that is also on `PATH`.
@@ -198,9 +198,9 @@ expect {
 	failure = RunPlan.start_failed({ owner: "build", text: "tool-x --a", program: "tool-x", why: "NotFound" })
 	RunPlan.env({ script: "build", dir: "/r/p/sub" }) == [("TALON_SCRIPT", "build"), ("TALON_SCRIPT_DIR", "/r/p/sub")]
 		and Fail.line(failure) == "tln: error[environment]: script build: the step 'tool-x --a' cannot start 'tool-x': NotFound"
-			and failure.kind.code() == 18
-				and RunPlan.list_text({ file: "/r/p/talon.toml", scripts }) == "scripts of /r/p/talon.toml\na:\n  x\n  in d: @y\nb:\n"
-					and RunPlan.path_note("fmt") == "the tool key 'fmt' is also a program on PATH: inside tln run the key wins (R-RUN3)"
+		and failure.kind.code() == 18
+		and RunPlan.list_text({ file: "/r/p/talon.toml", scripts }) == "scripts of /r/p/talon.toml\na:\n  x\n  in d: @y\nb:\n"
+		and RunPlan.path_note("fmt") == "the tool key 'fmt' is also a program on PATH: inside tln run the key wins (R-RUN3)"
 }
 
 # R-RUN11 (slice 087, a proposal R-OUT2): in `data` a step with `in` (or `ok-exit`) is the object `{ run, in, ok_exit }` (`null` for a key that the step does not have), the other steps are strings. More rows: `OkexitTest`.
@@ -229,18 +229,18 @@ cmd_view = |words| match Args.parse(words) {
 expect {
 	cmd_view(["run"]) == "list args="
 		and cmd_view(["run", "--json"]) == "list args="
-			and cmd_view(["run", "build"]) == "script build args="
-				and cmd_view(["run", "build", "--", "--verbose", "x y"]) == "script build args=--verbose,x y"
-					and cmd_view(["run", "check:wasm", "--offline", "--yes", "--quiet"]) == "script check:wasm args="
-						and cmd_view(["run", "a", "b"]) == "2 tln run takes one script name, got 2 words. Pass arguments for the script after --."
-							and cmd_view(["run", "a", "--json"]) == "2 tln run a does not take --json: the steps write to stdout. Only tln run with no name does."
-								and cmd_view(["run", "a", "--file", "x"]) == "2 flag '--file' is not for 'run'"
-									and cmd_view(["run", "a", "--frozen"]) == "2 flag '--frozen' is not for 'run'"
-										and cmd_view(["run", "--dry-run"]) == "2 flag '--dry-run' is not for 'run'"
-											and cmd_view(["run", "a", "--allow-downloads"]) == "2 flag '--allow-downloads' is not for 'run'"
-												and cmd_view(["run", "--", "x"]) == "2 tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>."
-													and cmd_view(["build"]) == "2 unknown command 'build'"
-														and cmd_view(["check"]) == "2 unknown command 'check'"
+		and cmd_view(["run", "build"]) == "script build args="
+		and cmd_view(["run", "build", "--", "--verbose", "x y"]) == "script build args=--verbose,x y"
+		and cmd_view(["run", "check:wasm", "--offline", "--yes", "--quiet"]) == "script check:wasm args="
+		and cmd_view(["run", "a", "b"]) == "2 tln run takes one script name, got 2 words. Pass arguments for the script after --."
+		and cmd_view(["run", "a", "--json"]) == "2 tln run a does not take --json: the steps write to stdout. Only tln run with no name does."
+		and cmd_view(["run", "a", "--file", "x"]) == "2 flag '--file' is not for 'run'"
+		and cmd_view(["run", "a", "--frozen"]) == "2 flag '--frozen' is not for 'run'"
+		and cmd_view(["run", "--dry-run"]) == "2 flag '--dry-run' is not for 'run'"
+		and cmd_view(["run", "a", "--allow-downloads"]) == "2 flag '--allow-downloads' is not for 'run'"
+		and cmd_view(["run", "--", "x"]) == "2 tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>."
+		and cmd_view(["build"]) == "2 unknown command 'build'"
+		and cmd_view(["check"]) == "2 unknown command 'check'"
 }
 
 d = |dir, names| { dir, toml: Ok({ names, bad: Err(None) }) }
@@ -274,28 +274,28 @@ expect {
 	# no workspace: the first file with the name, the walk stops at a file with no such name
 	find_view(Ok("x"), [nod("/r/a/b"), d("/r/a", ["x"]), d("/r", ["x"])], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r"
 		and find_view(Ok("x"), [d("/r/a/b", ["y"]), d("/r/a", ["x"])], Err(NoWorkspace), [], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/a/b/talon.toml."
-			# a workspace: the member file has no `x`, the root has it. A member file that has the name holds it. The root ends the walk.
-			and find_view(Ok("x"), ws_walk, Ok("/r/w"), [m1], []) == "found /r/w Root tools=/r/w members=${m1} stop=/r/w"
-				and find_view(Ok("y"), ws_walk, Ok("/r/w"), [m1], []) == "found /r/w/m1 Member tools=/r/w members=${m1} stop=/r/w"
-					and find_view(Ok("x"), [d("/r/w", ["r"]), d("/r", ["x"])], Ok("/r/w"), [m1], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/w/talon.toml."
-						# a standalone project in a workspace directory (no member file in it or below it): its own file, its own tools, and the root script has no effect there
-						and find_view(Ok("y"), [d("/r/w/s", ["y"]), d("/r/w", ["x"])], Ok("/r/w"), [m1], []) == "found /r/w/s Standalone tools=/r/w/s members= stop=/r/w"
-							and find_view(Ok("x"), [d("/r/w/s", ["y"]), d("/r/w", ["x"])], Ok("/r/w"), [m1], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/w/s/talon.toml."
-								# NC4: `deep` has the member below it, but `deep/inner/talon.toml` is between: the answer of the probe decides
-								and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], []) == "need /r/w/deep/inner/talon.toml"
-									and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.True)) == "found /r/w/deep Standalone tools=/r/w/deep members= stop=/r/w"
-										and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.False)) == "found /r/w/deep Member tools=/r/w members=${inner} stop=/r/w"
-											and find_view(Ok("r"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.True)) == "2 no script 'r' in the talon.toml files that the walk checked: /r/w/deep/inner/talon.toml, /r/w/deep/talon.toml."
-												and find_view(Ok("r"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.False)) == "found /r/w Root tools=/r/w members=${inner} stop=/r/w"
-													# a bad form: exit 19 for a file that the walk examines, none for a file above the stop
-													and find_view(Ok("x"), [{ dir: "/r/a", toml: Ok({ names: ["x"], bad: Ok("/r/a/talon.toml:3: scripts.x: must be a table") }) }], Err(NoWorkspace), [], []) == "19 /r/a/talon.toml:3: scripts.x: must be a table"
-														and find_view(Ok("x"), [d("/r/a", ["x"]), { dir: "/r", toml: Ok({ names: [], bad: Ok("/r/talon.toml:1: scripts: must be a table") }) }], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r"
-															# no name (the list, R-RUN11): the first file with a script
-															and find_view(Err(None), [d("/r/w/m1", []), d("/r/w", ["r"])], Ok("/r/w"), [m1], []) == "found /r/w Root tools=/r/w members=${m1} stop=/r/w"
-																and find_view(Err(None), [d("/r/a", ["p", "q"])], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r/a"
-																	and find_view(Err(None), [d("/r/a/b", []), d("/r/a", ["p"])], Err(NoWorkspace), [], []) == "2 no script in the talon.toml files that the walk checked: /r/a/b/talon.toml."
-																		# no file
-																		and find_view(Ok("x"), [nod("/r/a"), nod("/r")], Err(NoWorkspace), [], []) == "2 no talon.toml found. Checked: /r/a, /r."
+		# a workspace: the member file has no `x`, the root has it. A member file that has the name holds it. The root ends the walk.
+		and find_view(Ok("x"), ws_walk, Ok("/r/w"), [m1], []) == "found /r/w Root tools=/r/w members=${m1} stop=/r/w"
+		and find_view(Ok("y"), ws_walk, Ok("/r/w"), [m1], []) == "found /r/w/m1 Member tools=/r/w members=${m1} stop=/r/w"
+		and find_view(Ok("x"), [d("/r/w", ["r"]), d("/r", ["x"])], Ok("/r/w"), [m1], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/w/talon.toml."
+		# a standalone project in a workspace directory (no member file in it or below it): its own file, its own tools, and the root script has no effect there
+		and find_view(Ok("y"), [d("/r/w/s", ["y"]), d("/r/w", ["x"])], Ok("/r/w"), [m1], []) == "found /r/w/s Standalone tools=/r/w/s members= stop=/r/w"
+		and find_view(Ok("x"), [d("/r/w/s", ["y"]), d("/r/w", ["x"])], Ok("/r/w"), [m1], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/w/s/talon.toml."
+		# NC4: `deep` has the member below it, but `deep/inner/talon.toml` is between: the answer of the probe decides
+		and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], []) == "need /r/w/deep/inner/talon.toml"
+		and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.True)) == "found /r/w/deep Standalone tools=/r/w/deep members= stop=/r/w"
+		and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.False)) == "found /r/w/deep Member tools=/r/w members=${inner} stop=/r/w"
+		and find_view(Ok("r"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.True)) == "2 no script 'r' in the talon.toml files that the walk checked: /r/w/deep/inner/talon.toml, /r/w/deep/talon.toml."
+		and find_view(Ok("r"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.False)) == "found /r/w Root tools=/r/w members=${inner} stop=/r/w"
+		# a bad form: exit 19 for a file that the walk examines, none for a file above the stop
+		and find_view(Ok("x"), [{ dir: "/r/a", toml: Ok({ names: ["x"], bad: Ok("/r/a/talon.toml:3: scripts.x: must be a table") }) }], Err(NoWorkspace), [], []) == "19 /r/a/talon.toml:3: scripts.x: must be a table"
+		and find_view(Ok("x"), [d("/r/a", ["x"]), { dir: "/r", toml: Ok({ names: [], bad: Ok("/r/talon.toml:1: scripts: must be a table") }) }], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r"
+		# no name (the list, R-RUN11): the first file with a script
+		and find_view(Err(None), [d("/r/w/m1", []), d("/r/w", ["r"])], Ok("/r/w"), [m1], []) == "found /r/w Root tools=/r/w members=${m1} stop=/r/w"
+		and find_view(Err(None), [d("/r/a", ["p", "q"])], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r/a"
+		and find_view(Err(None), [d("/r/a/b", []), d("/r/a", ["p"])], Err(NoWorkspace), [], []) == "2 no script in the talon.toml files that the walk checked: /r/a/b/talon.toml."
+		# no file
+		and find_view(Ok("x"), [nod("/r/a"), nod("/r")], Err(NoWorkspace), [], []) == "2 no talon.toml found. Checked: /r/a, /r."
 }
 
 # What `Intent.read` gives for the warnings of a text in a role, or the failure.
@@ -311,11 +311,11 @@ expect {
 	bad = lines(["[scripts]", "n = 5"])
 	warn_view(text, Standalone) == Ok([])
 		and warn_view(text, Root) == Ok([])
-			and warn_view(text, Member) == Ok([])
-				and warn_view(bad, Standalone) == Ok([])
-					and warn_view(bad, Member) == Ok([])
-						and warn_view("[workspace]\nmembers = []\n\n[scripts]\nb = \"x\"\n", Root) == Ok([])
-							and warn_view("[tools]\n", Member) == Err("19 talon.toml:1: the table [tools] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)")
+		and warn_view(text, Member) == Ok([])
+		and warn_view(bad, Standalone) == Ok([])
+		and warn_view(bad, Member) == Ok([])
+		and warn_view("[workspace]\nmembers = []\n\n[scripts]\nb = \"x\"\n", Root) == Ok([])
+		and warn_view("[tools]\n", Member) == Err("19 talon.toml:1: the table [tools] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)")
 }
 
 # What `RunTools.table` gives: the keys and the warnings, or the failure.
@@ -329,7 +329,7 @@ expect {
 	text = lines(["[tools]", "roc-cfw = { ref = \"acme/foo@^1\", url = \"${foo10}\" }", "fmt = { ref = \"acme/fmt\", note = \"x\" }"])
 	table_view(text) == Ok("roc-cfw,fmt|talon.toml:3: unknown key tools.fmt.note")
 		and table_view("[scripts]\nb = 5\n") == Ok("|")
-			and table_view("[tools]\nx = 5\ny = 6\n") == Err("19 talon.toml:2: tools.x: must be a table with ref and url")
+		and table_view("[tools]\nx = 5\ny = 6\n") == Err("19 talon.toml:2: tools.x: must be a table with ref and url")
 }
 
 # R-RUN3 (point 2), R-PT7, R-DL7 (answers Q2 and Q6 of the review): a `[tools]` key with no `url` in a step is exit 14 (not locked) and names `tln install`. The consent stop of a build in `tln run` names `--yes` and `TALON_AUTO_INSTALL=yes`, not `--allow-downloads` (`run` refuses that flag).
@@ -341,10 +341,10 @@ expect {
 	no_url = RunTools.no_url({ path: "/p/talon.toml", key: "fmt" })
 	no_url.kind.code() == 14
 		and no_url.message == "the [tools] of /p/talon.toml are not locked: tools.fmt has no url. Run tln install to lock them."
-			and RunTools.stop(stop).message == "the compiler nightly-2026-10-12-2664a27 is not installed. Pass --yes or set TALON_AUTO_INSTALL=yes."
-				and RunTools.stop(stop).kind.code() == 13
-					and RunTools.stop(other).message == other.message
-						and RunTools.stop(build).message == build.message
+		and RunTools.stop(stop).message == "the compiler nightly-2026-10-12-2664a27 is not installed. Pass --yes or set TALON_AUTO_INSTALL=yes."
+		and RunTools.stop(stop).kind.code() == 13
+		and RunTools.stop(other).message == other.message
+		and RunTools.stop(build).message == build.message
 }
 
 # Slice 058, `tln run --each` (CLI 1: R-RUN13, R-EA1 to R-EA8, R-FL12, Design 4.4 R-WS5). Part A: `RunEach` (the nodes, the edges, the order, the skips, the output), the flags in `RunCmd.read` and the table `[run]` in `Intent.read`.
@@ -365,7 +365,7 @@ nd = |dir, members, text| { dir: "/r/w/${dir}", members: members.map(|m| "/r/w/$
 
 # What `RunEach.nodes` gives: `<node>=<its member files>` for each node.
 nodes_view = |members, present| {
-	files = RunEach.paths({ root: root8, members }).map(|path| { path, text: if present.contains(path) Ok("") else Err(None) })
+	files = RunEach.paths({ root: root8, members }).map(|path| { path, text: if (present.contains(path)) Ok("") else Err(None) })
 	Str.join_with(RunEach.nodes({ root: root8, members, files }).map(|n| "${lb(n.dir)}=${Str.join_with(n.members.map(|m| m.drop_prefix("${n.dir}/")), ",")}"), " ")
 }
 
@@ -390,16 +390,16 @@ expect {
 		"/r/w/workers/web/talon.toml",
 	]
 		and RunEach.paths({ root: root8, members: [] }) == []
-			and RunEach.paths({ root: root8, members: ["/r/w/top.roc"] }) == []
-				and nodes_view(members, present) == "libs=core/more.roc libs/core/src=main.roc workers/ledger=main.roc workers/web=main.roc"
-					and nodes_view(members, []) == ""
-						and nodes_view(["/r/w/a/m.roc"], ["/r/w/a/talon.toml"]) == "a=m.roc"
-							and nodes_view(["/r/w/a/b/m.roc", "/r/w/a/n.roc"], ["/r/w/a/talon.toml", "/r/w/a/b/talon.toml"]) == "a=n.roc a/b=m.roc"
-								and standalone_view(["/r/w/workers/solo", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers/solo"
-									and standalone_view(["/r/w/workers", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers"
-										and standalone_view(["/r/w/workers/web", "/r/w"], ["/r/w/workers/web"]) == "workspace"
-											and standalone_view(["/r/w"], []) == "workspace"
-												and standalone_view([], []) == "workspace"
+		and RunEach.paths({ root: root8, members: ["/r/w/top.roc"] }) == []
+		and nodes_view(members, present) == "libs=core/more.roc libs/core/src=main.roc workers/ledger=main.roc workers/web=main.roc"
+		and nodes_view(members, []) == ""
+		and nodes_view(["/r/w/a/m.roc"], ["/r/w/a/talon.toml"]) == "a=m.roc"
+		and nodes_view(["/r/w/a/b/m.roc", "/r/w/a/n.roc"], ["/r/w/a/talon.toml", "/r/w/a/b/talon.toml"]) == "a=n.roc a/b=m.roc"
+		and standalone_view(["/r/w/workers/solo", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers/solo"
+		and standalone_view(["/r/w/workers", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers"
+		and standalone_view(["/r/w/workers/web", "/r/w"], ["/r/w/workers/web"]) == "workspace"
+		and standalone_view(["/r/w"], []) == "workspace"
+		and standalone_view([], []) == "workspace"
 }
 
 hdr = |entries| "app [main!] {\n${Str.join_with(entries.map(|e| "\t${e},\n"), "")}}\n\nmain! = |_args| Ok({})\n"
@@ -425,17 +425,17 @@ expect {
 	web = hdr(["pf: platform \"../../platform/main.roc\"", "ledger: \"../ledger/main.roc\""])
 	edges_view(nodes, [("workers/api/main.roc", api), ("workers/web/main.roc", web)]) == Ok("workers/api -path-> libs/core, workers/web -path-> workers/ledger, workers/web -after-> workers/ledger")
 		and edges_view(nodes, []) == Ok("workers/web -after-> workers/ledger")
-			and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\".\"]\n")], []) == Ok("a -after-> a")
-				and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\", \"/r/w/c\"]\n"), nd("b", ["m.roc"], ""), nd("c", ["m.roc"], "")], []) == Ok("a -after-> b, a -after-> c")
-					and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n"), nd("b", ["m.roc"], "")], []) == Err("19 /r/w/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)")
-						and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"..\"]\n")], []) == Err("19 /r/w/a/talon.toml: run.after names '..', which is not a node of the workspace (a directory with a talon.toml and a member file)")
-							and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\"]\n"), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["x: \"../b/m.roc\""]))]) == Ok("a -path-> b, a -after-> b")
-								and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
-									and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "app [main!] {\n\tpf: platform\n")]) == Err("2 /r/w/a/m.roc:3: the header is not valid")
-										and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/Util.roc\""]))]) == Ok("a -path-> b")
-											and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/sub/x.roc\""]))]) == Ok("")
-												and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
-													and RunEach.header_paths(nodes) == ["/r/w/libs/core/main.roc", "/r/w/workers/api/extra.roc", "/r/w/workers/api/main.roc", "/r/w/workers/ledger/main.roc", "/r/w/workers/web/main.roc"]
+		and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\".\"]\n")], []) == Ok("a -after-> a")
+		and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\", \"/r/w/c\"]\n"), nd("b", ["m.roc"], ""), nd("c", ["m.roc"], "")], []) == Ok("a -after-> b, a -after-> c")
+		and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n"), nd("b", ["m.roc"], "")], []) == Err("19 /r/w/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+		and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"..\"]\n")], []) == Err("19 /r/w/a/talon.toml: run.after names '..', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+		and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\"]\n"), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["x: \"../b/m.roc\""]))]) == Ok("a -path-> b, a -after-> b")
+		and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
+		and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "app [main!] {\n\tpf: platform\n")]) == Err("2 /r/w/a/m.roc:3: the header is not valid")
+		and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/Util.roc\""]))]) == Ok("a -path-> b")
+		and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/sub/x.roc\""]))]) == Ok("")
+		and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
+		and RunEach.header_paths(nodes) == ["/r/w/libs/core/main.roc", "/r/w/workers/api/extra.roc", "/r/w/workers/api/main.roc", "/r/w/workers/ledger/main.roc", "/r/w/workers/web/main.roc"]
 }
 
 after_view = |text| match RunEach.read_after({ path: "talon.toml", text }) {
@@ -447,13 +447,13 @@ after_view = |text| match RunEach.read_after({ path: "talon.toml", text }) {
 expect {
 	after_view("") == Ok("")
 		and after_view("[scripts]\nb = \"x\"\n") == Ok("")
-			and after_view("[run]\n") == Ok("")
-				and after_view("[run]\nafter = []\n") == Ok("")
-					and after_view("[run]\n# c\nafter = [\"../a\", \"b/c\"]\n") == Ok("../a|b/c")
-						and after_view("[run]\nafter = \"../a\"\n") == Err("19 talon.toml:2: run.after: must be a list of strings (directories, relative to this file)")
-							and after_view("[run]\nafter = [\"a\", 5]\n") == Err("19 talon.toml:2: run.after: must be a list of strings (directories, relative to this file)")
-								and after_view("run = 1\n") == Err("19 talon.toml:1: run: must be a table")
-									and after_view("[run\n") == Err("19 talon.toml:1: not valid TOML")
+		and after_view("[run]\n") == Ok("")
+		and after_view("[run]\nafter = []\n") == Ok("")
+		and after_view("[run]\n# c\nafter = [\"../a\", \"b/c\"]\n") == Ok("../a|b/c")
+		and after_view("[run]\nafter = \"../a\"\n") == Err("19 talon.toml:2: run.after: must be a list of strings (directories, relative to this file)")
+		and after_view("[run]\nafter = [\"a\", 5]\n") == Err("19 talon.toml:2: run.after: must be a list of strings (directories, relative to this file)")
+		and after_view("run = 1\n") == Err("19 talon.toml:1: run: must be a table")
+		and after_view("[run\n") == Err("19 talon.toml:1: not valid TOML")
 }
 
 # What `RunEach.order` gives: the nodes (labels) in order, or the failure as `<code> <message>`. An edge is `(from, to, kind)`: `from` comes after `to`.
@@ -471,15 +471,15 @@ order_view = |names, links| {
 expect {
 	order_view(["alpha", "beta", "gamma", "Zed"], []) == Ok("Zed alpha beta gamma")
 		and order_view(["alpha", "beta", "gamma", "Zed"], [("alpha", "gamma", After)]) == Ok("Zed beta gamma alpha")
-			and order_view(["a", "m", "z"], [("a", "m", Path), ("m", "z", After)]) == Ok("z m a")
-				and order_view(["w/web", "w/ledger", "w/api"], [("w/web", "w/ledger", After), ("w/api", "w/web", Path)]) == Ok("w/ledger w/web w/api")
-					and order_view(["b", "a", "c"], [("a", "b", After), ("c", "b", After)]) == Ok("b a c")
-						and order_view([], []) == Ok("")
-							and order_view(["web", "ledger"], [("web", "ledger", After), ("ledger", "web", Path)]) == Err("19 the nodes of tln run --each depend on each other: ledger -path-> web -after-> ledger")
-								and order_view(["a"], [("a", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> a")
-									and order_view(["z", "a", "b", "c", "d", "e"], [("a", "b", After), ("b", "a", Path), ("d", "c", Path), ("c", "d", After), ("e", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> b -path-> a; c -after-> d -path-> c")
-										and order_view(["a", "b", "c", "d"], [("a", "b", After), ("b", "c", After), ("c", "a", After), ("a", "d", After), ("d", "a", Path)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> d -path-> a")
-											and order_view(["a", "b", "c"], [("a", "b", After), ("b", "c", After), ("c", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> b -after-> c -after-> a")
+		and order_view(["a", "m", "z"], [("a", "m", Path), ("m", "z", After)]) == Ok("z m a")
+		and order_view(["w/web", "w/ledger", "w/api"], [("w/web", "w/ledger", After), ("w/api", "w/web", Path)]) == Ok("w/ledger w/web w/api")
+		and order_view(["b", "a", "c"], [("a", "b", After), ("c", "b", After)]) == Ok("b a c")
+		and order_view([], []) == Ok("")
+		and order_view(["web", "ledger"], [("web", "ledger", After), ("ledger", "web", Path)]) == Err("19 the nodes of tln run --each depend on each other: ledger -path-> web -after-> ledger")
+		and order_view(["a"], [("a", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> a")
+		and order_view(["z", "a", "b", "c", "d", "e"], [("a", "b", After), ("b", "a", Path), ("d", "c", Path), ("c", "d", After), ("e", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> b -path-> a; c -after-> d -path-> c")
+		and order_view(["a", "b", "c", "d"], [("a", "b", After), ("b", "c", After), ("c", "a", After), ("a", "d", After), ("d", "a", Path)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> d -path-> a")
+		and order_view(["a", "b", "c"], [("a", "b", After), ("b", "c", After), ("c", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> b -after-> c -after-> a")
 }
 
 skip_view = |failed, node| {
@@ -494,14 +494,14 @@ skip_view = |failed, node| {
 expect {
 	skip_view(["a"], "b") == "a"
 		and skip_view(["a"], "c") == "a"
-			and skip_view(["a"], "d") == "a"
-				and skip_view(["a"], "e") == "run"
-					and skip_view(["a"], "f") == "run"
-						and skip_view([], "c") == "run"
-							and skip_view(["e", "a"], "c") == "a"
-								and skip_view(["b", "a"], "c") == "b"
-									and skip_view(["c"], "b") == "run"
-										and skip_view(["a"], "a") == "run"
+		and skip_view(["a"], "d") == "a"
+		and skip_view(["a"], "e") == "run"
+		and skip_view(["a"], "f") == "run"
+		and skip_view([], "c") == "run"
+		and skip_view(["e", "a"], "c") == "a"
+		and skip_view(["b", "a"], "c") == "b"
+		and skip_view(["c"], "b") == "run"
+		and skip_view(["a"], "a") == "run"
 }
 
 # R-EA8, R-EA5: the names of the nodes, and the output of `tln run --each` with no name: the order and the edges, as text and as `data` (the labels are relative to the root).
@@ -510,13 +510,13 @@ expect {
 	order = ["/r/w/libs/core", "/r/w/workers/ledger", "/r/w/workers/web"]
 	lb("/r/w/workers/web") == "workers/web"
 		and lb("/r/w") == "."
-			and lb("/other/x") == "/other/x"
-				and lb("/r/wx/y") == "/r/wx/y"
-					and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order, edges }) == "order of /r/w/talon.toml:\n  libs/core\n  workers/ledger\n  workers/web\nedges:\n  workers/web -after-> workers/ledger\n  workers/web -path-> libs/core\n"
-						and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: ["/r/w/a"], edges: [] }) == "order of /r/w/talon.toml:\n  a\nedges: none\n"
-							and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: [], edges: [] }) == "order of /r/w/talon.toml:\n  none\nedges: none\n"
-								and JsonDoc.render(RunEach.list_data({ root: root8, order, edges })) == "{\"order\":[\"libs/core\",\"workers/ledger\",\"workers/web\"],\"edges\":[{\"from\":\"workers/web\",\"to\":\"workers/ledger\",\"kind\":\"after\"},{\"from\":\"workers/web\",\"to\":\"libs/core\",\"kind\":\"path\"}]}"
-									and JsonDoc.render(RunEach.list_data({ root: root8, order: [], edges: [] })) == "{\"order\":[],\"edges\":[]}"
+		and lb("/other/x") == "/other/x"
+		and lb("/r/wx/y") == "/r/wx/y"
+		and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order, edges }) == "order of /r/w/talon.toml:\n  libs/core\n  workers/ledger\n  workers/web\nedges:\n  workers/web -after-> workers/ledger\n  workers/web -path-> libs/core\n"
+		and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: ["/r/w/a"], edges: [] }) == "order of /r/w/talon.toml:\n  a\nedges: none\n"
+		and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: [], edges: [] }) == "order of /r/w/talon.toml:\n  none\nedges: none\n"
+		and JsonDoc.render(RunEach.list_data({ root: root8, order, edges })) == "{\"order\":[\"libs/core\",\"workers/ledger\",\"workers/web\"],\"edges\":[{\"from\":\"workers/web\",\"to\":\"workers/ledger\",\"kind\":\"after\"},{\"from\":\"workers/web\",\"to\":\"libs/core\",\"kind\":\"path\"}]}"
+		and JsonDoc.render(RunEach.list_data({ root: root8, order: [], edges: [] })) == "{\"order\":[],\"edges\":[]}"
 }
 
 # What `Args.parse` and `RunCmd.read` give for `--each` and `--keep-going`: the script, the args and the 2 flags, or the failure as `<code> <message>`.
@@ -528,7 +528,7 @@ each_view = |words| match Args.parse(words) {
 				Ok(name) => "script ${name}"
 				Err(None) => "list"
 			}
-			"${what} args=${Str.join_with(cmd.args, ",")} each=${if cmd.each "yes" else "no"} keep=${if cmd.keep_going "yes" else "no"}"
+			"${what} args=${Str.join_with(cmd.args, ",")} each=${if (cmd.each) "yes" else "no"} keep=${if (cmd.keep_going) "yes" else "no"}"
 		}
 		Err(f) => "${f.kind.code().to_str()} ${f.message}"
 	}
@@ -539,19 +539,19 @@ each_view = |words| match Args.parse(words) {
 expect {
 	each_view(["run", "--each", "build"]) == "script build args= each=yes keep=no"
 		and each_view(["run", "build", "--each"]) == "script build args= each=yes keep=no"
-			and each_view(["run", "--each", "build", "--keep-going", "--", "x", "y z"]) == "script build args=x,y z each=yes keep=yes"
-				and each_view(["run", "--each"]) == "list args= each=yes keep=no"
-					and each_view(["run", "--each", "--json"]) == "list args= each=yes keep=no"
-						and each_view(["run", "--each", "--keep-going"]) == "list args= each=yes keep=yes"
-							and each_view(["run", "build"]) == "script build args= each=no keep=no"
-								and each_view(["run", "build", "--keep-going"]) == "2 flag '--keep-going' needs --each"
-									and each_view(["run", "--keep-going"]) == "2 flag '--keep-going' needs --each"
-										and each_view(["run", "--each", "build", "--json"]) == "2 tln run build does not take --json: the steps write to stdout. Only tln run with no name does."
-											and each_view(["run", "--each", "a", "--file", "x"]) == "2 flag '--file' is not for 'run'"
-												and each_view(["run", "--each", "a", "b"]) == "2 tln run takes one script name, got 2 words. Pass arguments for the script after --."
-													and each_view(["run", "--each", "--", "x"]) == "2 tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>."
-														and each_view(["list", "--each"]) == "2 flag '--each' is not for 'list'"
-															and each_view(["install", "--keep-going"]) == "2 flag '--keep-going' is not for 'install'"
+		and each_view(["run", "--each", "build", "--keep-going", "--", "x", "y z"]) == "script build args=x,y z each=yes keep=yes"
+		and each_view(["run", "--each"]) == "list args= each=yes keep=no"
+		and each_view(["run", "--each", "--json"]) == "list args= each=yes keep=no"
+		and each_view(["run", "--each", "--keep-going"]) == "list args= each=yes keep=yes"
+		and each_view(["run", "build"]) == "script build args= each=no keep=no"
+		and each_view(["run", "build", "--keep-going"]) == "2 flag '--keep-going' needs --each"
+		and each_view(["run", "--keep-going"]) == "2 flag '--keep-going' needs --each"
+		and each_view(["run", "--each", "build", "--json"]) == "2 tln run build does not take --json: the steps write to stdout. Only tln run with no name does."
+		and each_view(["run", "--each", "a", "--file", "x"]) == "2 flag '--file' is not for 'run'"
+		and each_view(["run", "--each", "a", "b"]) == "2 tln run takes one script name, got 2 words. Pass arguments for the script after --."
+		and each_view(["run", "--each", "--", "x"]) == "2 tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>."
+		and each_view(["list", "--each"]) == "2 flag '--each' is not for 'list'"
+		and each_view(["install", "--keep-going"]) == "2 flag '--keep-going' is not for 'install'"
 }
 
 # R-EA3, R-WS5 (exit code 19): `[run]` is a table of the other files of the workspace, not of the root file. A workspace member and a standalone file may have it (the commands that read `talon.toml` print no warning and never look into it). A key of a table that is not allowed stops the command. An unknown key of `[run]` gives the R-TF4 warning in each role (review of slice 058).
@@ -559,10 +559,10 @@ expect {
 	text = "[run]\nafter = [\"../a\"]\n"
 	warn_view(text, Member) == Ok([])
 		and warn_view(text, Standalone) == Ok([])
-			and warn_view("[dependencies]\njson = \"^1\"\n\n${text}", Member) == Ok([])
-				and warn_view("[run]\nafter = []\nfoo = 1\n", Member) == Ok(["talon.toml:3: unknown key run.foo"])
-					and warn_view("[run]\nafter = []\nfoo = 1\n", Standalone) == Ok(["talon.toml:3: unknown key run.foo"])
-						and warn_view("[workspace]\nmembers = []\n\n[run]\nafter = []\n", Root) == Err("19 talon.toml:4: the table [run] is not allowed in the workspace root file (it is for the other files of the workspace, R-EA3)")
+		and warn_view("[dependencies]\njson = \"^1\"\n\n${text}", Member) == Ok([])
+		and warn_view("[run]\nafter = []\nfoo = 1\n", Member) == Ok(["talon.toml:3: unknown key run.foo"])
+		and warn_view("[run]\nafter = []\nfoo = 1\n", Standalone) == Ok(["talon.toml:3: unknown key run.foo"])
+		and warn_view("[workspace]\nmembers = []\n\n[run]\nafter = []\n", Root) == Err("19 talon.toml:4: the table [run] is not allowed in the workspace root file (it is for the other files of the workspace, R-EA3)")
 }
 
 # Slice 059, `tln x` of a project tool (CLI 6.4: R-PT11, R-PT12). Part A: `XProject.choose` and `XProject.note`.
@@ -638,7 +638,7 @@ expect {
 	}
 	stop(Auto, Bool.False) == "ok"
 		and stop(Pinned, Bool.False) == "tln: error[usage]: --roc has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
-			and stop(Installed, Bool.False) == "tln: error[usage]: --roc has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
-				and stop(Auto, Bool.True) == "tln: error[usage]: --allow-unchecked has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
-					and stop(Installed, Bool.True) == "tln: error[usage]: --roc and --allow-unchecked have no effect on the project tool fmt: its pin and its url are the lock. Remove the flags."
+		and stop(Installed, Bool.False) == "tln: error[usage]: --roc has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
+		and stop(Auto, Bool.True) == "tln: error[usage]: --allow-unchecked has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
+		and stop(Installed, Bool.True) == "tln: error[usage]: --roc and --allow-unchecked have no effect on the project tool fmt: its pin and its url are the lock. Remove the flags."
 }

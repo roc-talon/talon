@@ -55,7 +55,7 @@ flow! = |fx, args, opts| {
 	loaded = ResolveLoad.load!(fx, asked)?
 	request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, loaded) }
 	facts = facts_of!(fx, request, loaded, opts.name)?
-	if opts.diff review!(fx, args, facts) else copy!(fx, args, facts)
+	if (opts.diff) review!(fx, args, facts) else copy!(fx, args, facts)
 }
 
 # Steps 3 and 4: the member, the entry that the name selects, and the `talon.toml` of the member.
@@ -69,7 +69,7 @@ facts_of! = |fx, request, loaded, name| {
 	target = match PatchCmd.entry({ text: name, rows: member.locked.rows }) {
 		Ok(t) => t
 		Err({ fail, block }) => {
-			if !block.is_empty() fx.err!(block)
+			if (!block.is_empty()) fx.err!(block)
 			return Err(fail)
 		}
 	}
@@ -137,7 +137,7 @@ review! = |fx, args, facts| {
 	} else {
 		fx.out!(shown.text)
 	}
-	if !shown.note.is_empty() fx.err!(shown.note)
+	if (!shown.note.is_empty()) fx.err!(shown.note)
 	Ok({})
 }
 

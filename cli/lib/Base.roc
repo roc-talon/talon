@@ -97,7 +97,7 @@ Base :: [].{
 		first = Base.select({ pin: run.pin, facts: run.facts })
 		on_path = match first {
 			Ok(sel) if sel.state == Installed and sel.rank != Range => Err(NoCompiler)
-			_ => if Base.in_proxy(run.env) Err(NoCompiler) else OnPath.file!(fx, run.roots)
+			_ => if (Base.in_proxy(run.env)) Err(NoCompiler) else OnPath.file!(fx, run.roots)
 		}
 		selected = match on_path {
 			Ok(file) => Base.select({ pin: run.pin, facts: { ..run.facts, path: Ok(file.id) } })
@@ -133,10 +133,10 @@ Base :: [].{
 	selected! : Fx, { env : List((Str, Str)), roots : Roots, installed : List(Str), config : ConfigToml.Config } => Try(Base.Basis, Fail)
 	selected! = |fx, run| {
 		toolchain = Compiler.toolchain_of(run.env)?
-		found = if toolchain.is_ok() Err(NoProject) else Base.find!(fx, { target: Main, skip: Bool.False, cwd: fx.cwd!(), env: run.env })
-		read = if toolchain.is_ok() Ok(Base.no_facts) else Base.load!(fx, run.roots, found, Given(run.config))
+		found = if (toolchain.is_ok()) Err(NoProject) else Base.find!(fx, { target: Main, skip: Bool.False, cwd: fx.cwd!(), env: run.env })
+		read = if (toolchain.is_ok()) Ok(Base.no_facts) else Base.load!(fx, run.roots, found, Given(run.config))
 		loaded = read?
-		times = if loaded.req.is_ok() and !run.installed.is_empty() Base.times!(fx, run.roots, run.installed) else []
+		times = if (loaded.req.is_ok() and !run.installed.is_empty()) Base.times!(fx, run.roots, run.installed) else []
 		compiler = Base.facts({ argument: Err(Unset), toolchain, loaded, env_nightly: Common.nightly_of(run.env), installed: run.installed, times })
 		match Base.choose!(fx, { roots: run.roots, env: run.env, pin: loaded.pin, facts: compiler }).selected {
 			Ok(sel) => Ok({ base: Ok(sel.id), hashes: loaded.hashes, range: Err(None) })
@@ -214,7 +214,7 @@ Base :: [].{
 		match x.source {
 			Read => x.files.concat(x.root).concat(own).concat([x.config]).concat(x.versions)
 			Given => x.files.concat(x.root).concat(own).concat(x.versions)
-			Patches => if x.files.is_empty() or shared.is_empty() [] else x.files.concat(shared)
+			Patches => if (x.files.is_empty() or shared.is_empty()) [] else x.files.concat(shared)
 		}
 	}
 
@@ -252,7 +252,7 @@ Base :: [].{
 			Patches => Patches
 		}
 		paths = Base.load_paths({ source: kind, files, root: tomls, nearest, config: config_path, versions })
-		read = if kind == Patches and paths.is_empty() [] else paths.map2(fx.read_files!(paths), |path, result| (path, result))
+		read = if (kind == Patches and paths.is_empty()) [] else paths.map2(fx.read_files!(paths), |path, result| (path, result))
 		locked = match (found, files) {
 			(Ok(project), [file]) => locked_of(read, file, project.header)
 			_ => Err(NoPin)
@@ -261,7 +261,7 @@ Base :: [].{
 			Ok(l) => l.roc
 			Err(NoPin) => Err(NoPin)
 		}
-		rooted = if kind == Patches Ok(unread) else read_toml(read, tomls)
+		rooted = if (kind == Patches) Ok(unread) else read_toml(read, tomls)
 		toml = rooted?
 		table = patch_table(read, { nearest, root: tomls, rooted: toml, reuse: kind != Patches })?
 		if kind == Patches {
@@ -412,7 +412,7 @@ patch_table = |read, x| match x.nearest {
 		} else {
 			match text_of(read, path) {
 				Ok(text) => {
-					scanned = Intent.read({ path, text, role: if is_root Root else Member })?
+					scanned = Intent.read({ path, text, role: if (is_root) Root else Member })?
 					Ok({ patches: scanned.intent.patches, path })
 				}
 				Err(NotFound) => Ok({ patches: [], path: "" })

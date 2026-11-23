@@ -232,7 +232,7 @@ flag_row = |key, flag| match flag {
 		("--dry-run", "Show the changes, and write nothing")
 	}
 	"--slots" => ("--slots <n>", "Run at most <n> probes at the same time")
-	"--as" => if key == "tool install" ("--as <name>", "The binary name") else ("--as <alias>", "The alias of the new entry (one name only)")
+	"--as" => if (key == "tool install") ("--as <name>", "The binary name") else ("--as <alias>", "The alias of the new entry (one name only)")
 	"--no-pin" => ("--no-pin", "With an exact version: start there, with no pin")
 	"--platform" => if key == "init" {
 		("--platform <owner/repo>[@<version>]", "The platform of the template")
@@ -251,7 +251,7 @@ flag_row = |key, flag| match flag {
 	"--smoke" => ("--smoke", "Run the smoke build of a platform")
 	"--target" => ("--target <target>", "A target of the smoke build (more than once for more targets)")
 	"--all" => ("--all", "Also remove packages and build caches")
-	"--force" => if key == "roc link" ("--force", "Replace a copy with the same name") else ("--force", "Remove also when an app module imports it")
+	"--force" => if (key == "roc link") ("--force", "Replace a copy with the same name") else ("--force", "Remove also when an app module imports it")
 	"--copy" => ("--copy", "Copy the binary, not a link")
 	"--rename-keys" => ("--rename-keys", "Rename the stale keys of talon.toml with no prompt")
 	"--allow-moves" => ("--allow-moves", "Move held entries with no prompt")
@@ -324,7 +324,7 @@ aliases = |word| match word {
 # A block of rows: the first column is as wide as the longest plus 2 spaces, and the rows are indented by 2.
 rows_block : List((Str, Str)) -> List(Str)
 rows_block = |rows| {
-	width = rows.fold(0, |wide, (left, _)| if left.count_utf8_bytes() > wide left.count_utf8_bytes() else wide) + 2
+	width = rows.fold(0, |wide, (left, _)| if (left.count_utf8_bytes() > wide) left.count_utf8_bytes() else wide) + 2
 	rows.map(|(left, right)| "  ${left}${Str.repeat(" ", width - left.count_utf8_bytes())}${right}")
 }
 
@@ -356,7 +356,7 @@ sub_line = |key| {
 		Err(_) => ""
 	}
 	last = key.split_on(" ").last() ?? ""
-	if aliases(last).is_empty() desc else "${desc} (also: ${Str.join_with(aliases(last), ", ")})"
+	if (aliases(last).is_empty()) desc else "${desc} (also: ${Str.join_with(aliases(last), ", ")})"
 }
 
 group_text : Str, Str -> Str
@@ -377,15 +377,15 @@ command_text = |key, one| {
 	marked = one.usage.any(|op| op.contains(" FLAGS"))
 	usage_lines = one.usage.map_with_index(
 		|op, i| {
-			head = if i == 0 "Usage: " else "       "
+			head = if (i == 0) "Usage: " else "       "
 			body = if op.contains(" FLAGS") {
-				op.replace_each(" FLAGS", if has_flags " [flags]" else "")
+				op.replace_each(" FLAGS", if (has_flags) " [flags]" else "")
 			} else if has_flags and !marked {
-				if op == "" " [flags]" else "${op} [flags]"
+				if (op == "") " [flags]" else "${op} [flags]"
 			} else {
 				op
 			}
-			spaced = if body == "" "" else if body.starts_with(" ") body else " ${body}"
+			spaced = if (body == "") "" else if (body.starts_with(" ")) body else " ${body}"
 			"${head}tln ${key}${spaced}"
 		},
 	)
@@ -395,7 +395,7 @@ command_text = |key, one| {
 		[]
 	} else {
 		front = Str.join_with(words.drop_last(1), " ")
-		forms = aliases(last).map(|a| if front == "" "tln ${a}" else "tln ${front} ${a}")
+		forms = aliases(last).map(|a| if (front == "") "tln ${a}" else "tln ${front} ${a}")
 		["Also: ${Str.join_with(forms, ", ")}"]
 	}
 	arg_block = if one.args.is_empty() {

@@ -43,17 +43,17 @@ Setup :: [].{
 	## name has `.exe` (`tln.exe`, `roc.exe`, `<tool>.exe`). The tool `talon` has no entry of its own (its binary is `tln`, which the first two entries cover). A tool that is named `tln` or `roc`, and a name that repeats, is left out.
 	names : { os : Setup.Os, tools : List(Str) } -> List(Setup.Entry)
 	names = |facts| {
-		ext = if facts.os == Windows ".exe" else ""
+		ext = if (facts.os == Windows) ".exe" else ""
 		tools = facts.tools.fold(
 			[],
-			|kept, tool| if ["talon", "tln", "roc"].contains(tool) or kept.contains(tool) kept else kept.append(tool),
+			|kept, tool| if (["talon", "tln", "roc"].contains(tool) or kept.contains(tool)) kept else kept.append(tool),
 		)
-		["tln", "roc"].concat(tools).map(|name| { entry: "${name}${ext}", source: "${if name == "roc" "tln" else name}${ext}" })
+		["tln", "roc"].concat(tools).map(|name| { entry: "${name}${ext}", source: "${if (name == "roc") "tln" else name}${ext}" })
 	}
 
 	## R-ST2: the name of the old `roc` in the bin dir: `roc.old` (`roc.old.exe` on Windows).
 	old_roc : Setup.Os -> Str
-	old_roc = |os| if os == Windows "roc.old.exe" else "roc.old"
+	old_roc = |os| if (os == Windows) "roc.old.exe" else "roc.old"
 
 	## R-LY8: the bin dir. Linux and macOS: `<HOME>/.local/bin`. Windows: `<USERPROFILE>\.local\bin`. A variable that is not set or is empty is kind `Environment` (exit 18): `HOME is not set`, `USERPROFILE is not set`.
 	bin_dir : { os : Setup.Os, env : List((Str, Str)) } -> Try(Str, Fail)
@@ -87,7 +87,7 @@ Setup :: [].{
 	judge = |facts| match (facts.source, facts.have) {
 		(Missing, _) => NoSource
 		(Sha(_), Absent) => Make
-		(Sha(want), Sha(have)) => if want == have Keep else Foreign
+		(Sha(want), Sha(have)) => if (want == have) Keep else Foreign
 		(Sha(_), _) => Foreign
 	}
 
@@ -184,7 +184,7 @@ Setup :: [].{
 		line = Setup.path_line({ shell: facts.shell, dir: facts.dir })
 		match facts.existing {
 			Err(NotFound) => Write("${line}\n")
-			Ok(text) => if text.contains(marker) Keep else Write(SetupText.appended(text, line))
+			Ok(text) => if (text.contains(marker)) Keep else Write(SetupText.appended(text, line))
 		}
 	}
 
@@ -192,7 +192,7 @@ Setup :: [].{
 	github_edit : { dir : Str, existing : Try(Str, [NotFound]) } -> [Keep, Write(Str)]
 	github_edit = |facts| match facts.existing {
 		Err(NotFound) => Write("${facts.dir}\n")
-		Ok(text) => if text.split_on("\n").contains(facts.dir) Keep else Write(SetupText.appended(text, facts.dir))
+		Ok(text) => if (text.split_on("\n").contains(facts.dir)) Keep else Write(SetupText.appended(text, facts.dir))
 	}
 
 	## R-ST5: the file of the completions of the shell in the user dir (a proposal, question Q6): bash `<home>/.local/share/bash-completion/completions/tln`, zsh `<home>/.local/share/zsh/site-functions/_tln`, fish `<home>/.config/fish/completions/tln.fish`.

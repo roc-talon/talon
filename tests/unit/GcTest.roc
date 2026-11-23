@@ -77,7 +77,7 @@ expect {
 	dbg got
 	got.live.map(|p| p.path) == ["/p/a/main.roc", "/p/b/main.roc", "/p/f/main.roc", "/p/g/main.roc"]
 		and got.live.map(|p| p.text == Err(Denied)) == [Bool.False, Bool.False, Bool.True, Bool.False]
-			and got.gone == ["/p/c/main.roc", "/p/d/main.roc", "/p/e/main.roc", "/p/h/main.roc"]
+		and got.gone == ["/p/c/main.roc", "/p/d/main.roc", "/p/e/main.roc", "/p/h/main.roc"]
 }
 
 # R-GC5, R-CC10, R-EV22, R-GC9 (D17, the answer of the manager to Q1): the verdict for each toolchain. The first row that fits wins: a `link-*` or `copy-*` entry stays (only `tln roc rm` removes it), the default stays, no known time stays,
@@ -182,17 +182,17 @@ expect {
 	dbg (dirs, stale)
 	dirs == ["/c/roc/toolchains", "/c/roc/packages", "/c/roc/talon", "/c/roc/talon/tmp", "/c/roc/talon/index", "/c/roc/talon/x"]
 		and entries.len() == 15
-			and entries.map(|x| x.path).first() == Ok("/c/roc/toolchains/nightly-2026-10-09-258ab27")
-				and stale
-					== [
-						"/c/roc/packages/h1.0123456789abcdef.tmp",
-						"/c/roc/talon/projects.json.3123456789abcdef.tmp",
-						"/c/roc/talon/tmp/4123456789abcdef",
-						"/c/roc/talon/tmp/6123456789abcdef.locks",
-						"/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.trash",
-						"/c/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp",
-						"/c/roc/toolchains/nightly-2026-10-14-38a3029.lock.2123456789abcdef.stale",
-					]
+		and entries.map(|x| x.path).first() == Ok("/c/roc/toolchains/nightly-2026-10-09-258ab27")
+		and stale
+			== [
+				"/c/roc/packages/h1.0123456789abcdef.tmp",
+				"/c/roc/talon/projects.json.3123456789abcdef.tmp",
+				"/c/roc/talon/tmp/4123456789abcdef",
+				"/c/roc/talon/tmp/6123456789abcdef.locks",
+				"/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.trash",
+				"/c/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp",
+				"/c/roc/toolchains/nightly-2026-10-14-38a3029.lock.2123456789abcdef.stale",
+			]
 }
 
 # R-OUT2, R-GC11, R-CC10 (proposal): the text of the run, in the order toolchains, skipped, compat dirs, stale paths, project entries. A dry run says `would remove` and ends with a line. Nothing to do: one line.
@@ -216,27 +216,27 @@ expect {
 	dry_full = { ..full, dry_run: Bool.True, skipped: [] }
 	Gc.report(busy) == ["another tln cache gc runs\n"]
 		and Gc.report(empty) == ["nothing to remove\n"]
-			and Gc.report(dry_busy) == ["nothing to remove\n", "dry run: nothing was removed\n"]
-				and Gc.report(full)
-					== [
-						"removed toolchain nightly-2026-08-01-aaaaaaa\n",
-						"removed toolchain git-0badc0de\n",
-						"skipped toolchain nightly-2026-05-01-6666666: an install holds it\n",
-						"removed /c/roc/compat-aaaaaaa\n",
-						"removed /c/roc/talon/tmp/4123456789abcdef\n",
-						"removed /c/roc/toolchains/n1.0123456789abcdef.trash\n",
-						"removed project /p/old/main.roc\n",
-					]
-					and Gc.report(dry_full)
-						== [
-							"would remove toolchain nightly-2026-08-01-aaaaaaa\n",
-							"would remove toolchain git-0badc0de\n",
-							"would remove /c/roc/compat-aaaaaaa\n",
-							"would remove /c/roc/talon/tmp/4123456789abcdef\n",
-							"would remove /c/roc/toolchains/n1.0123456789abcdef.trash\n",
-							"would remove project /p/old/main.roc\n",
-							"dry run: nothing was removed\n",
-						]
+		and Gc.report(dry_busy) == ["nothing to remove\n", "dry run: nothing was removed\n"]
+		and Gc.report(full)
+			== [
+				"removed toolchain nightly-2026-08-01-aaaaaaa\n",
+				"removed toolchain git-0badc0de\n",
+				"skipped toolchain nightly-2026-05-01-6666666: an install holds it\n",
+				"removed /c/roc/compat-aaaaaaa\n",
+				"removed /c/roc/talon/tmp/4123456789abcdef\n",
+				"removed /c/roc/toolchains/n1.0123456789abcdef.trash\n",
+				"removed project /p/old/main.roc\n",
+			]
+		and Gc.report(dry_full)
+			== [
+				"would remove toolchain nightly-2026-08-01-aaaaaaa\n",
+				"would remove toolchain git-0badc0de\n",
+				"would remove /c/roc/compat-aaaaaaa\n",
+				"would remove /c/roc/talon/tmp/4123456789abcdef\n",
+				"would remove /c/roc/toolchains/n1.0123456789abcdef.trash\n",
+				"would remove project /p/old/main.roc\n",
+				"dry run: nothing was removed\n",
+			]
 }
 
 # R-J3, R-J4, R-OUT4 (proposal, slice 028b): the `data` of `cache gc --json`. The keys are always the same, in this order (the new keys `builds`, `packages`, `sizes` and `freed`).
@@ -261,8 +261,8 @@ expect {
 		== "{\"dry_run\":false,\"ran\":true,\"toolchains\":[\"nightly-2026-08-01-aaaaaaa\"],\"skipped\":[\"nightly-2026-05-01-6666666\"],\"compat\":[\"/c/roc/compat-aaaaaaa\"],\"stale\":[\"/c/roc/talon/tmp/4123456789abcdef\"],\"builds\":[\"/c/roc/nightly-2025-01-01-abc1234\"],\"packages\":[\"/c/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA\"],\"projects\":[\"/p/old/main.roc\"],\"sizes\":[{\"item\":\"nightly-2026-08-01-aaaaaaa\",\"bytes\":1500000},{\"item\":\"/c/roc/talon/tmp/4123456789abcdef\",\"bytes\":999},{\"item\":\"/c/roc/nightly-2025-01-01-abc1234\",\"bytes\":7}],\"freed\":1501006}"
 		and Gc.data(busy).render()
 			== "{\"dry_run\":false,\"ran\":false,\"toolchains\":[],\"skipped\":[],\"compat\":[],\"stale\":[],\"builds\":[],\"packages\":[],\"projects\":[],\"sizes\":[],\"freed\":0}"
-			and Gc.data(dry).render()
-				== "{\"dry_run\":true,\"ran\":true,\"toolchains\":[],\"skipped\":[],\"compat\":[],\"stale\":[],\"builds\":[],\"packages\":[],\"projects\":[],\"sizes\":[],\"freed\":0}"
+		and Gc.data(dry).render()
+			== "{\"dry_run\":true,\"ran\":true,\"toolchains\":[],\"skipped\":[],\"compat\":[],\"stale\":[],\"builds\":[],\"packages\":[],\"projects\":[],\"sizes\":[],\"freed\":0}"
 }
 
 # R-GC4 (slice 028b): the hashes that the live projects use, found by a walk over the header files in the cache. `protected` is a step: `Need` names the files to read, `Done` has the sorted hashes.
@@ -277,7 +277,7 @@ expect {
 	lex = "${base}/lex/releases/download/1.0.0/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.tar.zst"
 	rows = |deps| Str.join_with(deps.map(|(alias, value)| "\t${alias}: \"${value}\",\n"), "")
 	proj = |deps| "app [main!] {\n\tpf: platform \"${pf}\",\n${rows(deps)}}\n\nmain! = |_args| Ok({})\n"
-	pkg = |deps| if deps.is_empty() "package [Lib] {}\n" else "package [Lib] {\n${rows(deps)}}\n"
+	pkg = |deps| if (deps.is_empty()) "package [Lib] {}\n" else "package [Lib] {\n${rows(deps)}}\n"
 	p1 = { path: "/p/one/main.roc", text: Ok(proj([("core", core), ("util", "../lib/main.roc"), ("odd", "https://example.com/x/abc.tar.zst")])) }
 	p2 = { path: "/p/two/main.roc", text: Ok(proj([("core", core)])) }
 	p3 = { path: "/p/three/main.roc", text: Err(Denied) }
@@ -303,17 +303,17 @@ expect {
 	dbg (step0, step1, step2, step3)
 	step0 == Need([pf, core, "/p/lib/main.roc"])
 		and step1 == Need([text, lex, "/p/lib/other.roc"])
-			and step2 == Need([text2])
-				and step3
-					== Done([
-						"4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN",
-						"895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw",
-						"8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r",
-						"ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L",
-						"HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm",
-					])
-					and none == Done([])
-						and nobody == Done([])
+		and step2 == Need([text2])
+		and step3
+			== Done([
+				"4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN",
+				"895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw",
+				"8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r",
+				"ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L",
+				"HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm",
+			])
+		and none == Done([])
+		and nobody == Done([])
 }
 
 # R-GC2, R-GC3 (second sentence), R-GC4, R-GC1, R-GC11 (slice 028b): the dirs that the age rule can remove, the one list for `tree_info!`, the dirs that expire, and the sizes.
@@ -382,17 +382,17 @@ expect {
 				{ item: "/c/roc/packages/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN", path: "/c/roc/packages/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN" },
 				{ item: "/c/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA", path: "/c/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA" },
 			]
-			and Gc.expired({ dirs, measured, now, span }) == ["/b/d6", "/b/d1"]
-				and short == ["/b/d6", "/b/d1", "/b/d2", "/b/d3"]
-					and Gc.sizes(measured)
-						== [
-							{ item: "/b/d1", bytes: 10 },
-							{ item: "/b/d2", bytes: 20 },
-							{ item: "/b/d3", bytes: 30 },
-							{ item: "/b/d4", bytes: 40 },
-							{ item: "/b/d6", bytes: 60 },
-							{ item: "toolchain-id", bytes: 70 },
-						]
+		and Gc.expired({ dirs, measured, now, span }) == ["/b/d6", "/b/d1"]
+		and short == ["/b/d6", "/b/d1", "/b/d2", "/b/d3"]
+		and Gc.sizes(measured)
+			== [
+				{ item: "/b/d1", bytes: 10 },
+				{ item: "/b/d2", bytes: 20 },
+				{ item: "/b/d3", bytes: 30 },
+				{ item: "/b/d4", bytes: 40 },
+				{ item: "/b/d6", bytes: 60 },
+				{ item: "toolchain-id", bytes: 70 },
+			]
 }
 
 # R-GC11, R-OUT2, R-OUT4 (slice 028b, proposal): the sizes in the report, the total, and the `data`. `Toolchain.size_text` writes a size (`999 B`, `2.0 KB`, `1.5 MB`, `3.1 GB`).
@@ -448,10 +448,10 @@ expect {
 				"would free 3.1 GB\n",
 				"dry run: nothing was removed\n",
 			]
-			and Gc.report(only_projects) == ["removed project /p/old/main.roc\n"]
-				and Gc.report(dry_projects) == ["would remove project /p/old/main.roc\n", "dry run: nothing was removed\n"]
-					and Gc.freed(sized) == 3101503049
-						and Gc.freed(only_projects) == 0
-							and Gc.data(sized).render()
-								== "{\"dry_run\":false,\"ran\":true,\"toolchains\":[\"t1\",\"t2\"],\"skipped\":[\"s1\"],\"compat\":[\"/c/c1\",\"/c/c1\"],\"stale\":[\"/c/x1\"],\"builds\":[\"/b/b1\"],\"packages\":[\"/c/roc/packages/p1\"],\"projects\":[\"/p/old/main.roc\"],\"sizes\":[{\"item\":\"t1\",\"bytes\":1500000},{\"item\":\"/c/c1\",\"bytes\":2000},{\"item\":\"/c/x1\",\"bytes\":999},{\"item\":\"/b/b1\",\"bytes\":3100000000},{\"item\":\"/c/roc/packages/p1\",\"bytes\":50}],\"freed\":3101503049}"
+		and Gc.report(only_projects) == ["removed project /p/old/main.roc\n"]
+		and Gc.report(dry_projects) == ["would remove project /p/old/main.roc\n", "dry run: nothing was removed\n"]
+		and Gc.freed(sized) == 3101503049
+		and Gc.freed(only_projects) == 0
+		and Gc.data(sized).render()
+			== "{\"dry_run\":false,\"ran\":true,\"toolchains\":[\"t1\",\"t2\"],\"skipped\":[\"s1\"],\"compat\":[\"/c/c1\",\"/c/c1\"],\"stale\":[\"/c/x1\"],\"builds\":[\"/b/b1\"],\"packages\":[\"/c/roc/packages/p1\"],\"projects\":[\"/p/old/main.roc\"],\"sizes\":[{\"item\":\"t1\",\"bytes\":1500000},{\"item\":\"/c/c1\",\"bytes\":2000},{\"item\":\"/c/x1\",\"bytes\":999},{\"item\":\"/b/b1\",\"bytes\":3100000000},{\"item\":\"/c/roc/packages/p1\",\"bytes\":50}],\"freed\":3101503049}"
 }

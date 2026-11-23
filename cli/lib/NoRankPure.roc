@@ -53,7 +53,7 @@ NoRankPure :: [].{
 			default: No,
 			question: "No compiler is selected. Download ${name}, ${size}? It becomes the default compiler.",
 			subject: "the download of ${name}",
-			answer_line: |answer| if answer == Yes yes_line else no_line,
+			answer_line: |answer| if (answer == Yes) yes_line else no_line,
 		}
 	}
 }

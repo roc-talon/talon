@@ -75,8 +75,8 @@ ToolInstall :: [].{
 	## A selector of the kinds `Nightly` and `Step` is refused by `Ref.parse` (it is for `tln roc`, R-SL6, R-SL7).
 	read : Args -> Try(Plan, Fail)
 	read = |args| {
-		if later_flag(args) == "--resolve" return Err(usage("tln tool install --resolve is not built yet. tln tool install builds the app with the packages that its header names."))
-		if later_flag(args) != "" return Err(usage("tln tool install ${later_flag(args)} is not built yet"))
+		if (later_flag(args) == "--resolve") return Err(usage("tln tool install --resolve is not built yet. tln tool install builds the app with the packages that its header names."))
+		if (later_flag(args) != "") return Err(usage("tln tool install ${later_flag(args)} is not built yet"))
 		operand = match args.operands {
 			[] => return Err(usage("tln tool install needs one app: owner/app"))
 			[one] => one
@@ -125,7 +125,7 @@ ToolInstall :: [].{
 
 	## R-ST15, R-LY7: the name of the binary file in the data bin dir and of the bin dir entry: the key, and `.exe` on Windows.
 	file_name : { os : Setup.Os, key : Str } -> Str
-	file_name = |facts| if facts.os == Windows "${facts.key}.exe" else facts.key
+	file_name = |facts| if (facts.os == Windows) "${facts.key}.exe" else facts.key
 
 	## R-T9, R-T10, R-DI3, R-DI6, R-C7: the releases to try, from the candidates of the repo (`Index.candidates`: a release with one package asset). `list` is not empty (the flow handles an empty list: R-T10).
 	##
@@ -193,8 +193,8 @@ ToolInstall :: [].{
 			Git(_) => Build
 			Release(rel) => match facts.selector {
 				Err(None) => Keep(rel.version)
-				Ok(Exact(wanted)) => if wanted == rel.version Keep(rel.version) else Build
-				Ok(_) => if facts.first == rel.version Keep(rel.version) else Build
+				Ok(Exact(wanted)) => if (wanted == rel.version) Keep(rel.version) else Build
+				Ok(_) => if (facts.first == rel.version) Keep(rel.version) else Build
 			}
 		}
 	}
@@ -204,7 +204,7 @@ ToolInstall :: [].{
 	compiler : { pin : Try(Str, [NoPin]), installed : List(Str) } -> Compiler
 	compiler = |facts| match facts.pin {
 		Err(NoPin) => NoPin
-		Ok(id) => if facts.installed.contains(id) Use(id) else Missing(id)
+		Ok(id) => if (facts.installed.contains(id)) Use(id) else Missing(id)
 	}
 
 	## R-T6, R-T16, R-DL1 to R-DL5: may the pinned compiler `id` be downloaded? `auto` is `TALON_AUTO_INSTALL` (`Consent.auto_install`), `yes` is `--yes`, `roc` is `--roc` (`Pinned` is the answer Yes). This is `Consent.required_want` with the mode
@@ -279,7 +279,7 @@ ToolInstall :: [].{
 		what = "the build of ${facts.name} ${facts.version} with ${facts.id}"
 		match facts.class {
 			Fail(n) => {
-				count = if n == 1 "1 error" else "${n.to_str()} errors"
+				count = if (n == 1) "1 error" else "${n.to_str()} errors"
 				title = match facts.errors.first() {
 					Ok(first) => ": ${first.title}"
 					Err(_) => ""
@@ -299,7 +299,7 @@ ToolInstall :: [].{
 		Absent => Make
 		Dir | Unreadable => Foreign
 		Sha(have) => match facts.old {
-			Ok(old) => if old == have Make else Foreign
+			Ok(old) => if (old == have) Make else Foreign
 			Err(NotFound) => Foreign
 		}
 	}
@@ -311,7 +311,7 @@ ToolInstall :: [].{
 	verdict_bin = |facts| match facts.have {
 		Absent => Make
 		Dir | Unreadable => Foreign
-		Sha(have) => if facts.old == Ok(have) or facts.recorded == Ok(have) Make else Foreign
+		Sha(have) => if (facts.old == Ok(have) or facts.recorded == Ok(have)) Make else Foreign
 	}
 
 	## R-T28, R-NM11, R-CC6: the failure of a binary name that another tool has. Kind `Usage` (exit 2). It names the flag: `<key> is the binary name of <taken> already. Use --as <name> to install <name> under another binary name.` (`<taken>` is the full name of the other tool.)
@@ -326,7 +326,7 @@ ToolInstall :: [].{
 	## also `targets: {}`. A list that has names and only wasm names (`wasm32`, `wasm32v1`) is `WasmOnly(names)`. A list with one other name is `Native`.
 	native : Try(List(Str), [NoSection]) -> [Native, WasmOnly(List(Str))]
 	native = |found| match found {
-		Ok(names) => if !names.is_empty() and names.all(|name| name.starts_with("wasm")) WasmOnly(names) else Native
+		Ok(names) => if (!names.is_empty() and names.all(|name| name.starts_with("wasm"))) WasmOnly(names) else Native
 		Err(NoSection) => Native
 	}
 
@@ -359,7 +359,7 @@ ToolInstall :: [].{
 	newest_tag : List(Index.Candidate) -> Try(Str, [None])
 	newest_tag = |list| match list {
 		[] => Err(None)
-		[first, .. as rest] => Ok(rest.fold(first, |best, c| if c.published_at > best.published_at c else best).tag)
+		[first, .. as rest] => Ok(rest.fold(first, |best, c| if (c.published_at > best.published_at) c else best).tag)
 	}
 
 	## R-T10: the default branch from the answer of `GET <api>/repos/<owner>/<repo>`. A status 200 and a JSON object with a text `default_branch` that is not empty give `Ok`. Any other answer is `Err(None)`.

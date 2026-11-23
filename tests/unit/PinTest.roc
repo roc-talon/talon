@@ -173,8 +173,8 @@ expect {
 		("Default, outside the range", gate(n1, Default, late, late_text, Bool.True, Default), Err((10, "the compiler ${n1} from the global default is outside [toolchain] roc (>=${n3}). Change the default (tln roc default) or [toolchain] roc."))),
 		("Range is never checked: rank 4 chose inside the range and the switch", gate(n1, Range, late, late_text, Bool.False, Config), Ok({})),
 		("Default, inside the range, a release with the switch off", gate("0.1.0", Default, Ok(Semver("0.1.*")), Ok("0.1.*"), Bool.False, Env), Ok({})),
-		("a git build is never checked, for each rank (R-NS6)", if all_ok([Env, Range, VersionFile, Default, Path].map(|from| gate("git-0123abcd", from, Ok(Exactly(n3)), Ok("=${n3}"), Bool.False, Env))) Ok({}) else Err(Fail.new(Internal, "a git build was checked")), Ok({})),
-		("a link build and a copy build are never checked", if all_ok([gate("link-dev", Default, late, late_text, Bool.False, Env), gate("copy-dev", VersionFile, late, late_text, Bool.False, Env)]) Ok({}) else Err(Fail.new(Internal, "a local build was checked")), Ok({})),
+		("a git build is never checked, for each rank (R-NS6)", if (all_ok([Env, Range, VersionFile, Default, Path].map(|from| gate("git-0123abcd", from, Ok(Exactly(n3)), Ok("=${n3}"), Bool.False, Env)))) Ok({}) else Err(Fail.new(Internal, "a git build was checked")), Ok({})),
+		("a link build and a copy build are never checked", if (all_ok([gate("link-dev", Default, late, late_text, Bool.False, Env), gate("copy-dev", VersionFile, late, late_text, Bool.False, Env)])) Ok({}) else Err(Fail.new(Internal, "a local build was checked")), Ok({})),
 		("Path, a nightly, the switch is off: exit 10 as in slice 012 (R-NS2)", gate(n1, Path, Err(Unset), Err(Unset), Bool.False, Env), Err((10, "the roc on PATH, ${n1}, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected."))),
 	]
 	bad = rows.keep_if(|(_, got, want)| shown(got) != want).map(|(label, got, want)| (label, want, shown(got)))

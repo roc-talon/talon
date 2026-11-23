@@ -173,7 +173,7 @@ no_move = |selector| match selector {
 # R-AD23 to R-AD28: the `talon.toml` pair for a selector. Q8: `--no-pin` only drops an exact version.
 toml_of : Str, Try(Selector, [None]), Bool -> Try({ key : Str, value : Str }, [Nothing])
 toml_of = |key, selector, no_pin| match selector {
-	Ok(Exact(version)) => if no_pin Err(Nothing) else Ok({ key, value: "=${version}" })
+	Ok(Exact(version)) => if (no_pin) Err(Nothing) else Ok({ key, value: "=${version}" })
 	Ok(Range(text)) => Ok({ key, value: text })
 	_ => Err(Nothing)
 }
@@ -229,7 +229,7 @@ is_unmanaged = |value| match Ident.of_url(value) {
 }
 
 entry_kind : Str -> Str
-entry_kind = |value| if value.contains("://") "a foreign URL" else "a path entry"
+entry_kind = |value| if (value.contains("://")) "a foreign URL" else "a path entry"
 
 # Q11: with no `--as`, a name that is in the header with one entry names that entry, also in another series.
 only_entry_of_repo : Str, Try(Str, [Unset]), List(HeaderRow) -> Try(Str, [NoEntry])
@@ -264,7 +264,7 @@ decide_platform = |req| match req.header.find_first(|row| row.is_platform) {
 		header: Replace,
 		url: req.chosen.url,
 		toml: toml_of(old.alias, req.selector, req.no_pin),
-		note: if old.url == req.chosen.url Err(None) else Ok("platform changes: ${describe(old.url)} -> ${req.chosen.name} ${version_of(req.chosen.url)}"),
+		note: if (old.url == req.chosen.url) Err(None) else Ok("platform changes: ${describe(old.url)} -> ${req.chosen.name} ${version_of(req.chosen.url)}"),
 	})
 	Err(NotFound) => match Alias.choose({ name: req.chosen.name, url: req.chosen.url, is_platform: Bool.True, as_alias: req.as_alias, header: req.header }) {
 		Ok(Alias.New(alias)) => Ok(insert(alias, req.chosen.url, req.selector, req.no_pin))

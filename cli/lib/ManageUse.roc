@@ -21,13 +21,13 @@ ManageUse :: [].{
 	read_use : Args -> Try(Str, Fail)
 	read_use = |args| match args.operands {
 		[] => Err(Fail.new(Usage, "tln roc use needs one compiler: a full id, a prefix, @latest or a step like @-1"))
-		[one] => if is_local_build(one) Err(use_refused(one)) else Ok(one)
+		[one] => if (is_local_build(one)) Err(use_refused(one)) else Ok(one)
 		many => Err(Fail.new(Usage, "tln roc use takes one compiler, got ${many.len().to_str()}"))
 	}
 
 	## R-U1 (slice 026b): the check of the id that the operand named (an installed prefix or the list gave a full id). A pin is a nightly or a release (`Pin.is_id`). Any other id (`git-*`, `link-*`, `copy-*`, `debug-<sha>`) is the failure of row 3 of `read_use`.
 	use_pinnable : Str -> Try({}, Fail)
-	use_pinnable = |id| if Pin.is_id(id) or Channel.user_parts(id).is_ok() Ok({}) else Err(use_refused(id))
+	use_pinnable = |id| if (Pin.is_id(id) or Channel.user_parts(id).is_ok()) Ok({}) else Err(use_refused(id))
 
 	## R-CS1, R-U3, R-RP1, R-WS13, R-RP3, R-BL1 (slice 026b): what `roc use` does for each member file, in the order of `members`. `id` is the new compiler. `pin` is the `roc:` entry of the member. `fallback` is the compiler of a member that has no pin
 	## (`ROC_TOOLCHAIN`, else the compiler that Resolution 13 selects: R-BL1).
@@ -141,7 +141,7 @@ ManageUse :: [].{
 				}
 			},
 		)
-		last = if facts.user "the roc pin is now =${facts.id} (in talon.toml)\n" else "the roc pin is now ${facts.id}\n"
+		last = if (facts.user) "the roc pin is now =${facts.id} (in talon.toml)\n" else "the roc pin is now ${facts.id}\n"
 		[["${facts.toml.file}\n", pin], gone, new].join().concat(members.join()).append(last)
 	}
 
@@ -154,7 +154,7 @@ ManageUse :: [].{
 		("probes", JsonDoc.Num(facts.probes.to_i64_wrap())),
 		("downloads", JsonDoc.Num(facts.downloads.to_i64_wrap())),
 		("check", JsonDoc.Text("passed")),
-		("build", if facts.built JsonDoc.Text("passed") else JsonDoc.Null),
+		("build", if (facts.built) JsonDoc.Text("passed") else JsonDoc.Null),
 		("notes", JsonDoc.Arr(facts.notes.map(|n| JsonDoc.Text(n)))),
 	])
 }

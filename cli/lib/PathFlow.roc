@@ -97,7 +97,7 @@ project_toml : Project, Try(Str, [NoToml]) -> Try({ exclude : List(Str), toml : 
 project_toml = |project, text| match (project.toml, text) {
 	(Ok(path), Ok(content)) => {
 		role = match project.workspace {
-			Ok(ws) => if path == Text.join(ws.root, "talon.toml") Root else Member
+			Ok(ws) => if (path == Text.join(ws.root, "talon.toml")) Root else Member
 			Err(Standalone) => Root
 		}
 		read = Intent.read({ path, text: content, role })?

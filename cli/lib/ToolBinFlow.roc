@@ -175,7 +175,7 @@ ToolBinFlow :: [].{
 				dir: f.dir,
 				bundle: f.entry.bundle,
 				target: f.entry.target,
-				kind: if XCache.is_prebuilt(f.entry) Prebuilt({ sha256: f.entry.sha256 }) else Built,
+				kind: if (XCache.is_prebuilt(f.entry)) Prebuilt({ sha256: f.entry.sha256 }) else Built,
 			},
 		)
 		match ToolBinUse.pick({ scope: Project, bundle: facts.bundle, target: facts.target, bin: facts.bin, machine: facts.machine, entries }) {
@@ -209,8 +209,8 @@ gate_of! = |fx, src| {
 		[b] => b
 		_ => Bool.False
 	}
-	help = if have Ok(one!(fx, ToolBinCheck.help_argv(src)).ended) else Err(NotAsked)
-	auth = if help == Ok(Exited(0)) Ok(one!(fx, TalonUpdate.gh_auth_argv).ended) else Err(NotAsked)
+	help = if (have) Ok(one!(fx, ToolBinCheck.help_argv(src)).ended) else Err(NotAsked)
+	auth = if (help == Ok(Exited(0))) Ok(one!(fx, TalonUpdate.gh_auth_argv).ended) else Err(NotAsked)
 	ToolBinCheck.gate({ found: have, help, auth })
 }
 
@@ -281,7 +281,7 @@ ready! = |fx, env, run, base, facts| {
 		}
 	}
 	checked = $ok
-	verified = if checked.is_empty() [] else fx.spawn_all!({ jobs: checked.map(|o| { argv: ToolBinCheck.verify_argv({ file: o.file, repo: src.repo, tag: src.tag }), cwd: Err(Inherit) }), limit: 8 })
+	verified = if (checked.is_empty()) [] else fx.spawn_all!({ jobs: checked.map(|o| { argv: ToolBinCheck.verify_argv({ file: o.file, repo: src.repo, tag: src.tag }), cwd: Err(Inherit) }), limit: 8 })
 	var $passed = []
 	for pair in checked.map2(verified, |o, done| (o, done)) {
 		(o, done) = pair
@@ -351,7 +351,7 @@ download! : Fx, Download.Program, Str, Str => Try({}, Str)
 download! = |fx, program, url, dest| match fx.spawn_all!({ jobs: [{ argv: Download.command({ program, url, dest }), cwd: Err(Inherit) }], limit: 8 }) {
 	[done] => match Download.outcome({ program, ended: done.ended, last_line: done.stderr_last }) {
 		Done => Ok({})
-		_ => Err(if done.stderr_last.is_empty() Str.inspect(done.ended) else done.stderr_last)
+		_ => Err(if (done.stderr_last.is_empty()) Str.inspect(done.ended) else done.stderr_last)
 	}
 	_ => Err("spawn_all! gave no result")
 }

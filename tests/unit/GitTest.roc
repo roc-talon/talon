@@ -177,7 +177,7 @@ expect {
 	dbg with_token
 	bad == []
 		and headers == [("User-Agent", "tln/${Help.version}"), ("Accept", "application/vnd.github.sha")]
-			and with_token == [("User-Agent", "tln/${Help.version}"), ("Authorization", "Bearer ghp_fake"), ("Accept", "application/vnd.github.sha")]
+		and with_token == [("User-Agent", "tln/${Help.version}"), ("Authorization", "Bearer ghp_fake"), ("Accept", "application/vnd.github.sha")]
 }
 
 # R-SE12 R-R3 R-DI13 (the commit answer): a 200 answer with 40 lower case hex digits (the body can end with a line end) is the sha. Any other 200 body (short, upper case, 41 digits, JSON,
@@ -287,8 +287,8 @@ expect {
 	dbg windows
 	linux == want_linux
 		and windows == { ..want_linux, built: "/c/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc.exe", roc: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/roc.exe" }
-			and command == ["zig", "build", "roc", "-Doptimize=ReleaseFast", "-Dcompiler-version=git-dd03c09e"]
-				and installed == ["/c/roc/toolchains/zig-0.17.0/zig", "build", "roc", "-Doptimize=ReleaseFast", "-Dcompiler-version=git-cf42a741"]
+		and command == ["zig", "build", "roc", "-Doptimize=ReleaseFast", "-Dcompiler-version=git-dd03c09e"]
+		and installed == ["/c/roc/toolchains/zig-0.17.0/zig", "build", "roc", "-Doptimize=ReleaseFast", "-Dcompiler-version=git-cf42a741"]
 }
 
 # R-R1 R-R7 R-TF1 R-CV5 R-LY1: `.talon.json` of a source build: one line, `format` 1 first, then `id`, `repo` (the URL on GitHub), `sha` (the full sha), `ref` (the ref as the user typed it: a branch, a tag
@@ -303,9 +303,9 @@ expect {
 	dbg ok
 	ok == "{\"format\":1,\"id\":\"git-dd03c09e\",\"repo\":\"https://github.com/Karakatiza666/roc\",\"sha\":\"${sha_a}\",\"ref\":\"my-branch\",\"sha256\":\"${"9f".repeat(32)}\",\"sha256_source\":\"computed\",\"compat\":\"c0ffee\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
 		and unknown == ok.replace_each("\"compat\":\"c0ffee\"", "\"compat\":null")
-			and several == unknown
-				and short == ok.replace_each("Karakatiza666/roc", "roc-lang/roc").replace_each("my-branch", "dd03c09e")
-					and JsonDoc.parse(ok.trim()).is_ok()
+		and several == unknown
+		and short == ok.replace_each("Karakatiza666/roc", "roc-lang/roc").replace_each("my-branch", "dd03c09e")
+		and JsonDoc.parse(ok.trim()).is_ok()
 }
 
 # R-DA3 R-SE12 R-R3 R-CC2 R-NI6: the failures of the command. The build failure is kind `Internal` (question Q5: the design has no code for a failed source build). The text has the id, how the
@@ -327,9 +327,9 @@ expect {
 	dbg bad
 	bad == []
 		and curl.kind == Environment
-			and curl.message.contains("curl")
-				and none.kind == Usage
-					and none.message.contains("Karakatiza666/roc@my-branch")
+		and curl.message.contains("curl")
+		and none.kind == Usage
+		and none.message.contains("Karakatiza666/roc@my-branch")
 }
 
 # R-R5 R-R1 R-R6: `tln roc default --git <owner/repo@ref>` picks the newest installed build of that ref: the `.talon.json` of a `git-*` dir that has the same repo URL and the same ref text, and the

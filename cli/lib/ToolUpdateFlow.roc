@@ -134,13 +134,13 @@ jobs_of = |items| items.keep_oks(
 evidenced! : Fx, Kind, ToolBuild.Facts, List(Item) => Try(List(Item), Fail)
 evidenced! = |fx, kind, base, items| {
 	jobs = jobs_of(items)
-	if kind == Rebuild or jobs.is_empty() return Ok(items)
+	if (kind == Rebuild or jobs.is_empty()) return Ok(items)
 	installed = Launch.toolchains!(fx, base.roots)
 	ids = ToolCompiler.candidates(installed)
 	missing = |job| !ToolUpdate.downloads({ pins: [job.id], installed }).is_empty()
 	closure = |job| { pf: ToolBuild.pf_hash(job.bundle), target: job.facts.target }
 	pending = jobs.keep_if(missing)
-	if pending.is_empty() return Ok(items)
+	if (pending.is_empty()) return Ok(items)
 	keys = pending.join_map(|job| ToolCompiler.evidence_keys({ pf: closure(job).pf, target: closure(job).target, ids }))
 	facts = Facts.load!(fx, { roots: base.roots, keys })?
 	var $known = []
@@ -251,7 +251,7 @@ branch_item! = |fx, args, facts, tool| {
 		Git(git) => git.ref
 		Release(_) => ""
 	}
-	if args.offline return Err(GitRef.offline_failure({ owner, repo, ref }))
+	if (args.offline) return Err(GitRef.offline_failure({ owner, repo, ref }))
 	sha = ToolGitFlow.head!(fx, facts.net, { owner, repo, ref }, facts.now)?
 	match ToolUpdate.moved({ tool, sha }) {
 		Same => return Ok(skip(tool, UpToDate, ToolUpdate.up_to_date_text(tool)))
@@ -310,10 +310,10 @@ platform_item! = |fx, args, job| match ToolFlow.platform_for!(fx, args, job.fact
 # Step 3 (R-T25, R-DL1 to R-DL5): the compilers that no installed release covers, one decision for the command. No build: no question.
 consent! : Fx, Args, ToolBuild.Facts, List(Str) => Try({}, Fail)
 consent! = |fx, args, base, pins| {
-	if pins.is_empty() return Ok({})
+	if (pins.is_empty()) return Ok({})
 	installed = Launch.toolchains!(fx, base.roots)
 	ids = ToolUpdate.downloads({ pins, installed })
-	if ids.is_empty() return Ok({})
+	if (ids.is_empty()) return Ok({})
 	mode = Mode.from_env({ env: Dict.from_list(base.env), json: args.json })
 	decide = |at| ToolUpdate.want({ ids, auto: Consent.auto_install(base.env), yes: args.yes, mode: at })
 	(want, known) = match decide(mode) {
@@ -344,9 +344,9 @@ asked! = |fx, args, base, run| {
 		$offers = $offers.append(RocInstall.offer!(fx, { id, env: base.env, offline: args.offline })?)
 	}
 	sum = DownloadAsk.totals($offers)
-	if sum.ids.is_empty() return Ok({})
+	if (sum.ids.is_empty()) return Ok({})
 	asked = Prompt.ask!(fx, ToolUpdate.prompt(sum), { mode: run.mode, yes: args.yes, quiet: args.quiet, flag: Err(NoFlag) })?
-	if asked.answer != Yes return Err(ToolUpdate.declined(run.ids))
+	if (asked.answer != Yes) return Err(ToolUpdate.declined(run.ids))
 	for offer in $offers {
 		match offer {
 			Download(found) => {

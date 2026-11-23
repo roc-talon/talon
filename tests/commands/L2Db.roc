@@ -31,7 +31,7 @@ L2Db :: [].{
 						},
 					)
 					match Facts.load!(fx, { roots, keys }) {
-						Ok(rows) => if rows.is_empty() fx.out!("  none\n") else for row in rows {
+						Ok(rows) => if (rows.is_empty()) fx.out!("  none\n") else for row in rows {
 							fx.out!("  ${Db.fact_line(row)}\n")
 						}
 						Err(fail) => L2Util.report!(fx, fail)
@@ -47,7 +47,7 @@ L2Db :: [].{
 							_ => Err(BadSpec)
 						},
 					)
-					match Facts.save!(fx, { roots, rows, existing: if mode == "keep" Keep else Replace }) {
+					match Facts.save!(fx, { roots, rows, existing: if (mode == "keep") Keep else Replace }) {
 						Ok(Saved) => fx.out!("  Saved\n")
 						Ok(Kept) => fx.out!("  Kept\n")
 						Err(fail) => L2Util.report!(fx, fail)
@@ -93,7 +93,7 @@ L2Db :: [].{
 					)
 					sharing = {
 						share: Ok(!flags.contains("off")),
-						registry: if flags.contains("direct") Direct else Url("http://127.0.0.1:9"),
+						registry: if (flags.contains("direct")) Direct else Url("http://127.0.0.1:9"),
 						offline: flags.contains("offline"),
 						env: fx.env_all!().concat(extra),
 					}
@@ -124,7 +124,7 @@ L2Db :: [].{
 						},
 					)
 					match fx.db_query!({ path: Roots.item(roots, CompatDb), busy_ms: Db.busy_ms, format: Db.format }, Smoke(keys)) {
-						Ok(Smoke(rows)) => if rows.is_empty() fx.out!("  none\n") else for row in rows {
+						Ok(Smoke(rows)) => if (rows.is_empty()) fx.out!("  none\n") else for row in rows {
 							fx.out!("  ${Db.smoke_line(row)}\n")
 						}
 						Ok(_) => fx.out!("  wrong answer\n")

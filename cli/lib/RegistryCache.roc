@@ -125,9 +125,9 @@ RegistryCache :: [].{
 	## | No copy | `Fetch` |
 	plan : { cached : Try(Cached, [Missing]), now : U64, offline : Bool, newest : Bool } -> Step
 	plan = |facts| match facts.cached {
-		Err(Missing) => if facts.offline Missing else Fetch
+		Err(Missing) => if (facts.offline) Missing else Fetch
 		Ok(copy) => {
-			age = if copy.mtime >= facts.now 0 else facts.now - copy.mtime
+			age = if (copy.mtime >= facts.now) 0 else facts.now - copy.mtime
 			fresh = match copy.max_age {
 				Ok(limit) => age < limit
 				Err(None) => Bool.False
@@ -161,7 +161,7 @@ RegistryCache :: [].{
 			Ok(e) if !no_cache => agent.append(("If-None-Match", e))
 			_ => agent
 		}
-		with_cache = if no_cache with_etag.append(("Cache-Control", "no-cache")) else with_etag
+		with_cache = if (no_cache) with_etag.append(("Cache-Control", "no-cache")) else with_etag
 		match facts.bookmark {
 			Ok(b) => with_cache.append(("Talon-Bookmark", b))
 			Err(None) => with_cache
@@ -197,7 +197,7 @@ RegistryCache :: [].{
 		url = "${facts.origin}${facts.path}"
 		paths = RegistryCache.files({ roots: facts.roots, origin: facts.origin, url })
 		no_cache = facts.newest or facts.bookmark != Err(None)
-		copy = if no_cache and !facts.offline Err(Missing) else load_copy!(fx, paths, RegistryCache.key({ origin: facts.origin, url }))
+		copy = if (no_cache and !facts.offline) Err(Missing) else load_copy!(fx, paths, RegistryCache.key({ origin: facts.origin, url }))
 		step = RegistryCache.plan({ cached: copy.map_ok(|c| c.cached), now: facts.now, offline: facts.offline, newest: no_cache })
 		match (step, copy) {
 			(Use, Ok(c)) => Ok(Answer({ status: 200, headers: [], body: c.body, source: Copy(c.cached.mtime) }))

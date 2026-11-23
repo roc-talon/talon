@@ -68,7 +68,7 @@ UnitFlow :: [].{
 	first! : Fx, UnitFlow.Ctx, { baseline : Probe.Spec, count : U64 } => Try(UnitFlow.First, Fail)
 	first! = |fx, ctx, run| {
 		pkgs = ctx.roots.pkgs
-		wanted = if ctx.no_probe [] else Units.missing({ nodes: ctx.nodes, facts: ctx.facts, nightly: ctx.started.id })
+		wanted = if (ctx.no_probe) [] else Units.missing({ nodes: ctx.nodes, facts: ctx.facts, nightly: ctx.started.id })
 		budget = match Units.budget({ max: ctx.probe.max, started: run.count, fixed: 1, wanted: wanted.len() }) {
 			Ok(done) => done
 			Err(Spent) => return Err(Units.spent({ max: ctx.probe.max, left: 0 }))
@@ -76,7 +76,7 @@ UnitFlow :: [].{
 		nodes = wanted.take_first(budget.run)
 		unit_specs = Units.specs({ nodes, compiler: ctx.started.id, program: ctx.started.program, env: ctx.started.env, pkgs, timeout: ctx.probe.timeout })
 		outputs = UnitFlow.probes!(fx, { roots: ctx.roots, now: ctx.now, pool: ctx.probe.slots, started: ctx.started, base: ctx.base, specs: [run.baseline].concat(unit_specs) })
-		if outputs.len() != 1 + nodes.len() return Err(Fail.new(Internal, "the probes gave no result for each probe"))
+		if (outputs.len() != 1 + nodes.len()) return Err(Fail.new(Internal, "the probes gave no result for each probe"))
 		results = Units.results({ nodes, outputs: outputs.drop_first(1), nightly: ctx.started.id, compiler: ctx.held, pkgs })
 		_ = Facts.save!(fx, { roots: ctx.roots, rows: results.facts, existing: Replace })?
 		match ctx.share {
@@ -103,7 +103,7 @@ UnitFlow :: [].{
 			Err(None) => {}
 		}
 		suspects = Units.suspects({ nodes: ctx.nodes, facts: run.first.facts, nightly: ctx.started.id, baseline: run.baseline })
-		scanned = if suspects.is_empty() Err(NotScanned) else Ok(UnitFlow.scan!(fx, ctx))
+		scanned = if (suspects.is_empty()) Err(NotScanned) else Ok(UnitFlow.scan!(fx, ctx))
 		Units.judge({ nodes: ctx.nodes, facts: run.first.facts, nightly: ctx.started.id, compiler: ctx.held, baseline: run.baseline, used: scanned ?? [] })?
 		if run.first.left > 0 {
 			Err(Units.spent({ max: ctx.probe.max, left: run.first.left }))
@@ -150,8 +150,8 @@ UnitFlow :: [].{
 			Err(_) => []
 		}
 		roots = Scan.roots({ kind: ctx.member.kind, file, exposed })
-		var $sources = if is_app [{ owner: App, path: file, text: ctx.member.text }] else []
-		var $todo = if is_app [] else roots.keep_if(|path| path != file).map(|path| { owner: App, path })
+		var $sources = if (is_app) [{ owner: App, path: file, text: ctx.member.text }] else []
+		var $todo = if (is_app) [] else roots.keep_if(|path| path != file).map(|path| { owner: App, path })
 		var $seen = [file]
 		var $used = []
 		while !$sources.is_empty() or !$todo.is_empty() {
@@ -160,7 +160,7 @@ UnitFlow :: [].{
 			fresh = read.keep_oks(|source| todo.find_first(|t| t.path == source.path).map_ok(|t| { owner: t.owner, path: source.path, text: source.text }))
 			seen = $seen.concat(todo.map(|t| t.path))
 			level = Uses.level({ project_dir, pkgs: ctx.roots.pkgs, edges, sources: $sources.concat(fresh), seen })
-			$used = level.used.fold($used, |found, row| if found.contains(row) found else found.append(row))
+			$used = level.used.fold($used, |found, row| if (found.contains(row)) found else found.append(row))
 			$seen = seen
 			$sources = []
 			$todo = level.next

@@ -98,9 +98,9 @@ flow! = |fx, args| {
 	settings = ResolveBase.settings_of(set, loaded)
 	current = start.project.file ?? ""
 	named = loaded.members.keep_if(|m| m.file == current)
-	shown = (if named.is_empty() loaded.members else named).map(|m| m.file)
+	shown = (if (named.is_empty()) loaded.members else named).map(|m| m.file)
 	vars = built.vars.keep_if(|v| v.uses.any(|u| shown.contains(u.file)))
-	names = vars.keep_oks(|v| indexed_name(v)).fold([], |found, name| if found.contains(name) found else found.append(name))
+	names = vars.keep_oks(|v| indexed_name(v)).fold([], |found, name| if (found.contains(name)) found else found.append(name))
 	# Slice 206e2: with a registry the list comes first, then the query with the `Report` window.
 	(listed, request) = match set.registry {
 		Read(query) => {
@@ -143,11 +143,11 @@ report! = |fx, request, ctx| {
 	# R-DI1, D8: the compiler list and the facts are read only when a row is behind.
 	releases = match listed {
 		Ok(list) => list
-		Err(NotRead) => if behind.is_empty() [] else PickLoop.releases!(fx, request)
+		Err(NotRead) => if (behind.is_empty()) [] else PickLoop.releases!(fx, request)
 	}
 	listed_d = Nightlies.candidates(releases)
 	domain = listed_d.map(|r| r.id)
-	hashes = behind.map(|r| r.hash).fold([], |found_hashes, hash| if found_hashes.contains(hash) found_hashes else found_hashes.append(hash))
+	hashes = behind.map(|r| r.hash).fold([], |found_hashes, hash| if (found_hashes.contains(hash)) found_hashes else found_hashes.append(hash))
 	local = Facts.load!(fx, { roots: request.roots, keys: hashes.join_map(|hash| domain.map(|id| { hash, nightly: id, target: "any" })) })?
 	ranged = evidence_of(request.index, listed_d, local)
 	members = pending.map(|p| { file: p.file, rows: p.rows.map(|r| { ..r.row, range: Outdated.range_of({ hash: r.hash, domain, facts: ranged.facts, epochs: ranged.epochs }) }), fixed: p.fixed })
@@ -185,7 +185,7 @@ pending_of = |file, vars, found, ctx| {
 	{
 		file,
 		rows: mine.keep_oks(|v| row_of(file, v, found, ctx)),
-		fixed: hosts.fold([], |seen, host| if seen.contains(host) seen else seen.append(host)),
+		fixed: hosts.fold([], |seen, host| if (seen.contains(host)) seen else seen.append(host)),
 	}
 }
 
@@ -196,7 +196,7 @@ row_of = |file, v, found, ctx| match (indexed_name(v), v.uses.find_first(|u| u.f
 		list = found.find_first(|c| c.name == name).map_ok(|c| c.list) ?? []
 		got = Outdated.versions({ current: first.url, ranges: v.ranges.map(|r| r.range), list, now: ctx.now, min_age: ctx.min_age, exclude: ctx.exclude, snapshot: Err(None) })
 		row = { alias: first.alias, name, current: first.version, wanted: got.wanted, latest: got.latest, new_series: got.new_series, range: Unread }
-		if Outdated.is_shown(row, ctx.moved) Ok({ row, hash: Ident.of_url(first.url).map_ok(|ident| ident.hash) ?? "" }) else Err(NoRow)
+		if (Outdated.is_shown(row, ctx.moved)) Ok({ row, hash: Ident.of_url(first.url).map_ok(|ident| ident.hash) ?? "" }) else Err(NoRow)
 	}
 	_ => Err(NoRow)
 }

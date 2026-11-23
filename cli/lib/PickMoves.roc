@@ -23,4 +23,4 @@ PickMoves :: [].{
 }
 
 files_of : List({ file : Str, alias : Str, url : Str, version : Str }) -> List(Str)
-files_of = |uses| uses.fold([], |found, u| if found.contains(u.file) found else found.append(u.file))
+files_of = |uses| uses.fold([], |found, u| if (found.contains(u.file)) found else found.append(u.file))

@@ -58,7 +58,7 @@ ProbeRange :: [].{
 						Err(_) => 0
 					}
 					open = w.places.keep_if(|i| i >= start and i < q and askable_at(w, i) and !has_real(cell_at(w, i)))
-					if open.is_empty() Done(found_of(w)) else Need(ids_at(w, picks_of(open)))
+					if (open.is_empty()) Done(found_of(w)) else Need(ids_at(w, picks_of(open)))
 				}
 			}
 		}
@@ -132,17 +132,17 @@ above_pass = |newest, i| match newest {
 
 # q: the oldest place such that each release from q to p has a pass.
 low_of : World, U64 -> U64
-low_of = |w, p| w.places.keep_if(|i| i <= p).rev().fold_until(p, |at, i| if passes(cell_at(w, i)) Continue(i) else Break(at))
+low_of = |w, p| w.places.keep_if(|i| i <= p).rev().fold_until(p, |at, i| if (passes(cell_at(w, i))) Continue(i) else Break(at))
 
 # t: the newest place such that each release from p to t has a pass.
 high_of : World, U64 -> U64
-high_of = |w, p| w.places.keep_if(|i| i >= p).fold_until(p, |at, i| if passes(cell_at(w, i)) Continue(i) else Break(at))
+high_of = |w, p| w.places.keep_if(|i| i >= p).fold_until(p, |at, i| if (passes(cell_at(w, i))) Continue(i) else Break(at))
 
 # R-PP2: all open places when there are 3 or fewer, else the places m/4, m/2 and 3m/4.
 picks_of : List(U64) -> List(U64)
 picks_of = |open| {
 	m = open.len()
-	if m <= 3 open else [m / 4, m / 2, 3 * m / 4].keep_oks(|at| open.get(at))
+	if (m <= 3) open else [m / 4, m / 2, 3 * m / 4].keep_oks(|at| open.get(at))
 }
 
 # An end is real when the release next to it, outside the range, is a real fail, or the end is an end of D (R-PB3).

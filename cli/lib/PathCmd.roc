@@ -37,7 +37,7 @@ PathCmd :: [].{
 	pick : { alias : Str, rows : List(Locked.Row), file : Str, roots : Roots } -> Try(PathCmd.Entry, Fail)
 	pick = |x| match x.rows.find_first(|row| row.alias == x.alias) {
 		Err(_) => {
-			names = if x.rows.is_empty() "none" else Str.join_with(x.rows.map(|row| row.alias), ", ")
+			names = if (x.rows.is_empty()) "none" else Str.join_with(x.rows.map(|row| row.alias), ", ")
 			Err(Fail.new(Usage, "no entry '${x.alias}' in the header of ${x.file}. Entries: ${names}."))
 		}
 		Ok(row) => match row.what {

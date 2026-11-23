@@ -116,9 +116,9 @@ Probe :: [].{
 	classify : Output -> Class
 	classify = |output| match output.ended {
 		TimedOut => Hang
-		Signaled(n) => if is_fault(n) Crash("signal ${n.to_str()}") else NoFact("signal ${n.to_str()}")
+		Signaled(n) => if (is_fault(n)) Crash("signal ${n.to_str()}") else NoFact("signal ${n.to_str()}")
 		NotStarted(text) => NoFact("not started: ${text}")
-		Exited(code) => if is_fault_exit(code) Crash("exit ${code.to_str()}") else classify_text(output, code)
+		Exited(code) => if (is_fault_exit(code)) Crash("exit ${code.to_str()}") else classify_text(output, code)
 	}
 
 	## The place of an error (R-BL4: the path in the app, or the hash and the module path for a package file, never the cache path).
@@ -179,10 +179,10 @@ classify_text : Probe.Output, I32 -> Probe.Class
 classify_text = |output, code| {
 	lines = output.stdout.split_on("\n").concat(output.stderr.split_on("\n"))
 	match lines.keep_oks(summary_of) {
-		[n, ..] => if n == 0 Pass else Fail(n)
+		[n, ..] => if (n == 0) Pass else Fail(n)
 		[] => {
 			headers = lines.keep_if(|l| l.starts_with("── ✗ ")).len()
-			if code != 0 and headers > 0 Fail(headers) else NoFact("no result (exit ${code.to_str()})")
+			if (code != 0 and headers > 0) Fail(headers) else NoFact("no result (exit ${code.to_str()})")
 		}
 	}
 }
@@ -271,9 +271,9 @@ message_of : List(Str) -> Str
 message_of = |body| {
 	kept = body.map_with_index(|line, i| (line, i)).keep_if(|(line, i)| !is_caret(line) and !is_caret(body.get(i + 1) ?? "")).map(|(line, _)| line)
 	lines = kept.map(|line| strip_positions(line).trim_end())
-	spaced = lines.fold([], |acc, line| if line.is_empty() and acc.last() == Ok("") acc else acc.append(line))
-	no_start = if spaced.first() == Ok("") spaced.drop_first(1) else spaced
-	Str.join_with(if no_start.last() == Ok("") no_start.drop_last(1) else no_start, "\n")
+	spaced = lines.fold([], |acc, line| if (line.is_empty() and acc.last() == Ok("")) acc else acc.append(line))
+	no_start = if (spaced.first() == Ok("")) spaced.drop_first(1) else spaced
+	Str.join_with(if (no_start.last() == Ok("")) no_start.drop_last(1) else no_start, "\n")
 }
 
 is_caret : Str -> Bool
@@ -294,7 +294,7 @@ strip_from = |bytes, i, kept| match bytes.get(i) {
 	Err(_) => kept
 	Ok(58) => {
 		first = digits_at(bytes, i + 1)
-		second = if first > 0 and bytes.get(i + 1 + first) == Ok(58) digits_at(bytes, i + 2 + first) else 0
+		second = if (first > 0 and bytes.get(i + 1 + first) == Ok(58)) digits_at(bytes, i + 2 + first) else 0
 		if second > 0 {
 			strip_from(bytes, i + 2 + first + second, kept)
 		} else {
@@ -311,4 +311,4 @@ digits_at = |bytes, start| match bytes.get(start) {
 }
 
 without_repeats : List(Probe.Err) -> List(Probe.Err)
-without_repeats = |errors| errors.fold([], |kept, e| if kept.contains(e) kept else kept.append(e))
+without_repeats = |errors| errors.fold([], |kept, e| if (kept.contains(e)) kept else kept.append(e))

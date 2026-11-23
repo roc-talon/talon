@@ -1,5 +1,5 @@
 app [target] {
-	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.4.3/41NK5FShyGC9Z8HNpUdUeXMWwLmLNfFxsfmLvdPL4Fxb.tar.zst",
+	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.7.0/HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br.tar.zst",
 	resolve: "../../packages/resolve/main.roc",
 }
 
@@ -103,13 +103,13 @@ model_of : Words -> Model
 model_of = |raw| {
 	n = field(raw.w0, 0, 2) % 3 + 1
 	slots = List.repeat(0, n).map_with_index(|_, s| s)
-	kinds = slots.map(|s| if field(raw.w0, 2, 2) == s Platform else Package)
+	kinds = slots.map(|s| if (field(raw.w0, 2, 2) == s) Platform else Package)
 	cells = List.repeat(0, 12).map_with_index(|_, c| c).keep_oks(
 		|c| {
-			x = if c < 9 field(raw.w1, 7 * c, 7) else field(raw.w2, 7 * (c - 9), 7)
+			x = if (c < 9) field(raw.w1, 7 * c, 7) else field(raw.w2, 7 * (c - 9), 7)
 			born = field(x, 2, 3)
 			if c // 4 < n and (x % 4 != 0 or field(x, 5, 1) == 1) {
-				Ok({ s: c // 4, v: c % 4, born: if born > 4 0 else born, yank: field(x, 5, 2) == 0 and field(x, 1, 1) == 0 })
+				Ok({ s: c // 4, v: c % 4, born: if (born > 4) 0 else born, yank: field(x, 5, 2) == 0 and field(x, 1, 1) == 0 })
 			} else {
 				Err(NoCell)
 			}
@@ -118,13 +118,13 @@ model_of = |raw| {
 	ranges = slots.keep_oks(
 		|s| {
 			x = field(raw.w0, 39 + 8 * s, 8)
-			if x % 4 == 0 Ok({ s, lo: field(x, 2, 3) % 3, hi: U64.min(field(x, 2, 3) % 3 + 1 + field(x, 5, 3) % 4, 4) }) else Err(NoRange)
+			if (x % 4 == 0) Ok({ s, lo: field(x, 2, 3) % 3, hi: U64.min(field(x, 2, 3) % 3 + 1 + field(x, 5, 3) % 4, 4) }) else Err(NoRange)
 		},
 	)
 	curs = slots.keep_oks(
 		|s| {
 			x = field(raw.w0, 27 + 4 * s, 4)
-			if x % 2 == 1 Ok({ s, v: field(x, 1, 3) % 4 }) else Err(NoCur)
+			if (x % 2 == 1) Ok({ s, v: field(x, 1, 3) % 4 }) else Err(NoCur)
 		},
 	)
 	base = {
@@ -164,7 +164,7 @@ checks_of = |raw| List.repeat(0, 60).map_with_index(|_, k| k).keep_oks(
 		}
 		x = field(word, 6 * (k % 10), 6)
 		code = field(x, 0, 4)
-		source = if field(x, 4, 1) == 1 Inferred else Real
+		source = if (field(x, 4, 1) == 1) Inferred else Real
 		id = id_of(k // 5 // 4, k // 5 % 4)
 		at = nightly(k % 5)
 		if code < 10 {
@@ -180,7 +180,7 @@ checks_of = |raw| List.repeat(0, 60).map_with_index(|_, k| k).keep_oks(
 		} else if code == 13 {
 			Ok({ id, nightly: at, outcome: Fail, modules: [], source })
 		} else {
-			Ok({ id, nightly: at, outcome: if field(x, 5, 1) == 0 Hang else Crash, modules: [], source: Real })
+			Ok({ id, nightly: at, outcome: if (field(x, 5, 1) == 0) Hang else Crash, modules: [], source: Real })
 		}
 	},
 )
@@ -190,7 +190,7 @@ uses_of : Words -> List({ id : Str, modules : List(Str) })
 uses_of = |raw| List.repeat(0, 12).map_with_index(|_, u| u).map(
 	|u| {
 		x = field(raw.w13, 10 + 2 * u, 2)
-		{ id: id_of(u // 4, u % 4), modules: (if x % 2 == 1 ["Yaml"] else []).concat(if x // 2 == 1 ["Other"] else []) }
+		{ id: id_of(u // 4, u % 4), modules: (if (x % 2 == 1) ["Yaml"] else []).concat(if (x // 2 == 1) ["Other"] else []) }
 	},
 )
 
@@ -209,18 +209,18 @@ term_of : U64 -> Term
 term_of = |x| {
 	s = field(x, 0, 2)
 	bits = [0, 1, 2, 3].keep_if(|b| field(x, 2 + b, 1) == 1)
-	{ s, ids: if s == 3 bits.map(nightly) else bits.map(|b| id_of(s, b)), sign: if field(x, 6, 1) == 0 In else NotIn }
+	{ s, ids: if (s == 3) bits.map(nightly) else bits.map(|b| id_of(s, b)), sign: if (field(x, 6, 1) == 0) In else NotIn }
 }
 
 # The order of the slots: the slots of the packages 0 to n-1 and the compiler (99) at the place `rpos`.
 order : Model -> List(U64)
 order = |m| {
 	pkgs = List.repeat(0, m.n).map_with_index(|_, s| s)
-	if m.has_roc pkgs.take_first(m.rpos).append(99).concat(pkgs.drop_first(m.rpos)) else pkgs
+	if (m.has_roc) pkgs.take_first(m.rpos).append(99).concat(pkgs.drop_first(m.rpos)) else pkgs
 }
 
 name_of : U64 -> Str
-name_of = |k| if k == 99 "roc" else "s${k.to_str()}"
+name_of = |k| if (k == 99) "roc" else "s${k.to_str()}"
 
 names : Model -> List(Str)
 names = |m| order(m).map(name_of)
@@ -231,7 +231,7 @@ universe = |m| List.repeat(0, m.n).map_with_index(|_, s| s).join_map(
 	|s| {
 		listed = m.cells.keep_if(|c| c.s == s).map(|c| (id_of(s, c.v), s, c.v))
 		match m.curs.find_first(|c| c.s == s) {
-			Ok(c) => if listed.any(|(_, _, v)| v == c.v) listed else listed.append((id_of(s, c.v), s, c.v))
+			Ok(c) => if (listed.any(|(_, _, v)| v == c.v)) listed else listed.append((id_of(s, c.v), s, c.v))
 			Err(_) => listed
 		}
 	},
@@ -241,7 +241,7 @@ own_kind : Model, U64 -> [Package, Platform]
 own_kind = |m, s| m.kinds.get(s) ?? Package
 
 fit_kind : Model, U64 -> [Package, Platform, App]
-fit_kind = |m, s| if (m.kinds.get(s) ?? Package) == Platform Platform else Package
+fit_kind = |m, s| if ((m.kinds.get(s) ?? Package) == Platform) Platform else Package
 
 platform_slot : Model -> U64
 platform_slot = |m| m.kinds.find_first_index(|k| k == Platform) ?? 0
@@ -251,14 +251,14 @@ platform_slot = |m| m.kinds.find_first_index(|k| k == Platform) ?? 0
 fact_of : Words, Model, U64, U64 -> Fact
 fact_of = |raw, m, s, v| {
 	c = s * 4 + v
-	word = if c < 4 raw.w3 else if c < 8 raw.w4 else raw.w5
+	word = if (c < 4) raw.w3 else if (c < 8) raw.w4 else raw.w5
 	x = field(word, 16 * (c % 4), 16)
 	kind_bits = field(x, 0, 4)
-	kind = if kind_bits == 0 Platform else if kind_bits == 1 Package else if kind_bits == 2 App else fit_kind(m, s)
+	kind = if (kind_bits == 0) Platform else if (kind_bits == 1) Package else if (kind_bits == 2) App else fit_kind(m, s)
 	pf_bits = field(x, 4, 3)
 	pf_v = field(x, 7, 2)
-	pf = if own_kind(m, s) == Platform Err(None) else if pf_bits == 0 Ok(id_of(platform_slot(m), pf_v)) else if pf_bits == 1 Ok("s9-${ver_of(pf_v)}") else Err(None)
-	deps = if field(x, 9, 2) == 0 [(if field(x, 11, 2) == 3 99 else field(x, 11, 2), field(x, 13, 3) % 5)] else []
+	pf = if (own_kind(m, s) == Platform) Err(None) else if (pf_bits == 0) Ok(id_of(platform_slot(m), pf_v)) else if (pf_bits == 1) Ok("s9-${ver_of(pf_v)}") else Err(None)
+	deps = if (field(x, 9, 2) == 0) [(if (field(x, 11, 2) == 3) 99 else field(x, 11, 2), field(x, 13, 3) % 5)] else []
 	{ kind, pf, deps }
 }
 
@@ -275,7 +275,7 @@ request_of = |m, known| {
 				Platform => Platform
 			},
 			candidates: m.cells.keep_if(|c| c.s == s).map(|c| cell_candidate(c)),
-			ranges: m.ranges.keep_if(|r| r.s == s).map(|r| ">=${ver_of(r.lo)}, <${if r.hi == 4 "99.0.0" else ver_of(r.hi)}"),
+			ranges: m.ranges.keep_if(|r| r.s == s).map(|r| ">=${ver_of(r.lo)}, <${if (r.hi == 4) "99.0.0" else ver_of(r.hi)}"),
 			current: match cur {
 				Ok(c) => Ok({ id: id_of(s, c.v), version: ver_of(c.v) })
 				Err(_) => Err(None)
@@ -293,23 +293,23 @@ request_of = |m, known| {
 		named: Err(None),
 	}
 	{
-		slots: order(m).map(|k| if k == 99 roc_slot else pkg_slot(k)),
-		rules: { now: 1000, min_age: 100, snapshot: if m.snap Ok(500) else Err(None), strategy: if m.low Lowest else Highest },
+		slots: order(m).map(|k| if (k == 99) roc_slot else pkg_slot(k)),
+		rules: { now: 1000, min_age: 100, snapshot: if (m.snap) Ok(500) else Err(None), strategy: if (m.low) Lowest else Highest },
 		facts: m.facts.keep_if(|(id, _)| known.contains(id)).map(|(id, f)| solver_fact(id, f)),
-		conflicts: m.conflicts.map(|c| c.map(|t| { name: if t.s == 3 and m.has_roc "roc" else "s${t.s.to_str()}", ids: t.ids, sign: t.sign })),
-		compat: { domain: d, checks: m.checks, used: m.uses, probes: if m.off Off else Allowed },
+		conflicts: m.conflicts.map(|c| c.map(|t| { name: if (t.s == 3 and m.has_roc) "roc" else "s${t.s.to_str()}", ids: t.ids, sign: t.sign })),
+		compat: { domain: d, checks: m.checks, used: m.uses, probes: if (m.off) Off else Allowed },
 	}
 }
 
 # The time of a release: 0 old, 1 young (950, with `min-release-age` 100 at the time 1000), 2 600, 3 exactly old enough (900), 4 exactly at the snapshot time (500).
 cell_candidate : Cell -> { id : Str, version : Str, published_at : U64, yanked : Bool }
 cell_candidate = |c| {
-	published_at = if c.born == 1 950 else if c.born == 2 600 else if c.born == 3 900 else if c.born == 4 500 else 0
+	published_at = if (c.born == 1) 950 else if (c.born == 2) 600 else if (c.born == 3) 900 else if (c.born == 4) 500 else 0
 	{ id: id_of(c.s, c.v), version: ver_of(c.v), published_at, yanked: c.yank }
 }
 
 solver_fact : Str, Fact -> Solver.Fact
-solver_fact = |id, f| { id, kind: f.kind, pf: f.pf, deps: f.deps.map(|(g, v)| { group: if g == 99 "t" else "g${g.to_str()}", version: ver_of(v) }) }
+solver_fact = |id, f| { id, kind: f.kind, pf: f.pf, deps: f.deps.map(|(g, v)| { group: if (g == 99) "t" else "g${g.to_str()}", version: ver_of(v) }) }
 
 # The oracle. R-C1, R-C6, R-C7, R-C9: the domain of a slot, best first, from the numbers (young: published at 950 with `min-release-age` 100 at the time 1000, late: published after the snapshot 500).
 Cd : { id : Str, v : U64 }
@@ -319,7 +319,7 @@ domain = |m, s| {
 	cur = m.curs.find_first(|c| c.s == s)
 	listed = m.cells.keep_if(|c| c.s == s)
 	all = match cur {
-		Ok(c) => if listed.any(|x| x.v == c.v) listed else listed.append({ s, v: c.v, born: 0, yank: Bool.False })
+		Ok(c) => if (listed.any(|x| x.v == c.v)) listed else listed.append({ s, v: c.v, born: 0, yank: Bool.False })
 		Err(_) => listed
 	}
 	ranges = m.ranges.keep_if(|r| r.s == s)
@@ -335,7 +335,7 @@ domain = |m, s| {
 			in_ranges and (is_cur or (!c.yank and !young and !late))
 		},
 	)
-	ordered = kept.sort_with(|a, b| if a.v == b.v Same else if (a.v < b.v) == m.low Before else After)
+	ordered = kept.sort_with(|a, b| if (a.v == b.v) Same else if ((a.v < b.v) == m.low) Before else After)
 	ordered.map(|c| { id: id_of(s, c.v), v: c.v })
 }
 
@@ -343,7 +343,7 @@ domain = |m, s| {
 roc_domain : Model -> List(Cd)
 roc_domain = |m| {
 	asc = m.rcands.map(|c| { id: nightly(c), v: c })
-	if m.low asc else asc.rev()
+	if (m.low) asc else asc.rev()
 }
 
 fact_at : Model, List(Str), Str -> Try(Fact, [None])
@@ -369,7 +369,7 @@ kind_fits = |m, known, s, c| match fact_at(m, known, c.id) {
 
 # The values of each slot, in the order of the slots.
 doms_of : Model, List(Str) -> List(List(Cd))
-doms_of = |m, known| order(m).map(|k| if k == 99 roc_domain(m) else domain(m, k).keep_if(|c| kind_fits(m, known, k, c)))
+doms_of = |m, known| order(m).map(|k| if (k == 99) roc_domain(m) else domain(m, k).keep_if(|c| kind_fits(m, known, k, c)))
 
 # R-EP7, R-UM1: a fail of the pair (release, compiler) that touches (no module, or a module that the app uses). `All`: real or inferred. `Real`: real only.
 fail_blocks : Model, [All, Real], Str, Str -> Bool
@@ -422,11 +422,11 @@ valid = |m, known, mode, tuple| {
 	nm = names(m)
 	broken = m.conflicts.any(
 		|terms| {
-			tn = |t| if t.s == 3 and m.has_roc "roc" else "s${t.s.to_str()}"
+			tn = |t| if (t.s == 3 and m.has_roc) "roc" else "s${t.s.to_str()}"
 			terms.all(|t| nm.contains(tn(t))) and terms.all(
 				|t| {
 					chosen = (tuple.get(nm.find_first_index(|x| x == tn(t)) ?? 0) ?? { id: "", v: 0 }).id
-					if t.sign == In t.ids.contains(chosen) else !t.ids.contains(chosen)
+					if (t.sign == In) t.ids.contains(chosen) else !t.ids.contains(chosen)
 				},
 			)
 		},
@@ -440,7 +440,7 @@ best = |m, known, mode| first_tuple(m, known, mode, doms_of(m, known), [])
 
 first_tuple : Model, List(Str), [All, Real], List(List(Cd)), List(Cd) -> Try(List(Cd), [None])
 first_tuple = |m, known, mode, rest, chosen| match rest {
-	[] => if valid(m, known, mode, chosen) Ok(chosen) else Err(None)
+	[] => if (valid(m, known, mode, chosen)) Ok(chosen) else Err(None)
 	[dom, .. as more] => {
 		var $found = Err(None)
 		for c in dom {
@@ -470,7 +470,7 @@ ask_text = |a| match a {
 }
 
 dedupe : List(Str) -> List(Str)
-dedupe = |list| list.fold([], |acc, x| if acc.contains(x) acc else acc.append(x))
+dedupe = |list| list.fold([], |acc, x| if (acc.contains(x)) acc else acc.append(x))
 
 # R-AL8, R-AL4: what the tuple lacks. The header facts first, each once, in the order of the slots. Else, with probes allowed, the pairs (release, compiler) with no real check, each once.
 need_text : Model, List(Str), List(Cd) -> Str
@@ -490,7 +490,7 @@ need_text = |m, known, tuple| {
 }
 
 tuple_text : Model, List(Cd) -> Str
-tuple_text = |m, tuple| "done ${Str.join_with(tuple.map_with_index(|c, i| "${names(m).get(i) ?? ""}=${if (order(m).get(i) ?? 0) == 99 c.id else ver_of(c.v)}"), " ")}"
+tuple_text = |m, tuple| "done ${Str.join_with(tuple.map_with_index(|c, i| "${names(m).get(i) ?? ""}=${if ((order(m).get(i) ?? 0) == 99) c.id else ver_of(c.v)}"), " ")}"
 
 # R-EP8, R-EP9: the step of `Allowed` has the best tuple A with all facts (real and inferred) and the best tuple B with the real facts only. No B: `Fail`. A lacks a fact: the need of A. A has all facts and B is A: `Done`. Else the need of B.
 # `Off`: A only, with no probe (a header fact is still asked for).
@@ -501,14 +501,14 @@ expected = |m, known| {
 	if m.off {
 		match a {
 			Err(_) => "fail"
-			Ok(ta) => if need_text(m, known, ta) == "none" tuple_text(m, ta) else need_text(m, known, ta)
+			Ok(ta) => if (need_text(m, known, ta) == "none") tuple_text(m, ta) else need_text(m, known, ta)
 		}
 	} else {
 		match b {
 			Err(_) => "fail"
 			Ok(tb) => match a {
 				Err(_) => need_text(m, known, tb)
-				Ok(ta) => if need_text(m, known, ta) != "none" need_text(m, known, ta) else if ta == tb tuple_text(m, ta) else need_text(m, known, tb)
+				Ok(ta) => if (need_text(m, known, ta) != "none") need_text(m, known, ta) else if (ta == tb) tuple_text(m, ta) else need_text(m, known, tb)
 			}
 		}
 	}
@@ -583,7 +583,7 @@ all_true = |nm, tuple, terms| terms.all(|t| holds(nm, tuple, t))
 leaves_of : List(Solver.Step), U64 -> List(U64)
 leaves_of = |steps, i| match steps.get(i) {
 	Ok(s) => match s.cause {
-		Derived(a, b) => if a < i and b < i leaves_of(steps, a).concat(leaves_of(steps, b)) else []
+		Derived(a, b) => if (a < i and b < i) leaves_of(steps, a).concat(leaves_of(steps, b)) else []
 		_ => [i]
 	}
 	Err(_) => []
@@ -630,22 +630,22 @@ real_leaf = |m, known, nm, all, step, got| {
 	ord = order(m)
 	match step.cause {
 		Given => {
-			tn = |t| if t.s == 3 and m.has_roc "roc" else "s${t.s.to_str()}"
+			tn = |t| if (t.s == 3 and m.has_roc) "roc" else "s${t.s.to_str()}"
 			exact = m.conflicts.any(
 				|c| c.all(|t| nm.contains(tn(t))) and pick(
 					all,
 					|tup| c.all(
 						|t| {
 							chosen = tup.get(nm.find_first_index(|x| x == tn(t)) ?? 0) ?? ""
-							if t.sign == In t.ids.contains(chosen) else !t.ids.contains(chosen)
+							if (t.sign == In) t.ids.contains(chosen) else !t.ids.contains(chosen)
 						},
 					),
 				) == got,
 			)
-			if exact Ok({}) else Err("R-AL3: a reason `Given` that is no conflict of the caller")
+			if (exact) Ok({}) else Err("R-AL3: a reason `Given` that is no conflict of the caller")
 		}
 		NoValue(name) => match nm.find_first_index(|x| x == name) {
-			Ok(i) => if (doms_of(m, known).get(i) ?? [{ id: "x", v: 0 }]).is_empty() Ok({}) else Err("R-AL3: a reason `NoValue` for a slot that has a value")
+			Ok(i) => if ((doms_of(m, known).get(i) ?? [{ id: "x", v: 0 }]).is_empty()) Ok({}) else Err("R-AL3: a reason `NoValue` for a slot that has a value")
 			Err(_) => Err("R-AL3: a reason `NoValue` for a name that is no slot")
 		}
 		Dep(dp) => {
@@ -662,7 +662,7 @@ real_leaf = |m, known, nm, all, step, got| {
 					)
 				},
 			)
-			if is_fact and want == got Ok({}) else Err("R-C2: a reason `Dep` that is no fact, or excludes other tuples than the rule: ${dp.id} ${dp.group} ${dp.version}")
+			if (is_fact and want == got) Ok({}) else Err("R-C2: a reason `Dep` that is no fact, or excludes other tuples than the rule: ${dp.id} ${dp.group} ${dp.version}")
 		}
 		Pf(pf) => {
 			is_fact = match fact_at(m, known, pf.id) {
@@ -680,13 +680,13 @@ real_leaf = |m, known, nm, all, step, got| {
 					_ => Bool.False
 				},
 			)
-			if is_fact and want == got Ok({}) else Err("R-C3: a reason `Pf` that is no fact, or excludes other tuples than the rule")
+			if (is_fact and want == got) Ok({}) else Err("R-C3: a reason `Pf` that is no fact, or excludes other tuples than the rule")
 		}
 		Derived(_, _) => Ok({})
 		Probe(p) => {
 			lo = d.find_first_index(|x| x == p.from) ?? 99
 			hi = d.find_first_index(|x| x == p.to) ?? 0
-			mode = if m.off All else Real
+			mode = if (m.off) All else Real
 			members = d.map_with_index(|x, i| (x, i)).keep_if(|(_, i)| lo <= i and i <= hi).map(|(x, _)| x)
 			cell = |x| m.checks.find_first(|c| c.id == p.id and c.nightly == x)
 			is_fault = |x| match cell(x) {
@@ -766,7 +766,7 @@ verdict = |raw| {
 			Ok(_) => if field(ws.w13, 59, 5) != 0 {
 				Ok({})
 			} else {
-				allowed = order(m).join_map(|k| if k == 99 [] else domain(m, k).map(|c| c.id))
+				allowed = order(m).join_map(|k| if (k == 99) [] else domain(m, k).map(|c| c.id))
 				start = request_of(m, [])
 				want = match best(m, all_ids, All) {
 					Err(_) => "fail"
@@ -789,7 +789,7 @@ verdict = |raw| {
 							} else {
 								match drive(m, flipped(start), allowed, all_ids.len() + 61) {
 									Err(why) => Err(why)
-									Ok(end2) => if end2.text != end.text Err("R-DT2: the order of the lists changed the end of the loop") else Ok({})
+									Ok(end2) => if (end2.text != end.text) Err("R-DT2: the order of the lists changed the end of the loop") else Ok({})
 								}
 							}
 						}
@@ -814,6 +814,7 @@ render = |r| match r {
 }
 
 target = Fuzz.target_with({
+	examples: [],
 	name: "pubgrub",
 	generator,
 	test,

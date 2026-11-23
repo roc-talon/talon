@@ -55,7 +55,7 @@ Report :: [].{
 	## Slice 206d2 (R-DT5, Design Q438): with `log` `Ok(n)` and an `at` that is not `log:<n>` (a time), the line names both: `resolved at 2026-10-12T00:00:00Z (log:184467), 4 probes`. With `at` = `log:<n>`, the log is not named twice.
 	resolved_line : { at : Str, log : Try(U64, [None]), probes : U64 } -> Str
 	resolved_line = |facts| {
-		count = if facts.probes == 1 "1 probe" else "${facts.probes.to_str()} probes"
+		count = if (facts.probes == 1) "1 probe" else "${facts.probes.to_str()} probes"
 		at = match facts.log {
 			Ok(n) if facts.at != "log:${n.to_str()}" => "${facts.at} (log:${n.to_str()})"
 			_ => facts.at
@@ -223,5 +223,5 @@ pin_of = |value| {
 		[_, v] => Ok(v)
 		_ => Err(NoPin)
 	}
-	if value.starts_with("=") Ok(value.drop_prefix("=")) else tail
+	if (value.starts_with("=")) Ok(value.drop_prefix("=")) else tail
 }

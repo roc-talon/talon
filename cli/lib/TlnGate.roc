@@ -14,7 +14,7 @@ TlnGate :: [].{
 	check = |facts| {
 		Ranges.check(facts.range)?
 		core = facts.version.split_first("+").map_ok(|s| s.before).ok_or(facts.version).split_first("-").map_ok(|s| s.before).ok_or(facts.version)
-		if Ranges.admits({ ranges: [facts.range], version: core }) Ok({}) else Err(Outside)
+		if (Ranges.admits({ ranges: [facts.range], version: core })) Ok({}) else Err(Outside)
 	}
 
 	## The gate for a parsed `talon.toml`: no key is `Ok`. The failures are kind `Input` (exit 19) and name the line of the key.

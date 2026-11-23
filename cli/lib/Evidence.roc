@@ -55,7 +55,7 @@ Evidence :: [].{
 			.keep_if(|f| f.hash == pair.hash and f.nightly == pair.compiler and f.target == "any")
 			.take_first(1)
 			.map(|f| { rank: 1, source: Local, result: f.outcome, modules: f.modules, digest: Err(None), counts: Err(None) })
-		hint = |rank, source, found| if is_compiler(found, pair.compiler) [{ rank, source, result: Pass, modules: [], digest: Err(None), counts: Err(None) }] else []
+		hint = |rank, source, found| if (is_compiler(found, pair.compiler)) [{ rank, source, result: Pass, modules: [], digest: Err(None), counts: Err(None) }] else []
 		local.concat(hint(3, Pin, pair.pin)).concat(hint(4, Hint, pair.hint))
 	}
 
@@ -72,9 +72,9 @@ Evidence :: [].{
 		reg = |source| mine
 			.keep_if(|r| r.source == source)
 			.take_first(1)
-			.map(|r| { rank: 2, source: if source == Bot Bot else Author, result: r.result, modules: [], digest: r.error_digest, counts: Err(None) })
+			.map(|r| { rank: 2, source: if (source == Bot) Bot else Author, result: r.result, modules: [], digest: r.error_digest, counts: Err(None) })
 		shared = match Matrix.shared({ hints: pair.shared, hash: pair.hash, nightly: pair.compiler, target: "any" }) {
-			Ok(h) => [{ rank: 6, source: Shared, result: if h.result == Pass Pass else Fail, modules: [], digest: Err(None), counts: Ok({ pass_count: h.pass_count, fail_count: h.fail_count, crash_count: h.crash_count }) }]
+			Ok(h) => [{ rank: 6, source: Shared, result: if (h.result == Pass) Pass else Fail, modules: [], digest: Err(None), counts: Ok({ pass_count: h.pass_count, fail_count: h.fail_count, crash_count: h.crash_count }) }]
 			Err(None) => []
 		}
 		base.keep_if(|l| l.rank == 1).concat(reg(Bot)).concat(reg(Author)).concat(base.keep_if(|l| l.rank != 1)).concat(shared)
@@ -164,7 +164,7 @@ Evidence :: [].{
 
 	## The name of a module in a message: the path in the package without the suffix `.roc` (`Yaml.roc` is `Yaml`, `sub/Yaml.roc` is `sub/Yaml`). A path with no suffix stays as it is.
 	module_name : Str -> Str
-	module_name = |path| if path.ends_with(".roc") path.drop_suffix(".roc") else path
+	module_name = |path| if (path.ends_with(".roc")) path.drop_suffix(".roc") else path
 
 	## E4: the unit-fail note, with no `note: ` prefix (the caller adds it): `module <Evidence.module_name> fails on <compiler>. Your app does not import it.` It has no error title and no package (the fact stores the failing modules only, R-P4).
 	note : { path : Str, compiler : Str } -> Str

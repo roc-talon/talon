@@ -110,7 +110,7 @@ Update :: [].{
 		asked = request_of(args, opts, start, { command: which.command, names: which.names, fixed: which.fixed, compiler, toolchain })
 		# Slice 206g (Design Q560): `init` (`fresh`) reads the registry setting for the compiler list only (`InstallFlow.compilers_only`).
 		request = asked
-		if which.fresh Resolve.install_fresh!(fx, request, Ok(args)) else Resolve.install_with!(fx, request, Ok(args))
+		if (which.fresh) Resolve.install_fresh!(fx, request, Ok(args)) else Resolve.install_with!(fx, request, Ok(args))
 	}
 
 	## Step 10 (shared with `Upgrade.run!`): the lines after the flow, or the envelope (as `Install.run!`).
@@ -139,7 +139,7 @@ flow! = |fx, args, opts, pick| {
 	mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
 	picked = if pick {
 		items = picker_items!(fx, mode, request_of(args, opts, start, { command: Update, names: opts.names, fixed: [], compiler: Err(NoCompiler), toolchain: Err(Unset) }))?
-		if items.is_empty() Ok([]) else ask_names!(fx, items)
+		if (items.is_empty()) Ok([]) else ask_names!(fx, items)
 	} else {
 		Ok(opts.names)
 	}

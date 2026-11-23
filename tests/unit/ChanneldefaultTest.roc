@@ -104,13 +104,13 @@ expect {
 			"note: the default compiler ${n_new} is not a build of the channel reify, so it stays. To change it, run: tln roc default ${r_new}\n",
 		]
 		and release_stay.stdout == ["${r_new} is the newest\n", "note: the default compiler 0.1.0 is not a build of the channel reify, so it stays. To change it, run: tln roc default ${r_new}\n"]
-			and unset.stdout == ["installed ${r_new}\n", "note: no default compiler is set, and ${r_new} is a build of the channel reify, so it is not made the default. To use it, run: tln roc default ${r_new}\n"]
+		and unset.stdout == ["installed ${r_new}\n", "note: no default compiler is set, and ${r_new} is a build of the channel reify, so it is not made the default. To use it, run: tln roc default ${r_new}\n"]
 	u1 and user
 		== { stdout: ["${n_new} is the newest\n", "note: the default compiler ${r_old} is a build of the channel reify, so it stays. To change it, run: tln roc default ${n_new}\n"], stderr: [] }
 		and link
 			== { stdout: ["${n_new} is the newest\n", "note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default ${n_new}\n"], stderr: [] }
-			and moved == { stdout: ["${r_new} is the newest\n", "the default compiler moved from ${r_old} to ${r_new}\n"], stderr: [] }
-				and same == { stdout: ["${r_new} is the newest\n"], stderr: [] }
+		and moved == { stdout: ["${r_new} is the newest\n", "the default compiler moved from ${r_old} to ${r_new}\n"], stderr: [] }
+		and same == { stdout: ["${r_new} is the newest\n"], stderr: [] }
 }
 
 # R-CH15 R-CM15 R-CM19 R-CH3 (TW24 proposal): the operand of `roc update`. None, or one channel name (R-CH3). The word `nightly` is a name. A text that R-CH3 refuses is exit 2 with the text of `tln roc channel add` (a name that is a reserved word and `-` is also refused there).
@@ -205,9 +205,9 @@ expect {
 	listing = [dir(r_new), dir(n_old), dir(n_new), dir(mine_new), dir("link-dev")]
 	newest([n_old, r_new, mine_new]) == Ok(n_old)
 		and newest([r_new, r_old, mine_new]) == Err(None)
-			and newest([]) == Err(None)
-				and Compiler.installed(listing) == ["link-dev", n_old, n_new]
-					and Compiler.installed_users(listing) == [mine_new, r_new]
+		and newest([]) == Err(None)
+		and Compiler.installed(listing) == ["link-dev", n_old, n_new]
+		and Compiler.installed_users(listing) == [mine_new, r_new]
 }
 
 # R1 R-RR1 R-OUT2 (Design Q619, TW24 proposal): the note when the removed default was a user-channel build and no other build of its channel is installed, so the default is not set. The command prints it on stderr as `note: <text>`
@@ -216,9 +216,9 @@ expect {
 	want = "${r_old} was the default and no other build of the channel reify is installed, so no default is set. Install one with tln roc install reify, then run: tln roc default <id>"
 	Manage.unset_note({ removed: r_old }) == Ok(want)
 		and Manage.unset_note({ removed: "my-fork-2026-11-03-1708298" }).map_ok(|t| t.contains("the channel my-fork ")) == Ok(Bool.True)
-			and Manage.unset_note({ removed: n_new }) == Err(None)
-				and Manage.unset_note({ removed: "0.1.0" }) == Err(None)
-					and Manage.unset_note({ removed: "link-dev" }) == Err(None)
+		and Manage.unset_note({ removed: n_new }) == Err(None)
+		and Manage.unset_note({ removed: "0.1.0" }) == Err(None)
+		and Manage.unset_note({ removed: "link-dev" }) == Err(None)
 }
 
 # G1 R-GC5 R-PD12 (Design Q619): the id that a root talon.toml pins with `[toolchain] roc = "=<id>"`. A user id or a nightly id; `*`, a range and a text that is no id give `Err(None)`. GC passes these ids to `Gc.toolchains` as `pinned`.

@@ -47,7 +47,7 @@ key = |id, target| { hash: "HP", nightly: id, target }
 
 good = { built: [key(c2, "x64musl")], installed: [c2], done: [], recorded: [c2], answers: [plain], domain }
 
-short = |id| if id == c2 "c2" else if id == c3 "c3" else id
+short = |id| if (id == c2) "c2" else if (id == c3) "c3" else id
 
 # The choices as text: `<nightly> <target> <verdict>`, in the order of the choices.
 view = |input| Smoke.choose(input).map(
@@ -259,7 +259,7 @@ expect {
 		("hang", line(Hang), "HP\t${c2}\tx64musl\thang"),
 		("crash", line(Crash), "HP\t${c2}\tx64musl\tcrash"),
 		("round trip", back("HP\t${c2}\tx64musl\tcrash"), "HP\t${c2}\tx64musl\tcrash"),
-		("the row", if Db.smoke_of("HP\t${c2}\tx64musl\thang") == Ok({ hash: "HP", nightly: c2, target: "x64musl", outcome: Hang }) "the row" else "other", "the row"),
+		("the row", if (Db.smoke_of("HP\t${c2}\tx64musl\thang") == Ok({ hash: "HP", nightly: c2, target: "x64musl", outcome: Hang })) "the row" else "other", "the row"),
 		("3 fields", back("HP\t${c2}\tx64musl"), "bad"),
 		("5 fields", back("HP\t${c2}\tx64musl\tpass\textra"), "bad"),
 		("a wrong word", back("HP\t${c2}\tx64musl\tok"), "bad"),

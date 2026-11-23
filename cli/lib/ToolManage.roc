@@ -95,13 +95,13 @@ ToolManage :: [].{
 				Newer(_) => Bool.False
 			},
 		)
-		head = if with_libs ["TOOL", "NAME", "SOURCE", "COMPILER", "TARGET", "INSTALLED", "LIBS"] else ["TOOL", "NAME", "SOURCE", "COMPILER", "TARGET", "INSTALLED"]
+		head = if (with_libs) ["TOOL", "NAME", "SOURCE", "COMPILER", "TARGET", "INSTALLED", "LIBS"] else ["TOOL", "NAME", "SOURCE", "COMPILER", "TARGET", "INSTALLED"]
 		cells = items.map(
 			|item| match item {
 				Known(t) => row_of(t, with_libs)
 				Newer(n) => {
 					base = [n.key, n.name, "needs a newer tln (source kind ${n.kind})", "-", "-", "-"]
-					if with_libs base.append("-") else base
+					if (with_libs) base.append("-") else base
 				}
 			},
 		)
@@ -157,7 +157,7 @@ ToolManage :: [].{
 	fate_bin : { old : Try(Str, [NotFound]), recorded : Try(Str, [None]), have : [Absent, Dir, Unreadable, Sha(Str)] } -> [Remove, Gone, Keep]
 	fate_bin = |facts| match facts.have {
 		Absent => Gone
-		Sha(sha) => if facts.old == Ok(sha) or facts.recorded == Ok(sha) Remove else Keep
+		Sha(sha) => if (facts.old == Ok(sha) or facts.recorded == Ok(sha)) Remove else Keep
 		Dir | Unreadable => Keep
 	}
 
@@ -202,7 +202,7 @@ verb_name = |verb| match verb {
 # Rows 1 to 4: how many operands the verb takes.
 count_check : [Ls, Update, Rebuild, Remove], Str, U64 -> Try({}, Fail)
 count_check = |verb, name, count| match verb {
-	Ls => if count > 0 Err(usage("tln tool list takes no tool name, got ${count.to_str()}")) else Ok({})
+	Ls => if (count > 0) Err(usage("tln tool list takes no tool name, got ${count.to_str()}")) else Ok({})
 	Remove => if count == 0 {
 		Err(usage("tln tool remove needs one tool: tln tool remove <tool>"))
 	} else if count > 1 {
@@ -210,7 +210,7 @@ count_check = |verb, name, count| match verb {
 	} else {
 		Ok({})
 	}
-	_ => if count > 1 Err(usage("tln tool ${name} takes one tool, or none for all tools, got ${count.to_str()}")) else Ok({})
+	_ => if (count > 1) Err(usage("tln tool ${name} takes one tool, or none for all tools, got ${count.to_str()}")) else Ok({})
 }
 
 # Is the operand the tool `talon` (the key or the full name)?
@@ -239,8 +239,8 @@ operand_ref = |name, operand| {
 flag_check : Args, Str, Bool -> Try({}, Fail)
 flag_check = |args, name, talon| {
 	only = match name {
-		"remove" => if talon [] else ["--dry-run", "--remove-tools", "--keep-all"]
-		"update" => if talon [] else ["--from-source"]
+		"remove" => if (talon) [] else ["--dry-run", "--remove-tools", "--keep-all"]
+		"update" => if (talon) [] else ["--from-source"]
 		_ => []
 	}
 	match args.options.find_first(|(flag, _)| only.contains(flag)) {
@@ -261,7 +261,7 @@ row_of = |tool, with_libs| {
 	}
 	date = Str.from_utf8_lossy(tool.installed_at.to_utf8().take_first(10))
 	base = [tool.key, tool.name, source, tool.nightly, tool.target, date]
-	if with_libs base.append(if tool.libs.is_empty() "-" else Str.join_with(tool.libs, ",")) else base
+	if (with_libs) base.append(if (tool.libs.is_empty()) "-" else Str.join_with(tool.libs, ",")) else base
 }
 
 # The width of column `i`: the widest cell, at least `least`.
@@ -269,7 +269,7 @@ widest : List(List(Str)), U64, U64 -> U64
 widest = |rows, i, least| rows.fold(
 	least,
 	|best, row| match row.get(i) {
-		Ok(cell) => if cell.count_utf8_bytes() > best cell.count_utf8_bytes() else best
+		Ok(cell) => if (cell.count_utf8_bytes() > best) cell.count_utf8_bytes() else best
 		Err(_) => best
 	},
 )
@@ -281,7 +281,7 @@ line_of = |row, widths| {
 	padded = row.map_with_index(
 		|cell, i| {
 			width = widths.get(i) ?? 0
-			if i == last or cell.count_utf8_bytes() >= width cell else "${cell}${Str.repeat(" ", width - cell.count_utf8_bytes())}"
+			if (i == last or cell.count_utf8_bytes() >= width) cell else "${cell}${Str.repeat(" ", width - cell.count_utf8_bytes())}"
 		},
 	)
 	Str.join_with(padded, "  ")

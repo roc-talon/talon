@@ -50,7 +50,7 @@ RegistryToolchains :: [].{
 	file_text_keep : List(Row), { top : Str, rows : List(Str) } -> Str
 	file_text_keep = |rows, extras| {
 		texts = rows.map_with_index(|row, i| with_extra(Wire.encode_row(row), extras.rows.get(i) ?? ""))
-		tail = if extras.top.is_empty() "" else ",${extras.top}"
+		tail = if (extras.top.is_empty()) "" else ",${extras.top}"
 		"{\"format\":${format.to_str()},\"rows\":[${Str.join_with(texts, ",")}]${tail}}\n"
 	}
 
@@ -106,7 +106,7 @@ RegistryToolchains :: [].{
 	merge : { kept : List(Row), fresh : List(Row) } -> List(Row)
 	merge = |facts| {
 		start = { top: RegistryToolchains.after_of(facts.kept), rows: facts.kept }
-		facts.fresh.fold(start, |acc, row| if row.log_index > acc.top { top: row.log_index, rows: acc.rows.append(row) } else acc).rows
+		facts.fresh.fold(start, |acc, row| if (row.log_index > acc.top) { top: row.log_index, rows: acc.rows.append(row) } else acc).rows
 	}
 
 	## R-AP19, R-AP47: `--snapshot log:N` hides each row with a `log_index` greater than N (`log: Ok(N)`: a row with `log_index == N` stays). `Err(None)`: all rows. The order stays. The file keeps all rows: the hide is for the use only.
@@ -199,7 +199,7 @@ known_row_keys = ["tag", "target", "asset_name", "sha256", "size", "published_at
 
 # The text of a row with the text of its unknown members before the closing brace.
 with_extra : Str, Str -> Str
-with_extra = |row, extra| if extra.is_empty() row else "${row.drop_suffix("}")},${extra}}"
+with_extra = |row, extra| if (extra.is_empty()) row else "${row.drop_suffix("}")},${extra}}"
 
 # Step 2 of `list!`: `--offline` reads only the file. Its age is its modification time.
 offline_list! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, source ?: Str }, Str, List(RegistryToolchains.Row) => Try({ rows : List(RegistryToolchains.Row), source : RegistryToolchains.Source }, Fail)

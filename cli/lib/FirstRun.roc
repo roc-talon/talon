@@ -51,7 +51,7 @@ FirstRun :: [].{
 		match state {
 			Off(DoNotTrack) => Skip(DoNotTrack)
 			Off(Ci) => Skip(Ci)
-			_ => if List.contains(facts.env, ("TALON_SHARE_ASKED", "1")) Skip(Asked) else NeedTty
+			_ => if (List.contains(facts.env, ("TALON_SHARE_ASKED", "1"))) Skip(Asked) else NeedTty
 		}
 	}
 
@@ -65,7 +65,7 @@ FirstRun :: [].{
 	need : { share : Try(Bool, [Unset]), registry : Net.Registry } -> [Skip(FirstRun.Why), Ask]
 	need = |facts| match facts.share {
 		Ok(_) => Skip(Set)
-		Err(Unset) => if facts.registry == Direct Skip(Direct) else Ask
+		Err(Unset) => if (facts.registry == Direct) Skip(Direct) else Ask
 	}
 
 	## What Talon writes after `Prompt.ask!` (R-SH11, R-NM12). The command passed the mode `Interactive`, so a returned mode that is `NonInteractive` means the end of input
@@ -122,6 +122,6 @@ FirstRun :: [].{
 			"\n",
 		),
 		subject: "sharing probe results",
-		answer_line: |answer| if answer == Yes "sharing: on" else "sharing: off",
+		answer_line: |answer| if (answer == Yes) "sharing: on" else "sharing: off",
 	}
 }

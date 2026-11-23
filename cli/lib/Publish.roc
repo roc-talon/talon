@@ -85,11 +85,11 @@ Publish :: [].{
 			Ok(text) => text
 			Err(Unset) => return Err(Publish.no_oidc("ACTIONS_ID_TOKEN_REQUEST_URL"))
 		}
-		token = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_TOKEN") {
+		token_text = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_TOKEN") {
 			Ok(text) => text
 			Err(Unset) => return Err(Publish.no_oidc("ACTIONS_ID_TOKEN_REQUEST_TOKEN"))
 		}
-		Ok({ url, token })
+		Ok({ url, token: token_text })
 	}
 
 	## R-DI2 (R-PUB2): `<api>/repos/<owner>/<repo>/releases/tags/<tag>`, the parts as they are (the tag is one safe part: `job`, Q514).
@@ -174,18 +174,18 @@ Publish :: [].{
 	token : Publish.Reply -> Try(Str, Fail)
 	token = |reply| {
 		failed = |why| Fail.new(Network, "the GitHub OIDC token request failed: ${why}")
-		answer = match reply {
+		got = match reply {
 			Ok(found) => found
 			Err(Timeout) => return Err(failed("no answer in 20 s"))
 			Err(Failed(why)) => return Err(failed(why))
 		}
-		if answer.status == 401 or answer.status == 403 {
-			return Err(Fail.new(Usage, "the GitHub OIDC token request was refused (${answer.status.to_str()}). The job needs permissions: id-token: write."))
+		if got.status == 401 or got.status == 403 {
+			return Err(Fail.new(Usage, "the GitHub OIDC token request was refused (${got.status.to_str()}). The job needs permissions: id-token: write."))
 		}
-		if answer.status != 200 {
-			return Err(failed("answered ${answer.status.to_str()}"))
+		if got.status != 200 {
+			return Err(failed("answered ${got.status.to_str()}"))
 		}
-		match JsonDoc.parse(answer.body) {
+		match JsonDoc.parse(got.body) {
 			Ok(Obj(pairs)) => match pairs.find_first(|(key, _)| key == "value") {
 				Ok((_, Text(jwt))) if !jwt.is_empty() => Ok(jwt)
 				_ => Err(failed("the answer has no token"))
@@ -218,7 +218,7 @@ Publish :: [].{
 	## The body is `Compat.encode_publish({ url, compat })`: `compat` is `Ok(facts)` for at least one fact, and `Err(None)` (the member is left out) for no fact (R-PUB3). `timeout_s` 20 (R-DA9, Q511).
 	request : { origin : Str, version : Str, token : Str, url : Str, facts : List(Publish.Fact) } -> Publish.Request
 	request = |input| {
-		compat = if input.facts.is_empty() Err(None) else Ok(input.facts)
+		compat = if (input.facts.is_empty()) Err(None) else Ok(input.facts)
 		{
 			method: Post,
 			url: "${input.origin}/v1/releases",
@@ -259,12 +259,12 @@ Publish :: [].{
 	## | any other answer (a 4xx, a second 401, 3xx, 202, ...) | `Stop` |
 	next : { retries : U64, renewed : Bool, reply : Publish.Reply } -> [Done, Renew, Wait(U64), Stop]
 	next = |input| match input.reply {
-		Ok(answer) => if answer.status == 200 or answer.status == 201 {
+		Ok(got) => if got.status == 200 or got.status == 201 {
 			Done
-		} else if answer.status == 401 and !input.renewed {
+		} else if got.status == 401 and !input.renewed {
 			Renew
-		} else if answer.status == 429 or (answer.status >= 500 and answer.status <= 599) {
-			Publish.wait(input.retries, Registry.retry_after_of(answer.headers))
+		} else if got.status == 429 or (got.status >= 500 and got.status <= 599) {
+			Publish.wait(input.retries, Registry.retry_after_of(got.headers))
 		} else {
 			Stop
 		}
@@ -289,14 +289,14 @@ Publish :: [].{
 	failure = |input| match input.reply {
 		Err(Timeout) => Publish.no_reply(input, "no answer in 20 s", "publish")
 		Err(Failed(why)) => Publish.no_reply(input, why, "publish")
-		Ok(answer) => {
-			retry_after = Registry.retry_after_of(answer.headers)
-			refused = Registry.refuse({ origin: input.origin, version: input.version, method: Post, reply: { status: answer.status, body: answer.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
-			match Registry.problem({ status: answer.status, body: answer.body }) {
+		Ok(got) => {
+			retry_after = Registry.retry_after_of(got.headers)
+			refused = Registry.refuse({ origin: input.origin, version: input.version, method: Post, reply: { status: got.status, body: got.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
+			match Registry.problem({ status: got.status, body: got.body }) {
 				Err(NotProblem) => refused
 				Ok(body) => {
 					type = body.type_text
-					what = if body.detail.is_empty() body.title else body.detail
+					what = if (body.detail.is_empty()) body.title else body.detail
 					text = if type == "/errors/label-conflict" {
 						Ok("${what} (${type}). The tag was released again. Release a new version.")
 					} else if type == "/errors/forbidden" {
@@ -304,7 +304,7 @@ Publish :: [].{
 					} else {
 						match Registry.operator_text(body) {
 							Ok(message) => Ok(message)
-							Err(None) => Publish.retry_text(input, { status: answer.status, retry_after, body })
+							Err(None) => Publish.retry_text(input, { status: got.status, retry_after, body })
 						}
 					}
 					match text {
@@ -355,7 +355,7 @@ Publish :: [].{
 	## The value of an environment variable. An empty value is no value.
 	env_var : List((Str, Str)), Str -> Try(Str, [Unset])
 	env_var = |env, name| match env.find_first(|(n, _)| n == name) {
-		Ok((_, value)) => if value.is_empty() Err(Unset) else Ok(value)
+		Ok((_, value)) => if (value.is_empty()) Err(Unset) else Ok(value)
 		Err(_) => Err(Unset)
 	}
 
@@ -407,7 +407,7 @@ Publish :: [].{
 			if !text.is_empty() and text.to_utf8().all(|b| b >= '0' and b <= '9') {
 				Wait(
 					match U64.from_str(text) {
-						Ok(n) => if n > 60 60000 else n * 1000
+						Ok(n) => if (n > 60) 60000 else n * 1000
 						Err(_) => 60000
 					},
 				)
@@ -441,12 +441,12 @@ Publish :: [].{
 	## The message of a write that failed after more than one request, or that got a new token (R-AP34, Q516, Q602). `Err(None)`: the text of `Registry.refuse`.
 	retry_text : { origin : Str, version : Str, tries : U64, renewed : Bool, reply : Publish.Reply, source ?: Str }, { status : U16, retry_after : Str, body : Problem.Body } -> Try(Str, [None])
 	retry_text = |input, got| {
-		what = if got.body.detail.is_empty() got.body.title else got.body.detail
+		what = if (got.body.detail.is_empty()) got.body.title else got.body.detail
 		type = got.body.type_text
 		status = got.status.to_str()
 		tries = input.tries.to_str()
 		source = input.?source ?? ""
-		who = if source == "" "the registry" else "the registry ${input.origin} (${source})"
+		who = if (source == "") "the registry" else "the registry ${input.origin} (${source})"
 		if got.status == 401 and input.renewed {
 			Ok("${what} (${type}): the registry refused the new token too.")
 		} else if input.tries > 1 and got.status == 429 {

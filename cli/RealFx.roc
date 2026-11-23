@@ -224,7 +224,7 @@ http_send! = |req| {
 	}
 	base = Request.from_method(method).with_uri(req.url).with_timeout(TimeoutMilliseconds(req.timeout_s * 1000))
 	with_headers = req.headers.fold(base, |r, (name, value)| r.add_header(name, value))
-	request = if req.body.is_empty() with_headers else with_headers.with_body(req.body.to_utf8())
+	request = if (req.body.is_empty()) with_headers else with_headers.with_body(req.body.to_utf8())
 	match Http.send!(request, {}) {
 		Ok(response) => match Str.from_utf8(Response.body(response)) {
 			Ok(body) => Ok({
@@ -393,7 +393,7 @@ rename! = |move| match Path.rename!(Path.utf8(move.from), Path.utf8(move.to)) {
 	Err(PathErr(AlreadyExists, _)) => Err(Exists)
 	Err(PathErr(NotFound, _)) => Err(NotFound)
 	Err(PathErr(PermissionDenied, _)) => Err(Denied)
-	Err(PathErr(Other(text), _)) => if text.contains("not empty") or text.contains("exists") Err(Exists) else Err(Other(text))
+	Err(PathErr(Other(text), _)) => if (text.contains("not empty") or text.contains("exists")) Err(Exists) else Err(Other(text))
 	Err(PathErr(other, _)) => Err(Other(Str.inspect(other)))
 }
 

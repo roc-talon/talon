@@ -129,16 +129,16 @@ Closure :: [].{
 	clashes : List(Row) -> List({ name : Str, series : List({ series : Str, via : Str }) })
 	clashes = |rows| {
 		releases = rows.keep_if(|r| r.kind == Release)
-		forms = releases.map(|r| r.form).fold([], |found, form| if found.contains(form) found else found.append(form))
+		forms = releases.map(|r| r.form).fold([], |found, form| if (found.contains(form)) found else found.append(form))
 		forms.keep_oks(
 			|form| {
 				of_form = releases.keep_if(|r| r.form == form)
-				series = of_form.map(|r| r.series).fold([], |found, one| if found.contains(one) found else found.append(one))
+				series = of_form.map(|r| r.series).fold([], |found, one| if (found.contains(one)) found else found.append(one))
 				first = of_form.first() ? |_| NoClash
 				if series.len() < 2 {
 					Err(NoClash)
 				} else {
-					Ok({ name: first.name, series: of_form.map(|r| { series: r.series, via: if r.direct r.alias else r.via ?? "" }) })
+					Ok({ name: first.name, series: of_form.map(|r| { series: r.series, via: if (r.direct) r.alias else r.via ?? "" }) })
 				}
 			},
 		)
@@ -170,7 +170,7 @@ Queued : { edge : Edge, from : Try(Str, [Header]), top : Str }
 shape_of : Str -> [Release, Path, Foreign]
 shape_of = |value| match Ident.of_url(value) {
 	Ok(_) => Release
-	Err(Foreign) => if value.contains("://") Foreign else Path
+	Err(Foreign) => if (value.contains("://")) Foreign else Path
 }
 
 key_of : PackageUrl -> Str
@@ -182,7 +182,7 @@ key_of = |url| {
 # A path file needs a URL for Mvs. The URL has the bytes of the path as digits, so it has no second version number and 2 files never share a group.
 made_up : Str -> Str
 made_up = |path| {
-	code = Str.join_with(path.to_utf8().map(|b| if b < 10 "00${b.to_str()}" else if b < 100 "0${b.to_str()}" else b.to_str()), "")
+	code = Str.join_with(path.to_utf8().map(|b| if (b < 10) "00${b.to_str()}" else if (b < 100) "0${b.to_str()}" else b.to_str()), "")
 	"https://talon.path/x${code}/1.0.0/x${code}.tar.zst"
 }
 
@@ -235,7 +235,7 @@ settle : List(Edge), List(Closure.Node), List((Str, Str)), U64 -> List((Str, Str
 settle = |root, nodes, chosen, left| {
 	followed = chosen.join_map(|(_, id)| node_edges(nodes, id))
 	next = winners(root, followed)
-	if left == 0 or next == chosen chosen else settle(root, nodes, next, left - 1)
+	if (left == 0 or next == chosen) chosen else settle(root, nodes, next, left - 1)
 }
 
 winners : List(Edge), List(Edge) -> List((Str, Str))
@@ -271,7 +271,7 @@ follow = |facts| {
 				id = picks.get(e.key) ?? e.target
 				$links = $links.append({ from: q.from, alias: e.alias, to: id })
 				if $rows.any(|r| r.key == e.key) {
-					$rows = $rows.map(|r| if r.key == e.key lowered(r, e) else r)
+					$rows = $rows.map(|r| if (r.key == e.key) lowered(r, e) else r)
 				} else {
 					$rows = $rows.append({ key: e.key, id, shape: e.shape, alias: e.alias, name: e.value, direct: q.from == Err(Header), top: q.top, is_pf: e.is_platform, lowest: e.url.map_ok(|u| u.version()) })
 					if e.shape != Foreign {
@@ -298,7 +298,7 @@ lowered : Seen, Edge -> Seen
 lowered = |r, e| {
 	named = e.url.map_ok(|u| u.version())
 	lowest = match (r.lowest, named) {
-		(Ok(have), Ok(v)) => if newer(have, v) Ok(v) else Ok(have)
+		(Ok(have), Ok(v)) => if (newer(have, v)) Ok(v) else Ok(have)
 		(Err(_), Ok(v)) => Ok(v)
 		(_, Err(_)) => r.lowest
 	}
@@ -307,7 +307,7 @@ lowered = |r, e| {
 
 row_of : Seen -> Closure.Row
 row_of = |r| {
-	via = if r.direct Err(None) else Ok(r.top)
+	via = if (r.direct) Err(None) else Ok(r.top)
 	plain = { id: r.id, kind: r.shape, alias: r.alias, name: r.name, form: "", version: "", series: "", direct: r.direct, via, raised: Err(None), is_platform: r.is_pf }
 	match (r.shape, Ident.of_url(r.id), PackageUrl.parse(r.id)) {
 		(Release, Ok(ident), Ok(url)) => {

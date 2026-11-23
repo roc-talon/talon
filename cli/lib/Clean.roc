@@ -51,7 +51,7 @@ Clean :: [].{
 	asks = |facts| {
 		always = [Roots.item(facts.roots, Index), Text.join(facts.roots.cache, "talon/x")]
 		dirs = facts.builds.keep_if(|one| one.is_dir and Gc.is_build_name(Text.last_segment(one.path))).map(|one| one.path)
-		paths = if facts.all always.append(facts.roots.pkgs).concat(Text.sorted_unique(dirs)) else always
+		paths = if (facts.all) always.append(facts.roots.pkgs).concat(Text.sorted_unique(dirs)) else always
 		paths.map(|path| { item: path, path })
 	}
 
@@ -142,5 +142,5 @@ flag_set = |args, name| args.options.any(|(each, _)| each == name)
 lines : Clean.Done, Str, Str -> List(Str)
 lines = |done, verb, total| {
 	items = done.paths.map(|path| "${verb} ${path}${Clean.size_suffix(done.sizes, path)}\n")
-	if done.sizes.is_empty() items else items.append("${total} ${Toolchain.size_text(Clean.freed(done))}\n")
+	if (done.sizes.is_empty()) items else items.append("${total} ${Toolchain.size_text(Clean.freed(done))}\n")
 }

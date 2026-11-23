@@ -265,7 +265,7 @@ expect {
 expect {
 	hex = "0123456789abcdef"
 	moves = |os, files| Str.join_with(TalonUpdate.del_moves({ os, hex, files }).map(|m| Str.concat(m.from, Str.concat(" -> ", m.to))), " | ")
-	del = |names| Str.join_with(names.map(|n| if TalonUpdate.is_del(n) "1" else "0"), "")
+	del = |names| Str.join_with(names.map(|n| if (TalonUpdate.is_del(n)) "1" else "0"), "")
 	entries = [{ name: "tln.${hex}.del", is_dir: Bool.False, mtime: 1 }, { name: "a.${hex}.del", is_dir: Bool.False, mtime: 1 }, { name: "tln.exe", is_dir: Bool.False, mtime: 1 }, { name: "roc.${hex}.del", is_dir: Bool.True, mtime: 1 }, { name: "tln.1.del", is_dir: Bool.False, mtime: 1 }]
 	rows = [
 		(TalonUpdate.del_name({ path: "/d/bin/tln.exe", hex }), "/d/bin/tln.${hex}.del"),

@@ -28,7 +28,7 @@ unit_doc = |hash, compiler, outcome| js("{'schema':1,'command':'probe','ok':true
 # "none" or the result of a row, to compare in one `expect`.
 row_text : Try(_, Str) -> Str
 row_text = |r| match r {
-	Ok(row) => "${row.hash} ${row.nightly} ${row.target} ${row.result} ${if row.error_digest.is_err() "null" else "digest"}"
+	Ok(row) => "${row.hash} ${row.nightly} ${row.target} ${row.result} ${if (row.error_digest.is_err()) "null" else "digest"}"
 	Err(_) => "none"
 }
 

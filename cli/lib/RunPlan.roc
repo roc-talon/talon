@@ -195,7 +195,7 @@ scripts_of = |ctx, dir| match ctx.files.find_first(|f| f.dir == dir) {
 cycle_fail : Ctx, List((Str, Str)), Str, Str -> Fail
 cycle_fail = |ctx, stack, dir, name| {
 	from = stack.find_first_index(|e| e == (dir, name)) ?? 0
-	label = |(d, n)| if d == ctx.start_dir n else "${n} (${d})"
+	label = |(d, n)| if (d == ctx.start_dir) n else "${n} (${d})"
 	loop = stack.drop_first(from).append((dir, name))
 	Fail.new(Input, "scripts call themselves: ${Str.join_with(loop.map(label), " -> ")}")
 }
@@ -206,7 +206,7 @@ steps_of = |ctx, dir, script, steps, args, stack, done| match steps {
 	[] => Ok(done)
 	[step, .. as rest] => {
 		here = { ctx, dir, owner: script.name, step, stack }
-		flats = one_step(here, if rest.is_empty() args else [])?
+		flats = one_step(here, if (rest.is_empty()) args else [])?
 		steps_of(ctx, dir, script, rest, args, stack, done.concat(flats))
 	}
 }

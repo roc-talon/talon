@@ -18,10 +18,10 @@ ProbeShow :: [].{
 	}
 
 	plural : U64, Str -> Str
-	plural = |n, word| if n == 1 "1 ${word}" else "${n.to_str()} ${word}s"
+	plural = |n, word| if (n == 1) "1 ${word}" else "${n.to_str()} ${word}s"
 
 	real_word : ProbeRange.End -> Str
-	real_word = |end| if end.real "real" else "unknown"
+	real_word = |end| if (end.real) "real" else "unknown"
 
 	place_text : Probe.File -> Str
 	place_text = |file| match file {

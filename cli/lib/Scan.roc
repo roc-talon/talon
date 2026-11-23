@@ -73,7 +73,7 @@ Scan :: [].{
 					},
 				),
 			)
-			.fold([], |found, file| if found.contains(file) or here.contains(file) or facts.seen.contains(file) found else found.append(file))
+			.fold([], |found, file| if (found.contains(file) or here.contains(file) or facts.seen.contains(file)) found else found.append(file))
 		{ hits, next }
 	}
 }

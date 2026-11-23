@@ -144,7 +144,7 @@ ToolsPlan :: [].{
 	cached = |facts| {
 		hits = facts.entries.keep_if(|f| f.has_bin and f.entry.bundle == facts.bundle and f.entry.target == facts.target and is_release(f.entry.source))
 		match hits {
-			[first, .. as rest] => Ok(rest.fold(first, |best, f| if later(f, best) f else best))
+			[first, .. as rest] => Ok(rest.fold(first, |best, f| if (later(f, best)) f else best))
 			[] => Err(None)
 		}
 	}
@@ -174,7 +174,7 @@ ToolsPlan :: [].{
 
 	## R-DL5, R-PT6 (D8 of the review): the environment of the build facts of a project tool. With `allow` (`--allow-downloads`) the pair `TALON_AUTO_INSTALL=yes` comes first, so the flag wins over the variable (flag over environment, as `Consent.required_want`) and `Consent.auto_install` reads `yes`. Else the environment as it is.
 	build_env : { env : List((Str, Str)), allow : Bool } -> List((Str, Str))
-	build_env = |facts| if facts.allow facts.env.prepend(("TALON_AUTO_INSTALL", "yes")) else facts.env
+	build_env = |facts| if (facts.allow) facts.env.prepend(("TALON_AUTO_INSTALL", "yes")) else facts.env
 
 	## R-DL4, R-DL7 (Q-A of the review): the stop of a build that needs a compiler download that nobody answered. `ToolInstall.consent_stop` names `--roc pinned`, a flag that `install`, `update` and `upgrade` do not take. For a project tool the text names the flags that the command takes: `the compiler <id> is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.` Any other failure stays as it is.
 	compiler_stop : Fail -> Fail
@@ -273,7 +273,7 @@ candidates_of = |file| if file == "talon.toml" or file.ends_with("/talon.toml") 
 climb : Str, List(Str) -> List(Str)
 climb = |dir, found| {
 	next = found.append(Text.join(dir, "talon.toml"))
-	if dir.is_empty() or dir == "/" next else climb(Text.dir_of(dir), next)
+	if (dir.is_empty() or dir == "/") next else climb(Text.dir_of(dir), next)
 }
 
 # R-PT14: the hashes of the candidates that were read, nearest first. The walk stops after the first file with a `[workspace]` table.

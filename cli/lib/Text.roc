@@ -14,7 +14,7 @@ Text :: [].{
 	sorted_unique : List(Str) -> List(Str)
 	sorted_unique = |items| Text.sorted(items).fold(
 		[],
-		|kept, item| if kept.last() == Ok(item) kept else kept.append(item),
+		|kept, item| if (kept.last() == Ok(item)) kept else kept.append(item),
 	)
 
 	## The last segment of a path: `/a/b/c` gives `c`.
@@ -35,7 +35,7 @@ Text :: [].{
 	## The absolute path of `path` seen from the absolute directory `dir`, with the `.` and `..` parts and the double `/` removed. A `path` that starts with `/` ignores `dir`.
 	resolve : Str, Str -> Str
 	resolve = |dir, path| {
-		full = if path.starts_with("/") path else "${dir}/${path}"
+		full = if (path.starts_with("/")) path else "${dir}/${path}"
 		parts = full.split_on("/").fold(
 			[],
 			|kept, part| match part {
@@ -49,7 +49,7 @@ Text :: [].{
 
 	## A directory and a name. The root `/` gives `/name`.
 	join : Str, Str -> Str
-	join = |dir, name| if dir.ends_with("/") "${dir}${name}" else "${dir}/${name}"
+	join = |dir, name| if (dir.ends_with("/")) "${dir}${name}" else "${dir}/${name}"
 }
 
 compare_bytes : List(U8), List(U8), U64 -> [Before, Same, After]
@@ -57,5 +57,5 @@ compare_bytes = |a, b, i| match (a.get(i), b.get(i)) {
 	(Err(_), Err(_)) => Same
 	(Err(_), Ok(_)) => Before
 	(Ok(_), Err(_)) => After
-	(Ok(x), Ok(y)) => if x < y Before else if x > y After else compare_bytes(a, b, i + 1)
+	(Ok(x), Ok(y)) => if (x < y) Before else if (x > y) After else compare_bytes(a, b, i + 1)
 }

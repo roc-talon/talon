@@ -29,12 +29,12 @@ Roots := {
 	from_env : List((Str, Str)) -> Try(Roots, Fail)
 	from_env = |env| {
 		var_of = |name| match env.find_first(|(n, _)| n == name) {
-			Ok((_, value)) => if value.is_empty() Err(Unset) else Ok(value)
+			Ok((_, value)) => if (value.is_empty()) Err(Unset) else Ok(value)
 			Err(_) => Err(Unset)
 		}
 		# An XDG variable that is empty or not an absolute path is ignored (XDG spec, Q2).
 		xdg = |name| match var_of(name) {
-			Ok(value) => if value.starts_with("/") Ok(value) else Err(Unset)
+			Ok(value) => if (value.starts_with("/")) Ok(value) else Err(Unset)
 			Err(Unset) => Err(Unset)
 		}
 		home = var_of("HOME")
@@ -71,11 +71,11 @@ Roots := {
 
 	## Slice 088, Q-W5 (b): the roots of one run, with the system from `Fx.windows!` (not in `calls.log`). Linux and macOS have no change.
 	of_run! : Fx, List((Str, Str)) => Try(Roots, Fail)
-	of_run! = |fx, env| Roots.from_env_on(if fx.windows!() Windows else Linux, env)
+	of_run! = |fx, env| Roots.from_env_on(if (fx.windows!()) Windows else Linux, env)
 
 	## The path of an item (the tables of `Item`). There is no `/` at the end of a path.
 	item : Roots, Item -> Str
-	item = |roots, item| match item {
+	item = |roots, it| match it {
 		Package(hash) => Text.join(roots.pkgs, hash)
 		PackageDeps(hash) => Text.join(roots.pkgs, "${hash}.deps.json")
 		Compat(id) => Text.join(roots.build, "compat-${id}")
@@ -117,7 +117,7 @@ windows_absolute = |value| {
 windows_roots : List((Str, Str)) -> Try(Roots, Fail)
 windows_roots = |env| {
 	var_of = |name| match env.find_first(|(n, _)| n == name) {
-		Ok((_, value)) => if value.is_empty() Err(Unset) else Ok(value.drop_suffix("\\"))
+		Ok((_, value)) => if (value.is_empty()) Err(Unset) else Ok(value.drop_suffix("\\"))
 		Err(_) => Err(Unset)
 	}
 	# R-LY10: a root variable that is not absolute is not set. `ROC_CACHE_DIR` is a root variable too (Q216).

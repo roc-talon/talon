@@ -44,7 +44,7 @@ ProbeShare :: [].{
 		decided = mine.map(
 			|f| {
 				recorded = input.recorded.any(|id| PinOrder.same_id(id, f.nightly))
-				fact = { origin: Probed, probe: if f.closure.is_empty() Unit else AppBuild, compiler: { id: f.nightly, recorded }, hash: f.hash, target: f.target, outcome: f.outcome, machine_error: Bool.False }
+				fact = { origin: Probed, probe: if (f.closure.is_empty()) Unit else AppBuild, compiler: { id: f.nightly, recorded }, hash: f.hash, target: f.target, outcome: f.outcome, machine_error: Bool.False }
 				# Q503: the local filters (2, 3, 6) decide first; the answer filters (4, 5, 7) apply only to the facts that pass them.
 				decision = match local_why(f, recorded) {
 					Err(why) => Skip(why)

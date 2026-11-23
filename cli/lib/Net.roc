@@ -31,7 +31,7 @@ Net :: [].{
 	from_env : List((Str, Str)) -> Settings
 	from_env = |env| {
 		var_of = |name| match env.find_first(|(n, _)| n == name) {
-			Ok((_, value)) => if value.is_empty() Err(Unset) else Ok(value)
+			Ok((_, value)) => if (value.is_empty()) Err(Unset) else Ok(value)
 			Err(_) => Err(Unset)
 		}
 		api = var_of("TALON_GITHUB_API")
@@ -75,7 +75,7 @@ Net :: [].{
 	token_from_gh = |facts| match facts.code {
 		Exited(0) => {
 			text = facts.stdout.trim()
-			if text.is_empty() Err(None) else Ok(text)
+			if (text.is_empty()) Err(None) else Ok(text)
 		}
 		_ => Err(None)
 	}

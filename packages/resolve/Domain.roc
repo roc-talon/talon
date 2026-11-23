@@ -37,7 +37,7 @@ Domain :: [].{
 # Rule 1: the header value is a candidate, also when the list lacks it.
 with_header : Domain.Query -> List(Domain.Candidate)
 with_header = |q| match q.current {
-	Ok(cur) => if q.candidates.any(|c| c.id == cur.id) q.candidates else q.candidates.append({ id: cur.id, version: cur.version, published_at: 0, yanked: Bool.False })
+	Ok(cur) => if (q.candidates.any(|c| c.id == cur.id)) q.candidates else q.candidates.append({ id: cur.id, version: cur.version, published_at: 0, yanked: Bool.False })
 	Err(None) => q.candidates
 }
 
@@ -73,8 +73,8 @@ hidden = |q, c| {
 # Rule 5: by version, then the byte order of the ids (D9).
 order : [Highest, Lowest], Domain.Candidate, Semver, Domain.Candidate, Semver -> [Before, Same, After]
 order = |strategy, a, va, b, vb| match va.order_relative_to(vb) {
-	Before => if strategy == Highest After else Before
-	After => if strategy == Highest Before else After
+	Before => if (strategy == Highest) After else Before
+	After => if (strategy == Highest) Before else After
 	Same => bytes(a.id.to_utf8(), b.id.to_utf8())
 }
 

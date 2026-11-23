@@ -49,7 +49,7 @@ LadderPlan :: [].{
 	with_patches = |x| {
 		flags = |pairs| pairs.join_map(|r| ["--replace-dep", r.old, r.new])
 		more = |spec, pairs| { ..spec, args: spec.args.concat(flags(pairs)) }
-		first = x.plan.first.map_with_index(|spec, i| if i == 0 more(spec, x.base) else more(spec, x.candidate))
+		first = x.plan.first.map_with_index(|spec, i| if (i == 0) more(spec, x.base) else more(spec, x.candidate))
 		{ first, build: x.plan.build.map_ok(|spec| more(spec, x.candidate)) }
 	}
 

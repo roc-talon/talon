@@ -120,7 +120,7 @@ Patched :: [].{
 	rebase : { base : List(Diff.File), copy : List(Diff.File), target : List(Diff.File) } -> Try(List(Diff.Applied), List(Str))
 	rebase = |x| {
 		applied = Diff.apply({ changes: Diff.make({ base: x.base, copy: x.copy }), target: x.target })
-		if applied.failed.is_empty() Ok(applied.done) else Err(applied.failed)
+		if (applied.failed.is_empty()) Ok(applied.done) else Err(applied.failed)
 	}
 
 	## R-PA5, R-AL6: the failure for a release on which the diff does not apply: it is not a candidate for the entry. Kind `NoTuple` (exit 10), with `again` (`Fail.of_tuple`): the oracle loop drops the release (`hash`) and tries another tuple.
@@ -145,7 +145,7 @@ entry_of = |rows, toml, p| match rows.find_first(|r| r.alias == p.key and !r.is_
 
 # R-PA9, R-RUN8: is `dir` strictly below `stop`? The stop dir `/` has every absolute dir below it.
 below : Str, Str -> Bool
-below = |dir, stop| if stop == "/" or stop == "" dir.starts_with("/") and dir != "/" else dir.starts_with("${stop}/")
+below = |dir, stop| if (stop == "/" or stop == "") dir.starts_with("/") and dir != "/" else dir.starts_with("${stop}/")
 
 # R-PA13: is the URL a release of the group that has the hash?
 in_group : Str, { form : Str, series : Str }, Str -> Bool
@@ -169,7 +169,7 @@ need_of = |e, chosen, install| {
 		Err(_) => e.url
 	}
 	match Ident.of_url(url) {
-		Ok(ident) => if ident.hash != e.base and (url != e.url or install) Ok({ entry: e, url, hash: ident.hash }) else Err(NoRebase)
+		Ok(ident) => if (ident.hash != e.base and (url != e.url or install)) Ok({ entry: e, url, hash: ident.hash }) else Err(NoRebase)
 		Err(Foreign) => Err(NoRebase)
 	}
 }

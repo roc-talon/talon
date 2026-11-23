@@ -207,7 +207,7 @@ ShareAccount :: [].{
 		advice = "Run tln share login, and then tln share forget."
 		message = match Registry.problem(facts.reply) {
 			Ok(body) => {
-				what = if body.detail.is_empty() body.title else body.detail
+				what = if (body.detail.is_empty()) body.title else body.detail
 				"the registry ${facts.origin} refused the account delete (${body.type_text}): ${what}. ${advice}"
 			}
 			Err(NotProblem) => "the registry ${facts.origin} refused the account delete (${facts.reply.status.to_str()}). ${advice}"

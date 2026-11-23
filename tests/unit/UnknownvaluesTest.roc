@@ -155,7 +155,7 @@ expect UnknownValues.unindexed_warning({ url: url_a, what: "no answer" }) == "wa
 
 # R-AP25, R-AD35 step 3, Q424: a 429 stops the command with exit code 15 (kind `network`). The message gives the time of `Retry-After` (the name in any case, white space cut).
 message_of = |result| match result {
-	Err(fail) => if fail.kind.code() == 15 fail.message else "wrong kind ${fail.message}"
+	Err(fail) => if (fail.kind.code() == 15) fail.message else "wrong kind ${fail.message}"
 	Ok(_) => "no failure"
 }
 

@@ -81,7 +81,7 @@ Kind : [Root, Member(List(Str)), Standalone]
 # R-WS5, NC2, NC4: the root is the root. In a workspace, a file with a member file in its directory is a member file. A member file below it makes it a member file too, unless a `talon.toml` is between (the answer of a probe). Else it is a standalone file.
 kind_of : RunFind.Facts, Str -> Try(Kind, [Need(List(Str))])
 kind_of = |facts, dir| match facts.root {
-	Ok(root) => if root == dir Ok(Root) else member_kind(facts, dir)
+	Ok(root) => if (root == dir) Ok(Root) else member_kind(facts, dir)
 	Err(NoWorkspace) => Ok(Standalone)
 }
 
@@ -95,13 +95,13 @@ member_kind = |facts, dir| {
 		Err(Need(asked))
 	} else {
 		node = own.concat(below.keep_if(|m| open_to(facts, dir, Text.dir_of(m))))
-		if node.is_empty() Ok(Standalone) else Ok(Member(node))
+		if (node.is_empty()) Ok(Standalone) else Ok(Member(node))
 	}
 }
 
 # The `talon.toml` path of a directory strictly under `top`, up to `from` (nearest first): the paths between a member file and the file in `top`.
 between : Str, Str -> List(Str)
-between = |top, from| if from == top or !from.starts_with("${top}/") [] else between(top, Text.dir_of(from)).prepend(Text.join(from, "talon.toml"))
+between = |top, from| if (from == top or !from.starts_with("${top}/")) [] else between(top, Text.dir_of(from)).prepend(Text.join(from, "talon.toml"))
 
 # The path of `between` to ask: the nearest one that is not known to be absent, when it is not known to exist.
 unknown_between : RunFind.Facts, Str, Str -> List(Str)
@@ -121,7 +121,7 @@ open_to = |facts, top, from| between(top, from).all(|p| answer(facts, p) == No)
 
 answer : RunFind.Facts, Str -> [Yes, No, Unknown]
 answer = |facts, path| match facts.probes.find_first(|p| p.path == path) {
-	Ok(probe) => if probe.exists Yes else No
+	Ok(probe) => if (probe.exists) Yes else No
 	Err(_) => Unknown
 }
 

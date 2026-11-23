@@ -96,7 +96,7 @@ PatchCmd :: [].{
 	## Each line of `text` ends with a line end.
 	created : { target : PatchCmd.Target, dir : Str, toml : Str, toml_created : Bool } -> { text : Str, data : JsonDoc }
 	created = |x| {
-		new_file = if x.toml_created " (new file)" else ""
+		new_file = if (x.toml_created) " (new file)" else ""
 		text = "copied: ${x.dir} (${x.target.name} ${x.target.version})\n${x.toml}: + [patch] ${x.target.alias}${new_file}\nedit the copy, then commit it and talon.toml. Review it with: tln patch ${x.target.alias} --diff\n"
 		data = JsonDoc.Obj([
 			("alias", Text(x.target.alias)),
@@ -120,7 +120,7 @@ PatchCmd :: [].{
 	shown : { alias : Str, base : Str, dir : Str, changes : List(Diff.Change) } -> { text : Str, note : Str, data : JsonDoc }
 	shown = |x| {
 		text = Diff.render(x.changes)
-		note = if x.changes.is_empty() "${x.alias}: no changes against ${x.base}\n" else ""
+		note = if (x.changes.is_empty()) "${x.alias}: no changes against ${x.base}\n" else ""
 		data = JsonDoc.Obj([
 			("alias", Text(x.alias)),
 			("base", Text(x.base)),
@@ -143,7 +143,7 @@ fact_of = |r| {
 		Release(ident) => Release({ name: ident.name ?? ident.group.form, series: ident.series, version: ident.version })
 		_ => Unmanaged
 	}
-	{ alias: r.alias, what, role: if r.is_platform Platform else Direct }
+	{ alias: r.alias, what, role: if (r.is_platform) Platform else Direct }
 }
 
 # One entry of `data.changes`: the path and the kind of the change.

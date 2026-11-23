@@ -119,7 +119,7 @@ form_of = |name| {
 		match parts {
 			[_] => Ok(Bare)
 			[_, _] => Ok(Full)
-			[first, ..] => if first.contains(".") Ok(HostPath) else bad
+			[first, ..] => if (first.contains(".")) Ok(HostPath) else bad
 			[] => bad
 		}
 	}

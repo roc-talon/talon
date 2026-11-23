@@ -79,7 +79,7 @@ XTake :: [].{
 				version = ToolsJson.source_text(hit.entry.source)
 				prompt = XCmd.unchecked_prompt({ via: TakeOver, key: facts.key, version })
 				mode = Mode.from_env({ env: Dict.from_list(facts.env), json: Bool.False })
-				flag = if args.options.any(|(name, _)| name == "--allow-unchecked") Ok(Yes) else Err(NoFlag)
+				flag = if (args.options.any(|(name, _)| name == "--allow-unchecked")) Ok(Yes) else Err(NoFlag)
 				asked = Prompt.ask!(fx, prompt, { mode, yes: args.yes, quiet: args.quiet, flag })?
 				match asked.answer {
 					Yes => Ok(Ok(take!(fx, facts, hit)?))

@@ -141,7 +141,7 @@ key_head = |b| (b >= 'a' and b <= 'z') or (b >= '0' and b <= '9')
 
 # A key in the form of the text of a table: bare when it has letters, digits, `_` and `-` only, else quoted.
 key_text : Str -> Str
-key_text = |key| if key.to_utf8().all(|b| key_head(b) or b == '_' or b == '-') key else "\"${key}\""
+key_text = |key| if (key.to_utf8().all(|b| key_head(b) or b == '_' or b == '-')) key else "\"${key}\""
 
 # A new key is inserted, a key that is there is replaced in place.
 put_key : Toml, Str, Value -> Try(Toml, [Unwritable])
@@ -265,7 +265,7 @@ edit_bin = |path, text, key, change| match Toml.parse(text) {
 read_bin : Dict(Str, Value) -> Try({ lock : Try(ToolBin.Lock, [Unset]), unknown_bin : List(Str) }, { name : Str, why : Str })
 read_bin = |t| match t.get("bin") {
 	Err(_) => Ok({ lock: Err(Unset), unknown_bin: [] })
-	Ok(Value.Boolean(b)) => if b Err({ name: "bin", why: bin_form }) else Ok({ lock: Ok(Off), unknown_bin: [] })
+	Ok(Value.Boolean(b)) => if (b) Err({ name: "bin", why: bin_form }) else Ok({ lock: Ok(Off), unknown_bin: [] })
 	Ok(Value.Table(bt)) => read_hashes(bt).map_ok(|lock| { lock, unknown_bin: bt.keys().keep_if(|k| !ToolBin.all_targets.contains(k)) })
 	Ok(_) => Err({ name: "bin", why: bin_form })
 }

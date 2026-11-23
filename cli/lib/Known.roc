@@ -47,7 +47,7 @@ Known :: [].{
 # R-PD9, R-PD10: the lock, the read and the write of `projects.json`. `refresh` is the rule for an entry that is already there.
 record_with! : Fx, { roots : Roots, files : List(Str), now : U64 }, [Always, After(U64)] => Try({}, Fail)
 record_with! = |fx, facts, refresh| {
-	if facts.files.is_empty() return Ok({})
+	if (facts.files.is_empty()) return Ok({})
 	item = Roots.item(facts.roots, Item.ProjectsJson)
 	fx.locked!(item, || update!(fx, item, facts, refresh))
 }
@@ -67,7 +67,7 @@ update! = |fx, item, facts, refresh| {
 		Ok(done) => done
 		Err(fail) => {
 			# No test covers this branch: the fake Fx cannot fail a read of projects.json. Change it only after careful thought.
-			if fail.kind != Input return Err(fail)
+			if (fail.kind != Input) return Err(fail)
 			fx.err!("warning: Talon does not record this project. ${fail.message}\n")
 			Unchanged
 		}

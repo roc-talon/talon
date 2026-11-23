@@ -99,7 +99,7 @@ ClosureIndex :: [].{
 		all.keep_if(|c| !kept.any(|k| k.url == c.url)).fold(
 			[],
 			|groups, c| match groups.find_first(|g| g.form == c.ident.group.form and g.series == c.ident.group.series) {
-				Ok(_) => groups.map(|g| if g.form == c.ident.group.form and g.series == c.ident.group.series { ..g, count: g.count + 1 } else g)
+				Ok(_) => groups.map(|g| if (g.form == c.ident.group.form and g.series == c.ident.group.series) { ..g, count: g.count + 1 } else g)
 				Err(_) => groups.append({ form: c.ident.group.form, series: c.ident.group.series, count: 1 })
 			},
 		)
@@ -260,9 +260,9 @@ ClosureIndex :: [].{
 				Ok(copy) => {
 					form_rows = copy.rows.keep_if(|row| row.group == form)
 					$repos = $repos.concat(copy.repos)
-					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else 0
-					$dropped = $dropped.concat(if facts.filter ClosureIndex.dropped_groups({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else [])
-					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: form_rows, held: facts.held }) else form_rows, artifacts: [], name: facts.name }))
+					$yanked = $yanked + if (facts.filter) ClosureIndex.dropped({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else 0
+					$dropped = $dropped.concat(if (facts.filter) ClosureIndex.dropped_groups({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else [])
+					$list = $list.concat(ClosureIndex.candidates({ releases: if (facts.filter) ClosureIndex.live({ releases: form_rows, held: facts.held }) else form_rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
 				}
 				Err(NoCopy) => {
@@ -278,11 +278,11 @@ ClosureIndex :: [].{
 			path = Registry.releases_of_repo_url({ origin: "", owner, repo })
 			match kept!(fx, facts, path)? {
 				Ok(copy) => {
-					rows = if facts.forms.is_empty() copy.rows else copy.rows.keep_if(|row| $no_copy.contains(row.group))
+					rows = if (facts.forms.is_empty()) copy.rows else copy.rows.keep_if(|row| $no_copy.contains(row.group))
 					$repos = $repos.concat(copy.repos)
-					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else 0
-					$dropped = $dropped.concat(if facts.filter ClosureIndex.dropped_groups({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else [])
-					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: rows, held: facts.held }) else rows, artifacts: [], name: facts.name }))
+					$yanked = $yanked + if (facts.filter) ClosureIndex.dropped({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else 0
+					$dropped = $dropped.concat(if (facts.filter) ClosureIndex.dropped_groups({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else [])
+					$list = $list.concat(ClosureIndex.candidates({ releases: if (facts.filter) ClosureIndex.live({ releases: rows, held: facts.held }) else rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
 					$no_copy = []
 				}

@@ -120,12 +120,12 @@ LadderJudge :: [].{
 # C6: a failed probe whose errors Talon cannot read is no fact. An empty set would blame the wrong hash (R-BL3).
 unreadable : Str, U64 -> Fail
 unreadable = |what, n| {
-	count = if n == 1 "1 error" else "${n.to_str()} errors"
+	count = if (n == 1) "1 error" else "${n.to_str()} errors"
 	Fail.new(Internal, "${what} gave no result: ${count} that tln cannot read. Run the command again.")
 }
 
 moved_text : List(LadderJudge.Owner) -> Str
-moved_text = |owners| if owners.is_empty() "" else " with ${Str.join_with(owners.map(|o| "${o.name} ${o.version}"), ", ")}"
+moved_text = |owners| if (owners.is_empty()) "" else " with ${Str.join_with(owners.map(|o| "${o.name} ${o.version}"), ", ")}"
 
 # `the platform <name> <version>`, or `the platform` when no owner is the platform.
 platform_text : List(LadderJudge.Owner) -> Str
@@ -206,7 +206,7 @@ hash_of = |e| match e.file {
 
 # R-AL5, D10 of slice 036b: the hashes that a failure blames, in the order of the first error, no repeat. The oracle loop drops the releases of these hashes.
 hashes_of : List(Probe.Err) -> List(Str)
-hashes_of = |errors| errors.map(hash_of).fold([], |found, hash| if found.contains(hash) found else found.append(hash))
+hashes_of = |errors| errors.map(hash_of).fold([], |found, hash| if (found.contains(hash)) found else found.append(hash))
 
 # An error that no file owns (a target that the platform lacks) blames the platform.
 platform_hashes : List(LadderJudge.Owner) -> List(Str)
@@ -225,7 +225,7 @@ owner_text = |owners, hash| match owners.find_first(|o| o.hash == hash) {
 # R-PH13: `<name> <version> (<module>: <title>, ...)` for each hash, in the order of its first error.
 blames : List(Probe.Err), List(LadderJudge.Owner) -> Str
 blames = |errors, owners| {
-	hashes = errors.map(hash_of).fold([], |found, hash| if found.contains(hash) found else found.append(hash))
+	hashes = errors.map(hash_of).fold([], |found, hash| if (found.contains(hash)) found else found.append(hash))
 	one = |hash| {
 		items = errors.keep_if(|e| hash_of(e) == hash).map(|e| "${module_of(e)}: ${e.title}")
 		"${owner_text(owners, hash)} (${Str.join_with(items, ", ")})"

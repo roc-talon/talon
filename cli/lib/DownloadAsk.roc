@@ -25,15 +25,15 @@ DownloadAsk :: [].{
 	required! = |fx, ctx, run| {
 		sum = DownloadAsk.totals(run.all)
 		want = |mode| Consent.required_want({ id: run.first, auto: ctx.auto, mode, yes: ctx.yes, flag: ctx.flag })
-		mode = if want(ctx.mode) == NeedTty Mode.with_tty(ctx.mode, fx.tty!()) else ctx.mode
+		mode = if (want(ctx.mode) == NeedTty) Mode.with_tty(ctx.mode, fx.tty!()) else ctx.mode
 		decided = want(mode)
 		match decided {
 			AutoNo => Err(Consent.download_refused(run.first))
 			NeedsConsent => Err(Consent.download_stop({ count: sum.ids.len(), size: sum.size }))
 			Install | Ask => {
-				flag = if decided == Install Ok(Yes) else Err(NoFlag)
+				flag = if (decided == Install) Ok(Yes) else Err(NoFlag)
 				asked = Prompt.ask!(fx, Consent.use_download(sum), { mode, yes: ctx.yes, quiet: ctx.quiet, flag })?
-				if asked.answer == Yes Ok({}) else Err(Consent.command_declined(sum.ids.first() ?? run.first))
+				if (asked.answer == Yes) Ok({}) else Err(Consent.command_declined(sum.ids.first() ?? run.first))
 			}
 			Refuse | NeedTty => Err(Fail.new(Internal, "the download rules gave no answer for ${run.first}"))
 		}

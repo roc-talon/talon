@@ -239,13 +239,13 @@ XCache :: [].{
 			Err(None),
 			|kept, c| match kept {
 				Err(None) => Ok(c)
-				Ok(have) => if compare(c.version, have.version) == After Ok(c) else kept
+				Ok(have) => if (compare(c.version, have.version) == After) Ok(c) else kept
 			},
 		)
 		match (best, facts.check) {
 			(Err(None), _) => NoMatch
 			(Ok(win), Offline) => win.found
-			(Ok(win), Online(o)) => if o.listed.contains(win.version) win.found else NoMatch
+			(Ok(win), Online(o)) => if (o.listed.contains(win.version)) win.found else NoMatch
 		}
 	}
 
@@ -260,7 +260,7 @@ XCache :: [].{
 	## | false | `Move` | `rename` to the data bin dir. When the `rename` fails (another file system, a running `.exe`): copy, then the entry is deleted all the same | deleted after the take-over (one owner) |
 	## | true | `Copy` | copy to the data bin dir (the project tool keeps its build, R-PT13) | stays |
 	take_how : { project_uses : Bool } -> [Move, Copy]
-	take_how = |facts| if facts.project_uses Copy else Move
+	take_how = |facts| if (facts.project_uses) Copy else Move
 
 	## R-GC7: the entry dirs that GC removes. `dirs` are the entry dirs (`dirs_of`), `reads` the answers of `Fx.read_files!` for their manifests (`manifest_of`), in the same order. `now` is the time of Talon (`TALON_NOW`, R-GC9), `age` is the GC age in seconds (`Gc.age`).
 	## `kept` are the bundle hashes that a `[tools]` URL of a live known project names (R-PT14: slice 056 fills it, slice 049 gives `[]`).
@@ -271,7 +271,7 @@ XCache :: [].{
 	expired = |facts| facts.dirs.map2(facts.reads, |dir, got| (dir, got)).keep_oks(
 		|(dir, got)| match got {
 			Ok(text) => match XCache.read_any({ path: XCache.manifest_of(dir), text }) {
-				Use(entry) => if is_expired({ now: facts.now, age: facts.age, kept: facts.kept }, entry) Ok(dir) else Err(Stays)
+				Use(entry) => if (is_expired({ now: facts.now, age: facts.age, kept: facts.kept }, entry)) Ok(dir) else Err(Stays)
 				_ => Err(Stays)
 			}
 			Err(_) => Err(Stays)

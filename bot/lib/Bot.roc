@@ -162,7 +162,7 @@ Bot :: [].{
 		oks = x.probes.keep_oks(|p| p)
 		wall = oks.fold(0.U64, |sum, s| sum + s.wall_ms)
 		cpu = oks.fold(0.U64, |sum, s| sum + s.cpu_ms)
-		rss = oks.fold(0.U64, |top, s| if s.rss_kb > top s.rss_kb else top)
+		rss = oks.fold(0.U64, |top, s| if (s.rss_kb > top) s.rss_kb else top)
 		no_stats = x.probes.len() - oks.len()
 		"${csv_field(x.run)},${Clock.format_utc(x.time)},${x.tags.to_str()},${x.probes.len().to_str()},${no_stats.to_str()},${wall.to_str()},${cpu.to_str()},${rss.to_str()}"
 	}
@@ -174,18 +174,18 @@ Bot :: [].{
 	row = |x| match JsonDoc.parse(x.stdout) {
 		Err(BadJson) => Err("the output of tln probe is not JSON")
 		Ok(doc) => {
-			if field(doc, "ok") != Ok(Flag(Bool.True)) return Err("tln probe did not succeed")
+			if (field(doc, "ok") != Ok(Flag(Bool.True))) return Err("tln probe did not succeed")
 			data = match field(doc, "data") {
 				Ok(d) => d
 				Err(None) => return Err("the output has no data")
 			}
-			if field(data, "kind") != Ok(Text("unit")) return Err("the output is not a unit check")
-			if field(data, "hash") != Ok(Text(x.hash)) return Err("the output is for another hash")
+			if (field(data, "kind") != Ok(Text("unit"))) return Err("the output is not a unit check")
+			if (field(data, "hash") != Ok(Text(x.hash))) return Err("the output is for another hash")
 			compiler = match field(data, "compiler") {
 				Ok(Text(c)) => c
 				_ => return Err("the output has no compiler")
 			}
-			if !Nightlies.same_nightly(compiler, x.tag) return Err("the output is for the compiler ${compiler}")
+			if (!Nightlies.same_nightly(compiler, x.tag)) return Err("the output is for the compiler ${compiler}")
 			match field(data, "outcome") {
 				Ok(Text(outcome)) if outcome == "pass" or outcome == "fail" or outcome == "hang" or outcome == "crash" => Ok({ hash: x.hash, nightly: x.tag, target: "any", result: outcome, error_digest: Err(None) })
 				_ => Err("the output has no outcome")
@@ -251,7 +251,7 @@ Bot :: [].{
 	} else {
 		parts = x.rows.chunks_of(500)
 		last = parts.len() - 1
-		parts.map_with_index(|rows, i| { rows, sweep: if i == last x.sweep else Err(None) })
+		parts.map_with_index(|rows, i| { rows, sweep: if (i == last) x.sweep else Err(None) })
 	}
 
 	## R-MX18 item 13, Design Q585 (proposals, R-OUT2): the failure of a registry or GitHub answer. Its own texts, not `Registry.refuse`. `reply` is `Ok` with the status and the body of the answer (the problem details of R-AP21 for a registry answer), or `Err(NoAnswer(why))`.
@@ -309,7 +309,7 @@ step_text = |step| match step {
 # The type and the detail of the problem details of an answer. An answer with none gives the status.
 problem_of : { status : U16, body : Str } -> { type : Str, what : Str }
 problem_of = |answer| match Registry.problem(answer) {
-	Ok(body) => { type: body.type_text, what: if body.detail.is_empty() body.title else body.detail }
+	Ok(body) => { type: body.type_text, what: if (body.detail.is_empty()) body.title else body.detail }
 	Err(NotProblem) => { type: "no problem details", what: "HTTP ${answer.status.to_str()}" }
 }
 

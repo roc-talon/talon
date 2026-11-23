@@ -3,7 +3,7 @@
 # The cache paths are absolute with no `..` (TESTING.md 3.2).
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 # The pinned compilers (docs/slices/PLAN.md, TW28): ROC_TAG (the CLI, the packages) and ROC_TAG_WORKER are the one place of each tag. A caller can set ROC_TAG or ROC.
-ROC_TAG=${ROC_TAG:-nightly-2026-10-14-38a3029}
+ROC_TAG=${ROC_TAG:-nightly-2026-11-13-03dce41}
 # The compiler of the registry Worker (worker/, its roc: pin): the nightly of the platform release cloudflare-workers 0.0.10 (TESTING.md TW28, Design Q59).
 ROC_TAG_WORKER=${ROC_TAG_WORKER:-nightly-2026-11-06-34f137a}
 ROC=${ROC:-$ROOT/cloudflare-workers/.cache/nightlies/$ROC_TAG/roc}

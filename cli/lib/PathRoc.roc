@@ -115,7 +115,7 @@ PathRoc :: [].{
 		match facts.state {
 			Newer => Skip
 			Corrupt => write_now
-			_ => if same_rows(facts.before, facts.after) Skip else write_now
+			_ => if (same_rows(facts.before, facts.after)) Skip else write_now
 		}
 	}
 
@@ -230,7 +230,7 @@ sha_of = |entries, file| match row_of(entries, file) {
 upsert : List(PathRoc.Entry), PathRoc.File, (PathRoc.Entry -> PathRoc.Entry) -> List(PathRoc.Entry)
 upsert = |entries, file, change| {
 	if entries.any(|e| e.path == file.path) {
-		entries.map(|e| if e.path != file.path e else if valid(e, file) change(e) else change(fresh(file)))
+		entries.map(|e| if (e.path != file.path) e else if (valid(e, file)) change(e) else change(fresh(file)))
 	} else {
 		entries.append(change(fresh(file)))
 	}
@@ -239,7 +239,7 @@ upsert = |entries, file, change| {
 # R-SO10, R-SO11: a local build is no compiler for rank 7.
 usable : [NotRun, NoId, Id(Str)] -> Try(Str, [NoCompiler])
 usable = |id| match id {
-	Id(text) => if Compiler.kind(text) == Local Err(NoCompiler) else Ok(text)
+	Id(text) => if (Compiler.kind(text) == Local) Err(NoCompiler) else Ok(text)
 	_ => Err(NoCompiler)
 }
 
@@ -252,7 +252,7 @@ walk = |exe, found, entries| match found {
 		match (sha_of(entries, file), sha_of(entries, exe)) {
 			(Err(None), _) => Hash(file)
 			(Ok(_), Err(None)) => Hash(exe)
-			(Ok(a), Ok(b)) => if a == b walk(exe, rest, entries) else compiler_step(file, entries)
+			(Ok(a), Ok(b)) => if (a == b) walk(exe, rest, entries) else compiler_step(file, entries)
 		}
 	}
 }

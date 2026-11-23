@@ -55,7 +55,7 @@ EvidenceFlow :: [].{
 		items = shown.map(
 			|s| {
 				compiler = compilers.find_first(|c| c.file == s.file).map_ok(|c| c.compiler) ?? Err(None)
-				hash = if s.target.kind == Release Ident.of_url(s.target.id).map_ok(|i| i.hash).map_err(|_| NoHash) else Err(NoHash)
+				hash = if (s.target.kind == Release) Ident.of_url(s.target.id).map_ok(|i| i.hash).map_err(|_| NoHash) else Err(NoHash)
 				{ shown: s, compiler, hash }
 			},
 		)
@@ -65,7 +65,7 @@ EvidenceFlow :: [].{
 			_ => Err(None)
 		}
 		pins = pins_with!(fx, ctx.request.roots.pkgs, answer, unique(active.map(|a| a.hash)))
-		keys = active.map(|a| { hash: a.hash, nightly: a.compiler, target: "any" }).fold([], |found, key| if found.contains(key) found else found.append(key))
+		keys = active.map(|a| { hash: a.hash, nightly: a.compiler, target: "any" }).fold([], |found, key| if (found.contains(key)) found else found.append(key))
 		facts = Facts.load!(fx, { roots: ctx.request.roots, keys })?
 		hints = hints_of!(fx, ctx.request.roots, active)
 		lines_of = |a| {
@@ -108,7 +108,7 @@ active_of = |item| match (item.compiler, item.hash) {
 }
 
 unique : List(Str) -> List(Str)
-unique = |texts| texts.fold([], |found, text| if found.contains(text) found else found.append(text))
+unique = |texts| texts.fold([], |found, text| if (found.contains(text)) found else found.append(text))
 
 # Step 1: the pin of the header of the member, else `ROC_TOOLCHAIN` (a bad value is no value, Q2), else `ResolveSelect.peek!`. The `roc` on `PATH` is asked at most once.
 compilers_of! : Fx, { request : ResolveBase.Request, loaded : ResolveBase.Loaded }, List(Str) => List({ file : Str, compiler : Try(Str, [None]) })
@@ -120,7 +120,7 @@ compilers_of! = |fx, ctx, files| {
 	# Slice 206e3b (Design Q521, R-WS4): the pins of the members that agree are the pin of the workspace: a member with no pin holds it too.
 	pins = ctx.loaded.members.keep_oks(|m| m.locked.roc)
 	shared = match pins {
-		[first, .. as rest] => if rest.all(|id| Pin.same_id(id, first)) Ok(first) else Err(NoPin)
+		[first, .. as rest] => if (rest.all(|id| Pin.same_id(id, first))) Ok(first) else Err(NoPin)
 		[] => Err(NoPin)
 	}
 	var $request = ctx.request

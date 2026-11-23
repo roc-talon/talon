@@ -82,10 +82,10 @@ ZigInstall :: [].{
 			Err(NotSet) => []
 		}
 		path_probe : List({ source : Zig.Source, path : Str })
-		path_probe = if on_path [{ source: Path, path: "zig" }] else []
+		path_probe = if (on_path) [{ source: Path, path: "zig" }] else []
 		probes = env_probe.concat(path_probe)
 		jobs = probes.map(|probe| { argv: [probe.path, "version"], cwd: Err(Inherit) })
-		done = if jobs.is_empty() [] else fx.spawn_all!({ jobs, limit: 2 })
+		done = if (jobs.is_empty()) [] else fx.spawn_all!({ jobs, limit: 2 })
 		looked = probes.map2(done, |probe, result| { source: probe.source, path: probe.path, version: version_of(result.ended, result.stdout) })
 		Zig.search({ need: run.facts.need, candidates: looked.concat(installed) })
 	}
@@ -101,7 +101,7 @@ ZigInstall :: [].{
 	## Steps 4 to 9: no Zig fits. `--offline` stops. Else the index, the consent, the lock and the install.
 	install_missing! : Fx, ZigInstall.Facts, { roots : Roots, host : Nightlies.Host, dir : Str } => Try(ZigInstall.Done, Fail)
 	install_missing! = |fx, facts, run| {
-		if facts.offline return Err(Toolchain.offline_missing("zig ${Zig.wanted(facts.need)}"))
+		if (facts.offline) return Err(Toolchain.offline_missing("zig ${Zig.wanted(facts.need)}"))
 		now = Clock.now!(fx, facts.env)?
 		entry = Zig.pick({ index: ZigInstall.read_index!(fx, Zig.index_url(facts.env))?, need: facts.need, host: run.host })?
 		mode = Mode.from_env({ env: Dict.from_list(facts.env), json: facts.json })
@@ -118,7 +118,7 @@ ZigInstall :: [].{
 	## Step 6: the text of the Zig index. A transport error, a timeout or a status other than 200 is a failure of kind `Network`.
 	read_index! : Fx, Str => Try(Str, Fail)
 	read_index! = |fx, url| match fx.http_get!({ url, headers: [] }) {
-		Ok(answer) => if answer.status == 200 Ok(answer.body) else Err(index_failed(url, "HTTP ${answer.status.to_str()}"))
+		Ok(answer) => if (answer.status == 200) Ok(answer.body) else Err(index_failed(url, "HTTP ${answer.status.to_str()}"))
 		Err(Timeout) => Err(index_failed(url, "no answer in 20 s"))
 		Err(Failed(text)) => Err(index_failed(url, text))
 	}
@@ -136,7 +136,7 @@ index_failed = |url, why| Fail.new(Network, "cannot read the Zig index ${url}: $
 version_of : Download.Ended, Str -> Try(Str, [Unknown])
 version_of = |ended, stdout| match ended {
 	Exited(0) => match stdout.split_on("\n").first() {
-		Ok(line) => if line.trim().is_empty() Err(Unknown) else Ok(line.trim())
+		Ok(line) => if (line.trim().is_empty()) Err(Unknown) else Ok(line.trim())
 		Err(_) => Err(Unknown)
 	}
 	_ => Err(Unknown)
@@ -160,7 +160,7 @@ install! : Fx, Run => Try([Installed, Present], Fail)
 install! = |fx, run| {
 	entries = toolchain_entries!(fx, run.dir)
 	item = Roots.item(run.roots, Item.Zig(run.entry.version))
-	if entries.any(|e| e.is_dir and e.name == Text.last_segment(item)) return Ok(Present)
+	if (entries.any(|e| e.is_dir and e.name == Text.last_segment(item))) return Ok(Present)
 	stale = Temp.of_item({ item, entries })
 	if !stale.is_empty() {
 		_ = fx.delete!(stale)

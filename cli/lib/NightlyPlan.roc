@@ -19,8 +19,8 @@ NightlyPlan :: [].{
 	scope : List(Str) -> { who : [All, Named(List(Str)), None], nightly : [Free, Held] }
 	scope = |names| {
 		named = names.keep_if(|name| name != "roc")
-		nightly = if named.is_empty() or names.contains("roc") Free else Held
-		who = if !named.is_empty() Named(named) else if names.contains("roc") None else All
+		nightly = if (named.is_empty() or names.contains("roc")) Free else Held
+		who = if (!named.is_empty()) Named(named) else if (names.contains("roc")) None else All
 		{ who, nightly }
 	}
 
@@ -65,7 +65,7 @@ NightlyPlan :: [].{
 	## `members` are the member files that the move writes: each member gets the pin (slice 039 D8). `Err(Same)` when the tuple is on H (also the other tag form of H, R-CV1: `Pin.same_id`) or the run has no compiler. The row is `{ alias: "roc", name: "roc", from: <H>, to: <the compiler>, why, members }`.
 	roc_move : { held : Str, nightly : Try(Str, [None]), why : Str, members : List(Str) } -> Try({ alias : Str, name : Str, from : Str, to : Str, why : Str, members : List(Str) }, [Same])
 	roc_move = |f| match f.nightly {
-		Ok(to) => if Pin.same_id(f.held, to) Err(Same) else Ok({ alias: "roc", name: "roc", from: f.held, to, why: f.why, members: f.members })
+		Ok(to) => if (Pin.same_id(f.held, to)) Err(Same) else Ok({ alias: "roc", name: "roc", from: f.held, to, why: f.why, members: f.members })
 		Err(None) => Err(Same)
 	}
 
@@ -74,13 +74,13 @@ NightlyPlan :: [].{
 	## so `Pin.decide` gives no failure and `held` (H) is the newest pin. Nobody moves down. With `differ` false the rows are the same.
 	unify : { members : List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }), free : Bool } -> { members : List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }), differ : Bool }
 	unify = |f| {
-		texts = f.members.keep_oks(|m| m.pin).fold([], |found, text| if found.contains(text) found else found.append(text))
+		texts = f.members.keep_oks(|m| m.pin).fold([], |found, text| if (found.contains(text)) found else found.append(text))
 		differ = f.free and texts.len() >= 2
 		newest = match texts {
-			[first, .. as rest] => rest.fold(first, |best, text| if Pin.order({ a: text, b: best, times: [] }) == After text else best)
+			[first, .. as rest] => rest.fold(first, |best, text| if (Pin.order({ a: text, b: best, times: [] }) == After) text else best)
 			[] => ""
 		}
-		members = if differ f.members.map(|m| { ..m, pin: m.pin.map_ok(|_| newest) }) else f.members
+		members = if (differ) f.members.map(|m| { ..m, pin: m.pin.map_ok(|_| newest) }) else f.members
 		{ members, differ }
 	}
 
@@ -89,7 +89,7 @@ NightlyPlan :: [].{
 	## A held nightly, a run with no compiler, and a tuple on H (the other tag form of H too, R-CV1: `Pin.same_id`) give `Err(Same)`, except with `unify`.
 	moved_to : { free : Bool, unify : Bool, held : Try(Str, [NoCompiler]), nightly : Try(Str, [None]) } -> Try(Str, [Same])
 	moved_to = |f| match (f.free, f.held, f.nightly) {
-		(Bool.True, Ok(h), Ok(n)) => if Pin.same_id(h, n) and !f.unify Err(Same) else Ok(n)
+		(Bool.True, Ok(h), Ok(n)) => if (Pin.same_id(h, n) and !f.unify) Err(Same) else Ok(n)
 		_ => Err(Same)
 	}
 
@@ -97,7 +97,7 @@ NightlyPlan :: [].{
 	## `~ roc: <old> -> <id>` for a member with a pin, `+ roc: <id>` for a member with no pin (the line of slice 013, R-RP3). `Err(Same)` when the member has the pin already (the same id or the other tag form of it): no edit.
 	pin_line : { old : Try(Str, [NoPin]), id : Str } -> Try(Str, [Same])
 	pin_line = |f| match f.old {
-		Ok(old) => if Pin.same_id(old, f.id) Err(Same) else Ok("~ roc: ${old} -> ${f.id}")
+		Ok(old) => if (Pin.same_id(old, f.id)) Err(Same) else Ok("~ roc: ${old} -> ${f.id}")
 		Err(NoPin) => Ok("+ roc: ${f.id}")
 	}
 }
@@ -111,5 +111,5 @@ askable_of = |f, extra| {
 	not_older = |id| Pin.order({ a: id, b: f.held, times }) != Before
 	fit = |id| Pin.same_id(id, f.held) or (not_older(id) and (have(id) or extra == Ok(id)))
 	listed = allowed.keep_if(fit)
-	if listed.any(|id| Pin.same_id(id, f.held)) listed else listed.append(f.held)
+	if (listed.any(|id| Pin.same_id(id, f.held))) listed else listed.append(f.held)
 }

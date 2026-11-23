@@ -116,7 +116,7 @@ Init :: [].{
 		match ordered {
 			[first, ..] => {
 				young = first.published_at + facts.min_age > facts.now
-				note = if young Ok("${facts.name} ${facts.version} was released at ${Clock.format_utc(first.published_at)}, less than min-release-age ago. It is used because the version is named.") else Err(None)
+				note = if (young) Ok("${facts.name} ${facts.version} was released at ${Clock.format_utc(first.published_at)}, less than min-release-age ago. It is used because the version is named.") else Err(None)
 				Ok({ candidate: first, note })
 			}
 			[] => Err(NoVersion)
@@ -275,7 +275,7 @@ after_first! = |fx, args, plan, here| {
 	begun = Update.begin!(shown, given)?
 	# R-IN10: a named version is held and never movable (`fixed`), and the nightly is free, as `tln upgrade roc`.
 	named = plan.version.is_ok()
-	done = Update.resolve!(shown, given, opts, begun, { command: Upgrade, names: if named ["roc"] else [], fixed: if named [platform_alias] else [], fresh: Bool.True })?
+	done = Update.resolve!(shown, given, opts, begun, { command: Upgrade, names: if (named) ["roc"] else [], fixed: if (named) [platform_alias] else [], fresh: Bool.True })?
 	outcome = done.outcome
 	remake!(fx, args, plan, { main_path: here.main_path, roots: here.roots, net: here.net, env: here.env, moved: outcome.moved })?
 	ci_path = Text.join(here.cwd, ".github/workflows/ci.yml")
@@ -349,7 +349,7 @@ remake! = |fx, args, plan, here| {
 downloads_of : Args, List((Str, Str)) -> Start.Downloads
 downloads_of = |args, env| {
 	auto: Consent.auto_install(env),
-	allow: if args.options.any(|(name, _)| name == "--allow-downloads") Ok(Yes) else Err(NoFlag),
+	allow: if (args.options.any(|(name, _)| name == "--allow-downloads")) Ok(Yes) else Err(NoFlag),
 	yes: args.yes,
 	mode: Mode.from_env({ env: Dict.from_list(env), json: args.json }),
 	quiet: args.quiet,

@@ -9,7 +9,7 @@ LinkTest :: [].{}
 # Texts and `data` fields that the design does not give are the proposals of docs/slices/024b-roc-link.md (TW24).
 
 plan = |copy, force, name, path| {
-	id = if copy "copy-${name}" else "link-${name}"
+	id = if (copy) "copy-${name}" else "link-${name}"
 	Ok({ copy, force, name, id, path })
 }
 
@@ -57,9 +57,9 @@ expect {
 	link = Link.source({ typed: "roc-src/lnk-roc", full: "/w/roc-src/lnk-roc", result: Ok("/w/roc-src/zig-out/bin/roc") })
 	got(Ok("/w/roc/zig-out/bin/roc")) == Ok("/w/roc/zig-out/bin/roc")
 		and link == Ok("/w/roc-src/lnk-roc")
-			and got(Err(NotFound)) == Err((2, "no such file: ../roc/zig-out/bin/roc"))
-				and got(Err(Denied)) == Err((18, "cannot read ../roc/zig-out/bin/roc: permission denied"))
-					and got(Err(Other("Is a directory"))) == Err((18, "cannot read ../roc/zig-out/bin/roc: Is a directory"))
+		and got(Err(NotFound)) == Err((2, "no such file: ../roc/zig-out/bin/roc"))
+		and got(Err(Denied)) == Err((18, "cannot read ../roc/zig-out/bin/roc: permission denied"))
+		and got(Err(Other("Is a directory"))) == Err((18, "cannot read ../roc/zig-out/bin/roc: Is a directory"))
 }
 
 # R-LK2: a name that exists is an error, and `--force` replaces it for a copy. For a link the error says how to start again. The name is compared as it is: `link-dev` and `copy-dev` are 2 ids. The other tag form of a nightly is no part of this.
@@ -68,12 +68,12 @@ expect {
 	have = ["copy-fix-1", "link-dev", "nightly-2026-10-14-38a3029"]
 	decide("link-new", Bool.False, Bool.False, have) == Ok(Create)
 		and decide("copy-new", Bool.True, Bool.True, have) == Ok(Create)
-			and decide("copy-fix-1", Bool.True, Bool.True, have) == Ok(Replace)
-				and decide("copy-fix-1", Bool.True, Bool.False, have) == Err((2, "copy-fix-1 exists. Use --force to replace it."))
-					and decide("link-dev", Bool.False, Bool.False, have) == Err((2, "link-dev exists. Run: tln roc remove link-dev"))
-						and decide("copy-dev", Bool.True, Bool.False, have) == Ok(Create)
-							and decide("link-fix-1", Bool.False, Bool.False, have) == Ok(Create)
-								and decide("link-dev", Bool.False, Bool.False, []) == Ok(Create)
+		and decide("copy-fix-1", Bool.True, Bool.True, have) == Ok(Replace)
+		and decide("copy-fix-1", Bool.True, Bool.False, have) == Err((2, "copy-fix-1 exists. Use --force to replace it."))
+		and decide("link-dev", Bool.False, Bool.False, have) == Err((2, "link-dev exists. Run: tln roc remove link-dev"))
+		and decide("copy-dev", Bool.True, Bool.False, have) == Ok(Create)
+		and decide("link-fix-1", Bool.False, Bool.False, have) == Ok(Create)
+		and decide("link-dev", Bool.False, Bool.False, []) == Ok(Create)
 }
 
 # R-LK4, R-LK2, R-TF1, R-TF2: the text of `.talon.json`. A link records the absolute path of the target (`path`), a copy records where it was copied from (`source`). The keys are in this order, with `format` first, one line and a line end.
@@ -85,7 +85,7 @@ expect {
 	quoted = Link.meta({ id: "link-q", kind: Link, path: "/w/a \"b\"/roc", now })
 	link == "{\"format\":1,\"id\":\"link-dev\",\"path\":\"/w/roc-src/zig-out/bin/roc\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
 		and copy == "{\"format\":1,\"id\":\"copy-fix-1\",\"source\":\"/w/roc-src/zig-out/bin/roc\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
-			and quoted == "{\"format\":1,\"id\":\"link-q\",\"path\":\"/w/a \\\"b\\\"/roc\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
+		and quoted == "{\"format\":1,\"id\":\"link-q\",\"path\":\"/w/a \\\"b\\\"/roc\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
 }
 
 # R-LK4, R-R5, R-TF1 to R-TF3, R-TF6: the program of a link is the absolute path in its `.talon.json`. The file is read as a Talon file: a `format` above 1 and text that does not parse are `Input` (exit 19), a field that Talon does not
@@ -124,6 +124,6 @@ expect {
 	copy_data = Link.data({ id: "copy-fix-1", kind: Copy, path: "/w/roc-src/zig-out/bin/roc", replaced: Bool.True }).render()
 	linked == ["linked link-dev -> /w/roc-src/zig-out/bin/roc\n"]
 		and copied == ["copied /w/roc-src/zig-out/bin/roc to copy-fix-1\n"]
-			and link_data == "{\"id\":\"link-dev\",\"kind\":\"link\",\"source\":\"/w/roc-src/zig-out/bin/roc\",\"replaced\":false}"
-				and copy_data == "{\"id\":\"copy-fix-1\",\"kind\":\"copy\",\"source\":\"/w/roc-src/zig-out/bin/roc\",\"replaced\":true}"
+		and link_data == "{\"id\":\"link-dev\",\"kind\":\"link\",\"source\":\"/w/roc-src/zig-out/bin/roc\",\"replaced\":false}"
+		and copy_data == "{\"id\":\"copy-fix-1\",\"kind\":\"copy\",\"source\":\"/w/roc-src/zig-out/bin/roc\",\"replaced\":true}"
 }

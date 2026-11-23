@@ -159,7 +159,7 @@ Share :: [].{
 		JsonDoc.Obj([
 			("on", JsonDoc.Flag(facts.state == On)),
 			("reason", reason),
-			("id", if doc.id == "none" JsonDoc.Null else JsonDoc.Text(short_id(doc.id))),
+			("id", if (doc.id == "none") JsonDoc.Null else JsonDoc.Text(short_id(doc.id))),
 			("sent", num(doc.sent)),
 			("counted", num(doc.counted)),
 			("first", num(doc.first)),
@@ -172,7 +172,7 @@ Share :: [].{
 	## R-SH10, R-SH1 (proposal, TW24): the lines of `tln share on`: `sharing: on`, and with `sends` false (the registry is `direct`) the second line `Talon shares nothing while the registry is direct.`.
 	## Each line has a line end.
 	on_lines : { sends : Bool } -> List(Str)
-	on_lines = |facts| if facts.sends ["sharing: on\n"] else ["sharing: on\n", "Talon shares nothing while the registry is direct.\n"]
+	on_lines = |facts| if (facts.sends) ["sharing: on\n"] else ["sharing: on\n", "Talon shares nothing while the registry is direct.\n"]
 
 	## R-SH10 (proposal, TW24): the `data` of `tln share on --json`: `{"share":true,"sends":<bool>}`.
 	on_data : { sends : Bool } -> JsonDoc
@@ -188,7 +188,7 @@ Share :: [].{
 	## R-SH5, R-SE15 (Q1, answered by the manager 2026-11-02, as R-HF2 `Toolchain.chmod_command`): the command line that sets the mode of `share.json`: `chmod 0600 <file>`.
 	## A Windows host needs none: `Err(NotNeeded)`. The flow runs it with `spawn_all!` (limit 1) after the write of the file, and takes `windows` from `Fx.windows!`.
 	chmod_command : { windows : Bool, file : Str } -> Try(List(Str), [NotNeeded])
-	chmod_command = |facts| if facts.windows Err(NotNeeded) else Ok(["chmod", "0600", facts.file])
+	chmod_command = |facts| if (facts.windows) Err(NotNeeded) else Ok(["chmod", "0600", facts.file])
 
 	## D7 (proposal, TW24): what `tln share off` does with a failed `ClearQueue`. `TooNew` is `Db.on_err` for a write (exit 19). A busy file is the warning
 	## `compat.db is busy: the share queue is not emptied`. Any other failure is `cannot use <path> (<text>): the share queue is not emptied`. (The text of `Db.on_err` says "the facts of this command" and is wrong here.)

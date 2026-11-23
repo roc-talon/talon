@@ -110,7 +110,7 @@ release! = |fx, net, job| {
 	reply = fx.http_get!({ url, headers: Net.headers({ token: Net.token({ plan: net.token, gh }), etag: Err(None) }) })
 	# The clock is read only for a rate limit answer.
 	now = match reply {
-		Ok(answer) => if answer.status == 403 or answer.status == 429 fx.clock!() else 0
+		Ok(answer) => if (answer.status == 403 or answer.status == 429) fx.clock!() else 0
 		Err(_) => 0
 	}
 	Publish.asset({ api: net.api, owner: job.owner, repo: job.repo, tag: job.tag, now, reply })
@@ -202,12 +202,12 @@ bump! = |fx, args, run| {
 	toolchain = Compiler.toolchain_of(start.env).map_err(|fail| first_line(fail.message))?
 	compiler = Install.compiler!(fx, start.roots, Bool.False)
 	wanted = args.yes or args.options.any(|(name, _)| name == "--probe-downloads")
-	flagged = ProbeFlow.request_of(args, { allow: if wanted Ok(Yes) else Err(NoFlag), probe: Err(NoFlag), slots: Err(Unset), none: Stop }, start, { toolchain, compiler })
+	flagged = ProbeFlow.request_of(args, { allow: if (wanted) Ok(Yes) else Err(NoFlag), probe: Err(NoFlag), slots: Err(Unset), none: Stop }, start, { toolchain, compiler })
 	# Q542: with no flag the consent is `No` for the whole run, so a range with no installed compiler is refused before any request (`ResolveSelect.ranged!`), and the refusal is read as the note of Q542.
-	request = if wanted flagged else { ..flagged, downloads: { ..flagged.downloads, auto: No } }
+	request = if (wanted) flagged else { ..flagged, downloads: { ..flagged.downloads, auto: No } }
 	prepared = ResolveLoad.prepared!(fx, request, Verify).map_err(|fail| prepared_reason(fail))?
 	kind = prepared.loaded.members.find_first(|m| m.file == file).map_ok(|m| m.locked.kind) ?? App
-	if kind != Package return Err("the project file is not a package")
+	if (kind != Package) return Err("the project file is not a package")
 	settings = ResolveBase.settings_of(request, prepared.loaded)
 	ResolveBase.check_pin(prepared.loaded, settings, prepared.decision, Verify).map_err(|fail| first_line(fail.message))?
 	# Q542: no required-download consent. With no flag `Start.run!` runs only for a compiler that is installed (or on `PATH`). A flag starts the download with no prompt.

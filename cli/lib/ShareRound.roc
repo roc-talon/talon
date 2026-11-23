@@ -24,14 +24,14 @@ ShareRound :: [].{
 			Off(_) => return Ok({})
 			On => {}
 		}
-		if round.facts.is_empty() return Ok({})
+		if (round.facts.is_empty()) return Ok({})
 		host = match Toolchain.host(fx.platform!()) {
 			Ok(found) => found
 			Err(_) => return Ok({})
 		}
 		target = Nightlies.target(host)
 		open = { path: Roots.item(round.roots, CompatDb), busy_ms: Db.busy_ms, format: Db.format }
-		ids = round.facts.map(|f| f.nightly).fold([], |found, id| if found.contains(id) found else found.append(id))
+		ids = round.facts.map(|f| f.nightly).fold([], |found, id| if (found.contains(id)) found else found.append(id))
 		recorded = match fx.db_query!(open, Pinned(ids.map(|id| { tag: id, target }))) {
 			Ok(Pinned(rows)) => rows
 			Ok(_) => []
