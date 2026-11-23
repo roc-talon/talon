@@ -23,3 +23,4 @@ research/slice-085-revert/reference/bin/
 # Local secrets (Cloudflare token, R2 keys). Never commit.
 /.env
 .tmp/
+secrets/

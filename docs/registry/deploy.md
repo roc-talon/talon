@@ -9,8 +9,9 @@ The command is `tln run deploy` in `worker/`. `tln run deploy-dry` does the same
 | 1 | `scripts/test.sh w0 wbuild w2 wtrap` (in the talon root) | The registry tests, on a build of their own in `.work/worker/<stamp>/` | `talon.toml` |
 | 2 | `@check` | `roc build` of `app.wasm`, then `roc-cfw sync --check` | `talon.toml` |
 | 3 | `roc-cfw deploy` | Preflight, record the live version, before reads of the `same-body` routes, `wrangler versions upload`, `d1 migrations apply DB --remote` (after the upload, before the deploy; the pending list must be empty after it), `versions deploy`, smoke checks, rollback when a check fails | `roc-cfw`, settings in `worker/roc-cfw.toml` |
-| 4 | Log tail | `wrangler tail`: look for errors for some minutes | Manual |
-| 5 | Dead letter consumer | In the log tail, look for the output of the dead-letter consumer (`IndexQueue.dead!`). The registry Worker is the consumer of `talon-index-dlq`, so a dead message is taken off at once and the queue never shows a count. | Manual |
+| 4 | Triggers, only when `[triggers] crons` or `routes` in `wrangler.toml` changed | `wrangler triggers deploy` (in `worker/`, token loaded). Then read the schedules (dashboard: Worker, Settings, Trigger Events) | Manual. `wrangler versions deploy` does not send triggers: they are not part of a version (it prints `No non-versioned settings to sync. Skipping...`). Found at the first deploy of slice 257, 2026-11-23. |
+| 5 | Log tail | `wrangler tail`: look for errors for some minutes | Manual |
+| 6 | Dead letter consumer | In the log tail, look for the output of the dead-letter consumer (`IndexQueue.dead!`). The registry Worker is the consumer of `talon-index-dlq`, so a dead message is taken off at once and the queue never shows a count. | Manual |
 
 `roc-cfw deploy --dry-run` (the last step of `deploy-dry`) does the preflight and `wrangler deploy --dry-run` only.
 
@@ -66,17 +67,17 @@ The registry Worker writes the log tiles to the R2 bucket `talon-log` and signs 
 | 1 | Make the bucket | `wrangler r2 bucket create talon-log` | One time. The binding is `LOG` in `wrangler.toml`. |
 | 2 | Make the key | `node ../research/log-key/log-key.mjs make --signer-out ~/.config/talon-log/signer.key --verifier-out ~/.config/talon-log/verifier.key` | Make the directory first (`mkdir -m 700 ~/.config/talon-log`). The tool refuses to overwrite and never prints the signer key text. Keep both files. Back up the signer file: a lost key cannot be made again. |
 | 3 | Set the secret | `wrangler secret put LOG_KEY < ~/.config/talon-log/signer.key` | The signer file has no newline (the tool writes none). Do not use `echo` or a here-string: they add a newline. Do this before the deploy of step 4: the old code ignores the secret. |
-| 4 | Deploy | `tln run deploy` | See Steps of `deploy`. The cron trigger is in `wrangler.toml`. |
-| 5 | Check the cron | see below | The range with a step is not confirmed (below). |
+| 4 | Deploy | `tln run deploy` | See Steps of `deploy`. |
+| 5 | Send the cron | `wrangler triggers deploy` | `tln run deploy` does not send the new cron (Steps of `deploy`, step 4). It also sends the custom domain again, with no change. |
 | 6 | Check the log | see below | |
 
-### The cron `2-59/5 * * * *` (open check)
+### The cron `2-59/5 * * * *` (confirmed 2026-11-23)
 
 | Item | State |
 | --- | --- |
 | Why this text | The reconcile has `*/5 * * * *`. `Worker.cron` takes one handler for each text. The log job gets its own text, and it starts 2 min after the reconcile (Design Q636 (9)). |
 | Docs | The Cloudflare cron docs list `*`, `,`, `-` and `/`. They give no example of a range with a step. Wrangler on this machine has no check of the text (no cron parser found in `wrangler-dist`). Miniflare passes any text to the handler. So this is NOT confirmed. |
-| Check | `tln run deploy` runs `wrangler versions deploy`. If the edge refuses the text, the deploy fails there (exit 1, old version live). After a good deploy, look at the dashboard (Worker, Settings, Trigger Events) for 3 cron texts, and wait for a run at minute 2, 7, 12 ... of an hour. Look in the log tail for `log wrote` (first run) or `log step failed`. |
+| Result | `wrangler triggers deploy` accepted the text on 2026-11-23 (03:40 UTC). The first run of the log wrote its objects at 03:52:08 UTC, 8 s after the 03:52 slot. Note: `wrangler tail` did not show that scheduled event. To check a run, read the `last_modified` time of the `checkpoint` object, not the tail only. |
 | Fallback (Design Q636 (9)) | If the edge refuses `2-59/5`, or never runs it: remove the text from `LogStep.cron`, `main.roc` and `wrangler.toml`, and run the step in the 5-minute handler before the reconcile. This is a code change (a new slice step with tests), not an operator step. |
 
 ### The first catch-up run (backfill)

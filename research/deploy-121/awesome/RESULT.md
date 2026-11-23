@@ -43,8 +43,8 @@
 | niclas-ahden/roc-url | Roc Packages | 4 | 200 x4 |
 | niclas-ahden/roc-vcr | Roc Packages | 3 | 200 x3 |
 | niclas-ahden/roc-xlsx | Roc Packages | 7 | 200 x7 |
-| niclas-ahden/roc-xml | Roc Packages | 8 | 429 rate-limited x8 |
-| niclas-ahden/roc-zip | Roc Packages | 3 | 429 rate-limited x3 |
+| niclas-ahden/roc-xml | Roc Packages | 8 | 201 x8 |
+| niclas-ahden/roc-zip | Roc Packages | 3 | 201 x3 |
 | obust/terrocotta | Roc Packages | 2 | 200 x2 |
 | roc-lang/http | Roc Packages | 3 | 200 x2, 422 not-a-candidate x1 |
 | roc-lang/path | Roc Packages | 5 | 200 x4, 422 not-a-candidate x1 |
@@ -58,7 +58,7 @@
 | lukewilliamboswell/roc-ray | Roc Platforms | 49 | 200 x11, 422 not-a-candidate x38 |
 | lukewilliamboswell/roc-signals | Roc Platforms | 10 | 200 x2, 422 not-a-candidate x8 |
 | lukewilliamboswell/roc-wasm4 | Roc Platforms | 4 | 200 x2, 422 not-a-candidate x2 |
-| niclas-ahden/joy | Roc Platforms | 5 | 429 rate-limited x5 |
+| niclas-ahden/joy | Roc Platforms | 5 | 201 x5 |
 | roc-lang/basic-cli | Roc Platforms | 16 | 200 x9, 422 not-a-candidate x7 |
 | roc-lang/basic-webserver | Roc Platforms | 9 | 200 x8, 422 not-a-candidate x1 |
 | lukewilliamboswell/roc-blueprint | Tools | 30 | 200 x8, 422 not-a-candidate x22 |
@@ -69,16 +69,14 @@
 | Result | Count |
 |---|---|
 | 200 | 214 |
-| 201 | 1 |
+| 201 | 17 |
 | 422 not-a-candidate | 116 |
-| 429 rate-limited | 16 |
 
 ## Distinct error codes
 
 | Result | Example URL |
 |---|---|
 | 422 not-a-candidate | https://github.com/Hasnep/roc-ascii/releases/download/v0.4.1/AnawhDawcVySaW3ywcvfUPuhbXfJK7jcwEHaMBAfVv2y.tar.zst |
-| 429 rate-limited | https://github.com/niclas-ahden/roc-xml/releases/download/1.0.0/8Nm5dN5Z6YKawPkhPqbTUfGVbsQztG8bXTa7RTBKgMbz.tar.zst |
 
 ## Repos with no hash-named asset
 
