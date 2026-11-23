@@ -91,6 +91,20 @@ ClosureIndex :: [].{
 		all.len() - kept.len()
 	}
 
+	## Slice 259 (R-C6, R-IX6, R-ID2): the dropped candidates of `dropped`, counted for each group (the URL form and the series of the candidate).
+	dropped_groups : { releases : List(WireRelease.Row), artifacts : List(WireArtifact.Row), name : Str, held : List(Str) } -> List({ form : Str, series : Str, count : U64 })
+	dropped_groups = |facts| {
+		all = ClosureIndex.candidates({ releases: facts.releases, artifacts: facts.artifacts, name: facts.name })
+		kept = ClosureIndex.candidates({ releases: ClosureIndex.live({ releases: facts.releases, held: facts.held }), artifacts: facts.artifacts, name: facts.name })
+		all.keep_if(|c| !kept.any(|k| k.url == c.url)).fold(
+			[],
+			|groups, c| match groups.find_first(|g| g.form == c.ident.group.form and g.series == c.ident.group.series) {
+				Ok(_) => groups.map(|g| if g.form == c.ident.group.form and g.series == c.ident.group.series { ..g, count: g.count + 1 } else g)
+				Err(_) => groups.append({ form: c.ident.group.form, series: c.ident.group.series, count: 1 })
+			},
+		)
+	}
+
 	## Slice 206d, Design Q461 (R-AP28 case 1, R-AP65, R-C9): the candidates of a name after the drop of the registry's release of a `Label` value. A candidate is dropped when a URL of `known` (the header values, `Ident.of_url`)
 	## has its group form (`ident.group.form`) and its version, and another hash. So the pick keeps the header URL of that label (the warning says that Talon does not use the registry's release for this value).
 	## The other versions of the group, a candidate with the hash of the header URL, and a candidate of another group form stay. The order stays. A `known` text that is no release URL drops nothing.
@@ -232,9 +246,10 @@ ClosureIndex :: [].{
 	##
 	## A copy body is decoded with `records.Index.decode_releases`. A copy that does not decode is as no copy (Design Q392, R-TF6): one `delete!` of its body and meta files (in this order), and the warning
 	## `warning: the kept answer <body path> of the registry <origin> does not decode (<reason>); removed` on stderr (a proposal, R-OUT2). Talon reads no GitHub page of `talon/index/github/` (R-IX5).
-	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]), yanked : U64, repos : List(Wire.Repo) }, Fail)
+	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]), yanked : U64, dropped : List({ form : Str, series : Str, count : U64 }), repos : List(Wire.Repo) }, Fail)
 	offline! = |fx, facts| {
 		var $yanked = 0
+		var $dropped = []
 		var $repos = []
 		var $list = no_candidates
 		var $oldest = Err(None)
@@ -246,6 +261,7 @@ ClosureIndex :: [].{
 					form_rows = copy.rows.keep_if(|row| row.group == form)
 					$repos = $repos.concat(copy.repos)
 					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else 0
+					$dropped = $dropped.concat(if facts.filter ClosureIndex.dropped_groups({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else [])
 					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: form_rows, held: facts.held }) else form_rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
 				}
@@ -265,19 +281,20 @@ ClosureIndex :: [].{
 					rows = if facts.forms.is_empty() copy.rows else copy.rows.keep_if(|row| $no_copy.contains(row.group))
 					$repos = $repos.concat(copy.repos)
 					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else 0
+					$dropped = $dropped.concat(if facts.filter ClosureIndex.dropped_groups({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else [])
 					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: rows, held: facts.held }) else rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
 					$no_copy = []
 				}
 				Err(NoCopy) => {
 					if facts.forms.is_empty() {
-						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest, yanked: $yanked, repos: $repos })
+						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest, yanked: $yanked, dropped: $dropped, repos: $repos })
 					}
 				}
 			}
 		}
 		missing_forms = $no_copy
-		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest, yanked: $yanked, repos: $repos })
+		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest, yanked: $yanked, dropped: $dropped, repos: $repos })
 	}
 }
 

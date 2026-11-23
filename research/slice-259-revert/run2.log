@@ -1,0 +1,4 @@
+base L2: commands: 20 passed, 0 failed 
+m3: L2 registry/of5-offline-count-repo-copy commands: 19 passed, 1 failed 
+m4: L2 registry/of5-offline-count-repo-copy commands: 19 passed, 1 failed 
+m5: L2 commands: 20 passed, 0 failed 

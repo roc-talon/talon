@@ -62,7 +62,7 @@ PickFlow :: [].{
 		input : PickLoop.Input,
 		setup : PickLoop.Setup,
 		second : Try(PickFlow.Second, [None]),
-		yanked : List({ name : Str, count : U64 }),
+		yanked : List({ name : Str, count : U64, groups : List({ form : Str, series : Str, count : U64 }) }),
 		follows : List(SuccessorFlow.Follow),
 	}
 
@@ -340,12 +340,13 @@ movable_names = |scoped, found| scoped
 PickInput : PickLoop.Input
 
 # Slice 250 (Design Q630-4, R-PH13): the failure of an empty domain counts the yanked rows that `ClosureIndex.live` dropped for its name (`Pick.with_yanked`). The count is read from the closure answer; no answer, no count.
-with_yanked_count : Fail, { index : ClosureIndex.Source, scoped : List(Vars.Scoped), asked : Asked, known : List(Str), yanked : List({ name : Str, count : U64 }) } -> Fail
+with_yanked_count : Fail, { index : ClosureIndex.Source, scoped : List(Vars.Scoped), asked : Asked, known : List(Str), yanked : List({ name : Str, count : U64, groups : List({ form : Str, series : Str, count : U64 }) }) } -> Fail
 with_yanked_count = |fail, facts| match (fail.kind, facts.index) {
 	(NoTuple, index) => {
 		first_alias = |s| s.variable.uses.first().map_ok(|u| u.alias) ?? ""
 		starts = |id| fail.message.starts_with("no tuple works: ${id} has no release ")
-		name = match facts.scoped.find_first(|s| starts(first_alias(s))) {
+		slot = facts.scoped.find_first(|s| starts(first_alias(s)))
+		name = match slot {
 			Ok(s) => s.variable.name.map_err(|_| None)
 			Err(_) => match facts.asked.fresh.find_first(|f| starts(f.key)) {
 				Ok(f) => Ok(f.name)
@@ -355,8 +356,19 @@ with_yanked_count = |fail, facts| match (fail.kind, facts.index) {
 		match name {
 			Ok(n) => {
 				count = match index {
-					Answer(a) => ClosureIndex.dropped({ releases: a.answer.releases, artifacts: a.answer.artifacts, name: n, held: facts.known })
-					Offline(_) => facts.yanked.find_first(|y| y.name == n).map_ok(|y| y.count) ?? 0
+					# Slice 259 (R-C6, R-ID2): the same group rule as offline: one series slot counts only its own group.
+					Answer(a) => match slot {
+						Ok(s) if !s.any_series => ClosureIndex.dropped_groups({ releases: a.answer.releases, artifacts: a.answer.artifacts, name: n, held: facts.known }).keep_if(|g| g.form == s.variable.group.form and g.series == s.variable.group.series).fold(0, |sum, g| sum + g.count)
+						_ => ClosureIndex.dropped({ releases: a.answer.releases, artifacts: a.answer.artifacts, name: n, held: facts.known })
+					}
+					# Slice 259 (R-C6, R-IX6, R-ID2): a slot in one series counts only the rows of its own group. An `any_series` slot (a selector, `upgrade`) and a new name count the rows of every series of the form.
+					Offline(_) => match facts.yanked.find_first(|y| y.name == n) {
+						Ok(y) => match slot {
+							Ok(s) if !s.any_series => y.groups.keep_if(|g| g.form == s.variable.group.form and g.series == s.variable.group.series).fold(0, |sum, g| sum + g.count)
+							_ => y.count
+						}
+						Err(_) => 0
+					}
 					Direct => 0
 				}
 				{ ..fail, message: Pick.with_yanked({ message: fail.message, yanked: count }) }

@@ -46,10 +46,10 @@ PickIndex :: [].{
 	# Slice 250 (Design Q630-4): `index!` and the count of the yanked rows that were dropped for each name of a kept copy (`Offline`). The other indexes give no count here (the flow counts an answer itself).
 	# Slice 252 (R-PU28, Q252-8): `repos` are the `repos` items of the kept copies that it read (`Offline`). The other indexes give none here (an answer has its own `repos`).
 	# `oldest` is the time of the oldest copy or cached page that it read (R-DI12). It prints no line: the caller prints it (`cached_line!`).
-	counted! : Fx, ResolveBase.Request, List(Str), List(Str) => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }), repos : List(Wire.Repo), oldest : Try(U64, [None]) }, Fail)
+	counted! : Fx, ResolveBase.Request, List(Str), List(Str) => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64, groups : List({ form : Str, series : Str, count : U64 }) }), repos : List(Wire.Repo), oldest : Try(U64, [None]) }, Fail)
 	counted! = |fx, request, names, known| gather!(fx, request, names, known, Bool.True)
 
-	gather! : Fx, ResolveBase.Request, List(Str), List(Str), Bool => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }), repos : List(Wire.Repo), oldest : Try(U64, [None]) }, Fail)
+	gather! : Fx, ResolveBase.Request, List(Str), List(Str), Bool => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64, groups : List({ form : Str, series : Str, count : U64 }) }), repos : List(Wire.Repo), oldest : Try(U64, [None]) }, Fail)
 	gather! = |fx, request, names, known, filter| {
 		var $yanked = []
 		var $repos = []
@@ -66,7 +66,7 @@ PickIndex :: [].{
 						Ok(t) => older($oldest, t)
 						Err(None) => $oldest
 					}
-					$yanked = $yanked.append({ name, count: got.yanked })
+					$yanked = $yanked.append({ name, count: got.yanked, groups: got.dropped })
 					$repos = $repos.concat(got.repos)
 					$found = $found.append({ name, list: got.list, missing: got.missing, missing_forms: got.missing_forms, pages: [] })
 				}

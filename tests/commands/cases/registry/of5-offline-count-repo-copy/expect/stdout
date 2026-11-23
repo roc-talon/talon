@@ -1,0 +1,4 @@
+== update --no-check --dry-run --offline --file u1/main.roc
+other: fixed: not in the registry index
+pf: fixed: offline, no cached index
+exit 10

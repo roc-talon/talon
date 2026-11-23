@@ -1,0 +1,8 @@
+== outdated --offline --file u1/main.roc
+$PROJECT/u1/main.roc
+  package  current  wanted  latest                          nightly range
+  json     2.0.0    2.0.0   2.0.0 (moved to acme/roc-json)  -
+exit 0
+== outdated --offline --json --file u1/main.roc
+{"schema":1,"command":"outdated","ok":true,"data":{"members":[{"file":"$PROJECT/u1/main.roc","packages":[{"alias":"json","name":"someone/roc-json","current":"2.0.0","wanted":"2.0.0","latest":"2.0.0","new_series":false,"successor":"acme/roc-json","nightly_range":{"state":"unread"}}],"fixed":[]}]},"error":null}
+exit 0

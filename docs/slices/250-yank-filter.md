@@ -1,6 +1,6 @@
 # 250 The yank filter of the pick
 
-Phase: P2 (the registry has the yank routes, slice 246. `tln yank` exists, slice 249). Status: done (2026-11-17). The user approved Q630-1 to Q630-4, the texts of section 7 and the R-B3 sentence (Design Q630, G-C260). The patch base lookup by hash skips the yank filter (it is not a pick; a regression found by mutation gap G4). Known limit: the second search of a held move gets no offline yanked count.
+Phase: P2 (the registry has the yank routes, slice 246. `tln yank` exists, slice 249). Status: done (2026-11-17). The user approved Q630-1 to Q630-4, the texts of section 7 and the R-B3 sentence (Design Q630, G-C260). The patch base lookup by hash skips the yank filter (it is not a pick; a regression found by mutation gap G4). The known limit "the second search of a held move gets no offline yanked count" is withdrawn: the failure of a held move is the failure of the first search, with no count from the second search, online and offline (slice 259, Design Q638 (a), guard registry/of3-offline-held-yanked).
 Design ids (pending, the manager writes them): Q630, G-C260. Left open by Design Q629 (13) and `docs/slices/249-yank.md` section 13, row P10.
 Test agent: 2026-11-16. No product code except 2 stubs (section 9).
 
