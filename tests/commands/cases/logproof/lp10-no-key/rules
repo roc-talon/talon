@@ -1,0 +1,1 @@
+R-LV5 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). TALON_LOG_KEY names the log 127.0.0.1:8/log, and no key applies to http://127.0.0.1:9: no check, no log request, no note. The output is the output of today.

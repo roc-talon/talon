@@ -89,6 +89,7 @@ package
 		Listing,
 		Lock,
 		Locked,
+		LogCheck,
 		LogKey,
 		LogProof,
 		LogSnapshot,

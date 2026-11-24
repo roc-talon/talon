@@ -82,3 +82,12 @@ http_send POST https://registry.roc-talon.org/v1/closure timeout=20
   User-Agent: tln/0.0.1
   Content-Type: application/json
   <body> {"compilers":{"from":"nightly-2026-10-14-38a3029","to":"nightly-2026-10-14-38a3029"},"groups":[{"group":"github.com/acme/json/releases/download/{v}/","range":">=2.0.0, <3.0.0","series":"2"},{"group":"github.com/acme/parser/releases/download/{v}/","range":">=1.0.0, <2.0.0","series":"1"},{"group":"github.com/acme/pfx/releases/download/{v}/","range":">=0.1.0, <0.2.0","series":"0.1"}],"hashes":["6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21","EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc"]}
+read_files $HOME/.local/share/talon/log/https_registry.roc-talon.org/checkpoint
+http_get https://registry.roc-talon.org/log/checkpoint
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/registry/https_registry.roc-talon.org/log/tile/entries/000.p/36 $HOME/.cache/roc/talon/index/registry/https_registry.roc-talon.org/log/tile/0/000.p/36
+http_get_bytes https://registry.roc-talon.org/log/tile/entries/000.p/36
+  User-Agent: tln/0.0.1
+http_get_bytes https://registry.roc-talon.org/log/tile/0/000.p/36
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/https_registry.roc-talon.org/log/tile/entries/000.p/36 $HOME/.cache/roc/talon/index/registry/https_registry.roc-talon.org/log/tile/0/000.p/36 $HOME/.local/share/talon/log/https_registry.roc-talon.org/checkpoint

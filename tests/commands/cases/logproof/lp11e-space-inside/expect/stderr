@@ -1,0 +1,1 @@
+tln: error[input]: $HOME/.config/talon/config.toml: line 2: log-key: '127.0.0.1:9/log+56ce7b6e +AVe39KgFjJZCyKJq5RMF6DDELMicWhqw/y2J3GSpbE2P' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>)

@@ -246,11 +246,12 @@ ClosureIndex :: [].{
 	##
 	## A copy body is decoded with `records.Index.decode_releases`. A copy that does not decode is as no copy (Design Q392, R-TF6): one `delete!` of its body and meta files (in this order), and the warning
 	## `warning: the kept answer <body path> of the registry <origin> does not decode (<reason>); removed` on stderr (a proposal, R-OUT2). Talon reads no GitHub page of `talon/index/github/` (R-IX5).
-	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]), yanked : U64, dropped : List({ form : Str, series : Str, count : U64 }), repos : List(Wire.Repo) }, Fail)
+	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]), yanked : U64, dropped : List({ form : Str, series : Str, count : U64 }), repos : List(Wire.Repo), rows : List(WireRelease.Row) }, Fail)
 	offline! = |fx, facts| {
 		var $yanked = 0
 		var $dropped = []
 		var $repos = []
+		var $kept_rows = []
 		var $list = no_candidates
 		var $oldest = Err(None)
 		var $no_copy = no_names
@@ -260,6 +261,7 @@ ClosureIndex :: [].{
 				Ok(copy) => {
 					form_rows = copy.rows.keep_if(|row| row.group == form)
 					$repos = $repos.concat(copy.repos)
+					$kept_rows = $kept_rows.concat(form_rows)
 					$yanked = $yanked + if (facts.filter) ClosureIndex.dropped({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else 0
 					$dropped = $dropped.concat(if (facts.filter) ClosureIndex.dropped_groups({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else [])
 					$list = $list.concat(ClosureIndex.candidates({ releases: if (facts.filter) ClosureIndex.live({ releases: form_rows, held: facts.held }) else form_rows, artifacts: [], name: facts.name }))
@@ -280,6 +282,7 @@ ClosureIndex :: [].{
 				Ok(copy) => {
 					rows = if (facts.forms.is_empty()) copy.rows else copy.rows.keep_if(|row| $no_copy.contains(row.group))
 					$repos = $repos.concat(copy.repos)
+					$kept_rows = $kept_rows.concat(rows)
 					$yanked = $yanked + if (facts.filter) ClosureIndex.dropped({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else 0
 					$dropped = $dropped.concat(if (facts.filter) ClosureIndex.dropped_groups({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else [])
 					$list = $list.concat(ClosureIndex.candidates({ releases: if (facts.filter) ClosureIndex.live({ releases: rows, held: facts.held }) else rows, artifacts: [], name: facts.name }))
@@ -288,13 +291,13 @@ ClosureIndex :: [].{
 				}
 				Err(NoCopy) => {
 					if facts.forms.is_empty() {
-						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest, yanked: $yanked, dropped: $dropped, repos: $repos })
+						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest, yanked: $yanked, dropped: $dropped, repos: $repos, rows: $kept_rows })
 					}
 				}
 			}
 		}
 		missing_forms = $no_copy
-		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest, yanked: $yanked, dropped: $dropped, repos: $repos })
+		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest, yanked: $yanked, dropped: $dropped, repos: $repos, rows: $kept_rows })
 	}
 }
 

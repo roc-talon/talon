@@ -1,0 +1,1 @@
+tln: error[integrity]: known: acme/known 1.1.0: the log of http://127.0.0.1:9 has another entry at log index 2: github.com/acme/known/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK. Talon wrote nothing.

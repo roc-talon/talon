@@ -1,0 +1,13 @@
+{
+ "host": "127.0.0.1:9",
+ "leaves": {
+  "1": "github.com/acme/known/releases/download/{v}/ 1.0.0 5UVYbRk4zTJP7MLG5AAaTwK2TmX3U1bdndvNzddMyTaV 1790848800000",
+  "2": "github.com/acme/known/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK 1790848800000"
+ },
+ "serve": [
+  {
+   "file": "checkpoint",
+   "size": 3
+  }
+ ]
+}

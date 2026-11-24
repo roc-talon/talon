@@ -1,0 +1,5 @@
+== add acme/known --no-check --file p1/main.roc
+exit 19
+== add acme/known --no-check --file p1/main.roc --json
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"input","code":19,"message":"$HOME/.config/talon/config.toml: line 2: log-key: 'xyz' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>)","details":{"log":"http://127.0.0.1:9/log","reason":"bad-key","size":null,"index":null,"release":null}}}
+exit 19

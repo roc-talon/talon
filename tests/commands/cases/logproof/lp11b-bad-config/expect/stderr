@@ -1,0 +1,2 @@
+tln: error[input]: $HOME/.config/talon/config.toml: line 2: log-key: 'xyz' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>)
+tln: error[input]: $HOME/.config/talon/config.toml: line 2: log-key: 'xyz' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>)

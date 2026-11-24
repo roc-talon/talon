@@ -1,0 +1,6 @@
+== install --no-check --file p1/main.roc
+nothing to change
+exit 0
+== update --no-check --file p1/main.roc
+nothing to change
+exit 0

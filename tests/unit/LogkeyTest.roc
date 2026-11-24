@@ -85,3 +85,120 @@ vec_bad_keys : { alg2 : Str, short31 : Str, long33 : Str, no_type : Str, non_poi
 vec_bad_keys = { alg2: "registry.roc-talon.org/log+338a0f4b+Ah/IiLuExwX1injOo1olZopZngPqAXCx+TnIG79R+W5C", short31: "registry.roc-talon.org/log+a3365cbe+AR/IiLuExwX1injOo1olZopZngPqAXCx+TnIG79R+W4=", long33: "registry.roc-talon.org/log+1845f38b+AR/IiLuExwX1injOo1olZopZngPqAXCx+TnIG79R+W5CAA==", no_type: "registry.roc-talon.org/log+9f87bdd6+H8iIu4THBfWKeM6jWiVmilmeA+oBcLH5Ocgbv1H5bkI=", non_point: "registry.roc-talon.org/log+46418d7b+AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", space_name: "a b/log+489ae87d+AR/IiLuExwX1injOo1olZopZngPqAXCx+TnIG79R+W5C", wrong_id: "registry.roc-talon.org/log+be8be942+AR/IiLuExwX1injOo1olZopZngPqAXCx+TnIG79R+W5C" }
 
 # --- end of vectors ---
+
+# --- Slice 261c (docs/slices/261-log-inclusion-proofs.md section 14): the key of a registry, `LogKey.choose` (R-LV5, R-EV30, R-LY4, R-LV11, slice 261 13.7 N1). ---
+# Test keys from tests/tools/mk-log.mjs (fixed test seeds "talon slice 261c test key L" and "... M"): L9 and M9 have the name `127.0.0.1:9/log`, L8 the name `127.0.0.1:8/log`.
+
+key_l9 : Str
+key_l9 = "127.0.0.1:9/log+56ce7b6e+AVe39KgFjJZCyKJq5RMF6DDELMicWhqw/y2J3GSpbE2P"
+
+key_m9 : Str
+key_m9 = "127.0.0.1:9/log+853289c3+AWN3yPVx8EWKlL7aSOgZBc/g1b+ekSiHPwCodn2Js3k1"
+
+key_l8 : Str
+key_l8 = "127.0.0.1:8/log+103a4665+AVe39KgFjJZCyKJq5RMF6DDELMicWhqw/y2J3GSpbE2P"
+
+default_base : Str
+default_base = "https://registry.roc-talon.org"
+
+local_base : Str
+local_base = "http://127.0.0.1:9"
+
+config_path : Str
+config_path = "/h/.config/talon/config.toml"
+
+# A config.toml value at line 3.
+at3 : Str -> Try({ text : Str, path : Str, line : U64 }, [Unset])
+at3 = |text| Ok({ text, path: config_path, line: 3 })
+
+# The key and the source of a choice, as text: `<name> <key id hex> <source>`, `none`, or `fail <kind> <message> <details>`.
+chosen : { base : Str, env : Try(Str, [Unset]), config : Try({ text : Str, path : Str, line : U64 }, [Unset]) } -> Str
+chosen = |setting| match LogKey.choose(setting) {
+	Ok(Ok(c)) => {
+		digits = "0123456789abcdef".to_utf8()
+		id = c.key.key_id.join_map(|b| [digits.get((b // 16).to_u64()) ?? 48, digits.get((b % 16).to_u64()) ?? 48])
+		source = match c.source {
+			BuiltIn => "builtin"
+			Env => "env"
+			Config(path) => "config ${path}"
+		}
+		"${c.key.name} ${Str.from_utf8(id) ?? "?"} ${source}"
+	}
+	Ok(Err(NoKey)) => "none"
+	Err(f) => "fail ${f.kind.name()} ${f.message} ${f.details.map_ok(|d| d.render()) ?? "no details"}"
+}
+
+# Guard (passes now): the test keys parse; a name with a port (`127.0.0.1:9/log`) is a key name.
+expect [key_l9, key_m9, key_l8].all(|t| LogKey.parse_verifier_key(t).is_ok())
+
+# R-LV5, Design Q636 (15): the built-in text is the line of secrets/log-key-verifier.
+expect LogKey.builtin_text == builtin
+
+# R-LV5: the built-in key applies to https://registry.roc-talon.org only; a registry with no key has no check (no failure, no note).
+expect
+	[
+		chosen({ base: default_base, env: Err(Unset), config: Err(Unset) }),
+		chosen({ base: local_base, env: Err(Unset), config: Err(Unset) }),
+	]
+		== ["registry.roc-talon.org/log e5942107 builtin", "none"]
+
+# R-LV5, R-EV30: a set key applies to the registry of its name `<host>:<port>/log`; a set key of another registry does not replace the built-in key.
+expect
+	[
+		chosen({ base: local_base, env: Ok(key_l9), config: Err(Unset) }),
+		chosen({ base: local_base, env: Ok(key_l8), config: Err(Unset) }),
+		chosen({ base: default_base, env: Ok(key_l9), config: Err(Unset) }),
+		chosen({ base: local_base, env: Err(Unset), config: at3(key_l9) }),
+	]
+		== ["127.0.0.1:9/log 56ce7b6e env", "none", "registry.roc-talon.org/log e5942107 builtin", "127.0.0.1:9/log 56ce7b6e config /h/.config/talon/config.toml"]
+
+# R-LV5: a set key with the name of the built-in key replaces it (test key A of 261b), from TALON_LOG_KEY and from config.toml.
+expect
+	[
+		chosen({ base: default_base, env: Ok(vec_keys.a.verifier), config: Err(Unset) }),
+		chosen({ base: default_base, env: Err(Unset), config: at3(vec_keys.a.verifier) }),
+	]
+		== ["registry.roc-talon.org/log ${vec_keys.a.key_id} env", "registry.roc-talon.org/log ${vec_keys.a.key_id} config /h/.config/talon/config.toml"]
+
+# R-EV30, R-LY4: TALON_LOG_KEY has priority over log-key: only TALON_LOG_KEY is read (as Design Q439), so a bad log-key under a set TALON_LOG_KEY does not stop the run (a proposal).
+expect
+	[
+		chosen({ base: local_base, env: Ok(key_l9), config: at3(key_m9) }),
+		chosen({ base: local_base, env: Ok(key_l9), config: at3("xyz") }),
+	]
+		== ["127.0.0.1:9/log 56ce7b6e env", "127.0.0.1:9/log 56ce7b6e env"]
+
+# Slice 261 13.7 N1: the white space around the key text is trimmed (spaces, a tab, a newline); in TALON_LOG_KEY and in log-key.
+expect
+	[
+		chosen({ base: local_base, env: Ok(" ${key_l9}\n"), config: Err(Unset) }),
+		chosen({ base: local_base, env: Ok("\t${key_l9}  "), config: Err(Unset) }),
+		chosen({ base: local_base, env: Err(Unset), config: at3("  ${key_l9} ") }),
+	]
+		== ["127.0.0.1:9/log 56ce7b6e env", "127.0.0.1:9/log 56ce7b6e env", "127.0.0.1:9/log 56ce7b6e config /h/.config/talon/config.toml"]
+
+# R-LV5, R-EV30, R-LV11 T8b: a bad TALON_LOG_KEY is exit 2 (kind usage), with the trimmed text and the details reason bad-key. Also a key with a space inside (N1), and a bad key that names no registry of the run.
+expect {
+	details = "{\"log\":\"http://127.0.0.1:9/log\",\"reason\":\"bad-key\",\"size\":null,\"index\":null,\"release\":null}"
+	t8b = |text| "fail usage TALON_LOG_KEY: '${text}' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>) ${details}"
+	inner = "127.0.0.1:9/log+56ce7b6e +AVe39KgFjJZCyKJq5RMF6DDELMicWhqw/y2J3GSpbE2P"
+	[
+		chosen({ base: local_base, env: Ok("xyz"), config: Err(Unset) }),
+		chosen({ base: local_base, env: Ok(" xyz\n"), config: Err(Unset) }),
+		chosen({ base: local_base, env: Ok(inner), config: Err(Unset) }),
+		chosen({ base: local_base, env: Ok("example.org/log+00000000+AVe39KgFjJZCyKJq5RMF6DDELMicWhqw/y2J3GSpbE2P"), config: Err(Unset) }),
+	]
+		== [t8b("xyz"), t8b("xyz"), t8b(inner), t8b("example.org/log+00000000+AVe39KgFjJZCyKJq5RMF6DDELMicWhqw/y2J3GSpbE2P")]
+}
+
+# R-LV5, R-TF4, R-LV11 T8: a bad log-key of config.toml is exit 19 (kind input), with `<path>: line <n>: log-key:`; a space inside the key (N1) too. Also with the default registry.
+expect {
+	t8 = |base, text| "fail input ${config_path}: line 3: log-key: '${text}' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>) {\"log\":\"${base}/log\",\"reason\":\"bad-key\",\"size\":null,\"index\":null,\"release\":null}"
+	inner = "127.0.0.1:9/log+56ce7b6e+AVe39KgFjJZCyKJq5 RMF6DDELMicWhqw/y2J3GSpbE2P"
+	[
+		chosen({ base: local_base, env: Err(Unset), config: at3("xyz") }),
+		chosen({ base: local_base, env: Err(Unset), config: at3(inner) }),
+		chosen({ base: default_base, env: Err(Unset), config: at3(" xyz ") }),
+	]
+		== [t8(local_base, "xyz"), t8(local_base, inner), t8(default_base, "xyz")]
+}

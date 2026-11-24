@@ -1,0 +1,6 @@
+# Slice 261c (TESTING.md 2.3, R-LV7): the fake http_get_bytes!: bytes above 0x7F and bytes that are not UTF-8 come back as they are; the meta headers;
+# the n-th answer counts the GET requests of the URL (.2: a text body, .3: a timeout); no route: 404 with the body of the fake.
+bytes http://127.0.0.1:9/log/tile/0/000.p/2 h:User-Agent=tln/0.0.1
+bytes http://127.0.0.1:9/log/tile/0/000.p/2
+bytes http://127.0.0.1:9/log/tile/0/000.p/2
+bytes http://127.0.0.1:9/log/tile/0/001

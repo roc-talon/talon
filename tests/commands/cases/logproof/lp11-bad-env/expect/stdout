@@ -1,0 +1,5 @@
+== add acme/known --no-check --file p1/main.roc env:TALON_LOG_KEY=xyz
+exit 2
+== add acme/known --no-check --file p1/main.roc --json env:TALON_LOG_KEY=xyz
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"TALON_LOG_KEY: 'xyz' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>)","details":{"log":"http://127.0.0.1:9/log","reason":"bad-key","size":null,"index":null,"release":null}}}
+exit 2

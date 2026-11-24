@@ -1,0 +1,5 @@
+== add acme/known --no-check --file p1/main.roc --dry-run
+exit 16
+== add acme/known --no-check --file p1/main.roc --dry-run --json
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"integrity","code":16,"message":"known: acme/known 1.1.0: the log of http://127.0.0.1:9 has another entry at log index 2: github.com/acme/known/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK. Talon wrote nothing.","details":{"log":"http://127.0.0.1:9/log","reason":"entry-differs","size":3,"index":2,"release":"https://github.com/acme/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst"}}}
+exit 16

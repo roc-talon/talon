@@ -1,0 +1,1 @@
+R-LV5 R-TF4 R-LV11 R-J7 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). log-key = "xyz" in config.toml (line 2): exit 19, T8, nothing written. Run 2: --json.

@@ -17,6 +17,8 @@ import NightlyPlan
 import InstallPlan
 import InstallWrite
 import Lags
+import LogCheck
+import LogProof
 import PatchApply
 import Patched
 import Pick
@@ -310,6 +312,38 @@ resolve! = |fx, request, loaded, built, start| {
 listed_start : PickLoop.State, Try(List(Nightlies.Release), [NotRead]) -> PickLoop.State
 listed_start = |state, releases| { ..state, probed: { ..state.probed, listed: releases } }
 
+# Slice 261c (R-LV1 to R-LV12): the releases that the command writes and whose rows came from a registry are checked against the log of that registry. No registry (`direct`): no check.
+log_check! : Fx, ResolveBase.Request, Loaded, List(Vars.Scoped), List(ResolveBase.Edit), Try(Fail.Ran, [None]), List(ResolveBase.Candidates) => Try({}, Fail)
+log_check! = |fx, request, loaded, scoped, edits, ran, found| {
+	base = match request.index {
+		Answer(a) => Ok(a.origin)
+		Offline(origin) => Ok(origin)
+		Direct => Err(None)
+	}
+	match base {
+		Err(None) => Ok({})
+		Ok(origin) => {
+			answered = match ran {
+				Ok(r) => r.answers.join_map(|a| a.releases)
+				Err(None) => []
+			}
+			rows = answered.concat(found.join_map(|c| c.rows))
+			names = scoped.join_map(
+				|s| match s.variable.name {
+					Ok(n) => s.variable.uses.map(|u| (u.alias, n))
+					Err(NoName) => []
+				},
+			)
+			checks = LogProof.to_check({
+				before: loaded.members.join_map(|m| m.locked.rows.map(|r| r.value)),
+				after: LogCheck.after_of({ ops: edits.map(|e| e.op), names, rows }),
+				rows,
+			})
+			LogCheck.run!(fx, { roots: request.roots, base: origin, offline: request.offline, env: request.downloads.env, config: loaded.config.log_key, checks })
+		}
+	}
+}
+
 # R-AL6, R-PH13 (slice 036b): the ladder runs on the tuple of the pick. A failure of the ladder that is about the tuple (`Fail.again`) goes back to the oracle loop as a conflict, on the releases that the ladder blames (all of the tuple when it names none).
 # The next tuple is picked with the facts that the command has. The line `note: tuple dropped: ...` says it (a proposal, TW24). `seen` are the lines before the ladder that the command printed for the tuples before (Q7: a line prints once). When no other tuple exists, the failure of the command is the first failure of the ladder.
 attempts! : Fx, ResolveBase.Request, Loaded, PickFlow.Ready, { picked : ResolveBase.Picked, first : Try(Fail, [None]), seen : List(Str), downloads : U64, fresh : Bool } => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
@@ -444,6 +478,14 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	ladder_decision = if (moved.is_ok()) { ..decision, writes: [] } else decision
 	# R-PA5, R-PA10 (slice 043): the patches that move are applied to the new release in temp dirs before the ladder. A release on which a diff does not apply is dropped like a release that fails the ladder (`Fail.again`).
 	patch = PatchApply.run!(fx, request, loaded, { scoped, chosen: var_chosen })?
+	# Slice 261c (R-LV1, R-LV8): the log check of the new release values, after the pick and the patches, before the ladder, the prompts and the writes (also with `--dry-run` and `--no-check`).
+	match log_check!(fx, request, loaded, scoped, edits, ran, after.found) {
+		Ok({}) => {}
+		Err(log_fail) => {
+			PatchApply.clean!(fx, patch)
+			return Err(log_fail)
+		}
+	}
 	settled = settle!(
 		fx,
 		request,

@@ -1,0 +1,15 @@
+{
+ "host": "registry.roc-talon.org",
+ "index_dir": "https_registry.roc-talon.org",
+ "leaves": {
+  "25": "github.com/acme/json/releases/download/{v}/ 2.1.0 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq 1790337600000",
+  "33": "github.com/acme/pfx/releases/download/{v}/ 0.1.1 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK 1789905600000",
+  "35": "github.com/acme/parser/releases/download/{v}/ 1.2.0 EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt 1791201600000"
+ },
+ "serve": [
+  {
+   "file": "checkpoint",
+   "size": 36
+  }
+ ]
+}

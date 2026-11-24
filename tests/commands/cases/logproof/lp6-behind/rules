@@ -1,0 +1,1 @@
+R-LV9 R-LV6 R-LV12 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). The checkpoint has size 1 on reads 1 and 2 and size 3 on read 3 (checkpoint.2, checkpoint.3): sleep 2000 and sleep 4000 before reads 2 and 3, then the proof passes: exit 0.

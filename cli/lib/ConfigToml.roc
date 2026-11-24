@@ -15,7 +15,7 @@ ConfigToml :: [].{
 	## A `default-roc` that is not a string, or not a full id (a prefix), is a failure of kind `Input` (exit 19, R-TF4, R-SC12): `<path>:<line>: default-roc: must be a full compiler id`. The other keys are known and not read.
 	## Slice 206b (R-RG1, R-RG7 row 6): `registry` is the text of the key `registry` and its place `<path>:<line>`, for `IndexQuery.setting`, which checks it. A value that is not a string is `Err(Unset)` here (slice 206f, Design Q546: `remove` and `share *` check it with `IndexQuery.setting`, the commands that read the file for a key of their own; `list`, `cache`, `tool list` and `path` do not read it).
 	## Slice 240 (R-CH11): `channels` are the user tables of the file that have all their keys.
-	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]), min_release_age_exclude : List(Str), default_roc : Try(Str, [Unset]), gc_age : Try(U64, [Unset]), tool_binaries : Try(Bool, [Unset]), probe : Probe.Keys, registry : Try({ text : Str, at : Str }, [Unset]), share : Try(Bool, [Unset]), channels : List({ name : Str, source : Str, tag_prefix : Str }) }
+	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]), min_release_age_exclude : List(Str), default_roc : Try(Str, [Unset]), gc_age : Try(U64, [Unset]), tool_binaries : Try(Bool, [Unset]), probe : Probe.Keys, registry : Try({ text : Str, at : Str }, [Unset]), log_key : Try({ text : Str, path : Str, line : U64 }, [Unset]), share : Try(Bool, [Unset]), channels : List({ name : Str, source : Str, tag_prefix : Str }) }
 
 	## Reads the text of a `config.toml` (R-TF4). A key with a value of the wrong form is a failure of kind `Input` (exit 19): `<path>:<line>: <key>: <why>`.
 	## An unknown top-level key is a warning: `<path>:<line>: unknown key <key>`.
@@ -109,7 +109,7 @@ scan = |path, file_text, doc| {
 	channels = Channel.read(doc, file_text)
 	unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: TomlKeys.key_line(doc, [key]), message: "unknown key ${key}" })
 	{
-		config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, tool_binaries: tool_binaries.value, probe: probe.value, registry: registry_of(doc, path), share: share_of(doc), channels: Channel.entries(channels.tables) },
+		config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, tool_binaries: tool_binaries.value, probe: probe.value, registry: registry_of(doc, path), log_key: log_key_of(doc, path), share: share_of(doc), channels: Channel.entries(channels.tables) },
 		issues: nightly.issues.concat(age.issues).concat(exclude.issues).concat(default_roc.issues).concat(gc_age.issues).concat(tool_binaries.issues).concat(probe.issues).concat(channels.issues),
 		warnings: unknown.concat(probe.warnings).concat(channels.warnings),
 	}
@@ -121,7 +121,7 @@ is_default_id = |text| Pin.is_id(text) or Channel.parse_id(text).is_ok() or ["gi
 
 # The keys of `config.toml` (CLI 6.1). `probe` is a table.
 config_keys : List(Str)
-config_keys = ["default-roc", "registry", "nightly", "min-release-age", "min-release-age-exclude", "gc-age", "tool-binaries", "share", "probe", "channels"]
+config_keys = ["default-roc", "registry", "nightly", "min-release-age", "min-release-age-exclude", "gc-age", "tool-binaries", "share", "probe", "channels", "log-key"]
 
 # A top-level key of `config.toml`, or the reason that it is wrong.
 config_field : Toml, Str, (Value -> Try(a, Str)) -> { value : Try(a, [Unset]), issues : List(TomlKeys.Note) }
@@ -137,6 +137,13 @@ config_field = |doc, key, parse| match Toml.get(doc, [key]) {
 registry_of : Toml, Str -> Try({ text : Str, at : Str }, [Unset])
 registry_of = |doc, path| match Toml.get(doc, ["registry"]) {
 	Ok(Value.String(text)) => Ok({ text, at: "${path}:${TomlKeys.key_line(doc, ["registry"]).to_str()}" })
+	_ => Err(Unset)
+}
+
+# Slice 261c (R-LV5, R-LY4): the key `log-key`: the text and its place. A value that is not a string is `Unset` here. `LogKey.choose` checks the text.
+log_key_of : Toml, Str -> Try({ text : Str, path : Str, line : U64 }, [Unset])
+log_key_of = |doc, path| match Toml.get(doc, ["log-key"]) {
+	Ok(Value.String(text)) => Ok({ text, path, line: TomlKeys.key_line(doc, ["log-key"]) })
 	_ => Err(Unset)
 }
 

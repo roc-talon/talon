@@ -1,0 +1,2 @@
+tln: error[network]: the log of http://127.0.0.1:9 does not answer (status 404): Talon cannot check known: acme/known 1.1.0. Try again later, or use --registry direct.
+tln: error[network]: the log of http://127.0.0.1:9 does not answer (timeout): Talon cannot check known: acme/known 1.1.0. Try again later, or use --registry direct.

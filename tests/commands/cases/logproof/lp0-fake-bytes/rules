@@ -1,0 +1,1 @@
+R-LV7 (slice 261c, TESTING.md 2.3, entry `http`): the fake Fx call http_get_bytes!: the body as bytes (0x00 0x7f 0x80 0xff 0xc3 0x28: not UTF-8), the headers of the meta, the n-th answer (.2 text, .3 timeout), 404 for no route. The log line is `http_get_bytes <url>` and the header lines.

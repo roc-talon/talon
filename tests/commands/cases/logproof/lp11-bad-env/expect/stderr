@@ -1,0 +1,2 @@
+tln: error[usage]: TALON_LOG_KEY: 'xyz' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>)
+tln: error[usage]: TALON_LOG_KEY: 'xyz' is not a log verifier key (the form is <name>+<8 hex digits>+<base64 key>)

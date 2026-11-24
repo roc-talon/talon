@@ -1,0 +1,1 @@
+tln: error[integrity]: the log of http://127.0.0.1:9 changed its history: the checkpoint of size 3 does not contain the checkpoint of size 1 that Talon kept on 2026-10-14 ($HOME/.local/share/talon/log/http_127.0.0.1_9/checkpoint). Talon wrote nothing. Report this to the registry operator.

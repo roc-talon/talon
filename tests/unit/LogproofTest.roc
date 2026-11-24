@@ -1,5 +1,7 @@
 import lib.LogKey
 import lib.LogProof
+import records.Release
+import records.Tlog
 
 LogproofTest :: [].{}
 
@@ -180,3 +182,201 @@ vec_root7 : Str
 vec_root7 = "19f84ee93c2757858d772d7fe8a95515806ebbdcc893ef3649818a6dfb7b49ca"
 
 # --- end of vectors ---
+
+# --- Slice 261c (docs/slices/261-log-inclusion-proofs.md section 14): the pure parts of the header check (R-LV1, R-LV3, R-LV7, R-LV9, R-LV10, R-LV11, R-IX8). ---
+
+# A release row of a registry answer (Registry R-AP1, R-AP13) with the fields that the check reads.
+row : U64, Str, Str, Str -> Release.Row
+row = |log_index, repo, version, hash| {
+	log_index,
+	hash,
+	group: "github.com/${repo}/releases/download/{v}/",
+	series: "1",
+	version,
+	url: "https://github.com/${repo}/releases/download/${version}/${hash}.tar.zst",
+	tag: Ok(version),
+	roc_version: Err(None),
+	repo: Ok(repo),
+	published_at: 1790848800000,
+	yanked: Bool.False,
+	yank_reason: Err(None),
+	withdrawn: Err(None),
+	provenance: ["ingest"],
+}
+
+json_old : Release.Row
+json_old = row(44, "acme/json", "2.0.0", "7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21")
+
+json_new : Release.Row
+json_new = row(25, "acme/json", "2.1.0", "4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq")
+
+parser_new : Release.Row
+parser_new = row(35, "acme/parser", "1.2.0", "EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt")
+
+check_of : Str, Release.Row -> LogProof.Check
+check_of = |text, r| { text, log_index: r.log_index, group: r.group, version: r.version, hash: r.hash, url: r.url }
+
+# R-LV1, Design R-SE2: only the new values with a registry row are checked: a value that the header has now is not; a URL with no row (another host) is not;
+# a candidate row that is not chosen is not; one URL of two aliases is checked once (the first alias); the order is the order of log_index.
+expect {
+	other = "https://example.org/acme/other/releases/download/1.0.0/4fuYsvs8fLQptnhMHwz9pYv7M1j3knJFyQSmR4o1aaUu.tar.zst"
+	got = LogProof.to_check({
+		before: [json_old.url, other],
+		after: [
+			{ alias: "parser", name: "acme/parser", url: parser_new.url },
+			{ alias: "json", name: "acme/json", url: json_new.url },
+			{ alias: "json2", name: "acme/json", url: json_new.url },
+			{ alias: "old", name: "acme/json", url: json_old.url },
+			{ alias: "other", name: "acme/other", url: "https://example.org/acme/other/releases/download/2.0.0/4fuYsvs8fLQptnhMHwz9pYv7M1j3knJFyQSmR4o1aaUu.tar.zst" },
+		],
+		rows: [json_old, json_new, parser_new, row(36, "acme/parser", "1.1.0", "u2J5ZhgwXSYn55Ac7xti1xFYVGz78yhBDqfZY2ZtFR6")],
+	})
+	got == [check_of("json: acme/json 2.1.0", json_new), check_of("parser: acme/parser 1.2.0", parser_new)]
+}
+
+# R-LV1: no new value gives no check (install with no change, R-SE2 sentence 2).
+expect LogProof.to_check({ before: [json_new.url], after: [{ alias: "json", name: "acme/json", url: json_new.url }], rows: [json_new] }) == []
+
+# R-LV9: read again up to 3 more times, after waits of 2, 4 and 8 s; then Behind (T5). A read that covers ends the reads.
+expect
+	[
+		LogProof.after_read({ read: 1, size: 1, need: 2 }),
+		LogProof.after_read({ read: 2, size: 1, need: 2 }),
+		LogProof.after_read({ read: 3, size: 1, need: 2 }),
+		LogProof.after_read({ read: 4, size: 1, need: 2 }),
+		LogProof.after_read({ read: 1, size: 2, need: 2 }),
+		LogProof.after_read({ read: 3, size: 50, need: 2 }),
+		LogProof.after_read({ read: 4, size: 2, need: 2 }),
+	]
+		== [Again(2000), Again(4000), Again(8000), Behind, Covers, Covers, Covers]
+
+# R-LV3, R-LV7, R-LV10: the tiles of a command, in order, no duplicate (the paths come from research/slice-261-vectors/vectors.mjs: entryTile, proofTiles, consistencyTiles).
+expect {
+	paths = |need| LogProof.tiles_of(need).map(Tlog.path)
+	[
+		paths({ kept: Err(None), size: 3, indexes: [2] }),
+		paths({ kept: Ok(1), size: 3, indexes: [2] }),
+		paths({ kept: Err(None), size: 300, indexes: [2, 290] }),
+		paths({ kept: Err(None), size: 36, indexes: [25, 33, 35, 25] }),
+		paths({ kept: Ok(5), size: 9, indexes: [7] }),
+		paths({ kept: Ok(300), size: 600, indexes: [550] }),
+		paths({ kept: Ok(3), size: 3, indexes: [2] }),
+	]
+		== [
+			["tile/entries/000.p/3", "tile/0/000.p/3"],
+			["tile/0/000.p/3", "tile/entries/000.p/3"],
+			["tile/entries/000", "tile/0/000", "tile/1/000.p/1", "tile/0/001.p/44", "tile/entries/001.p/44"],
+			["tile/entries/000.p/36", "tile/0/000.p/36"],
+			["tile/0/000.p/9", "tile/entries/000.p/9"],
+			["tile/0/001", "tile/1/000.p/2", "tile/0/002.p/88", "tile/entries/002.p/88"],
+			["tile/entries/000.p/3", "tile/0/000.p/3"],
+		]
+}
+
+hash_tile : Tlog.Tile
+hash_tile = { level: Hashes(0), index: 0, width: 2 }
+
+bundle_tile : Tlog.Tile
+bundle_tile = { level: Entries, index: 0, width: 2 }
+
+hash_bytes : List(U8)
+hash_bytes = (0.U8).until(64).collect()
+
+hash_text : Str
+hash_text = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\n202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f\n"
+
+bundle_bytes : List(U8)
+bundle_bytes = [0, 8].concat("a b c 1\n".to_utf8()).concat([0, 8]).concat("d e f 2\n".to_utf8())
+
+# R-IX8: the text form of the copies, and back.
+expect
+	[
+		LogProof.copy_text({ tile: hash_tile, bytes: hash_bytes }),
+		LogProof.copy_text({ tile: bundle_tile, bytes: bundle_bytes }),
+	]
+		== [Ok(hash_text), Ok("a b c 1\nd e f 2\n")]
+
+expect
+	[LogProof.copy_bytes(hash_tile, hash_text), LogProof.copy_bytes(bundle_tile, "a b c 1\nd e f 2\n")]
+		== [Ok(hash_bytes), Ok(bundle_bytes)]
+
+# R-IX8: bytes that are not `width` hashes or entries are not kept; a copy text that is not `width` lines of the form is not used.
+expect
+	[
+		LogProof.copy_text({ tile: hash_tile, bytes: hash_bytes.drop_last(1) }),
+		LogProof.copy_text({ tile: bundle_tile, bytes: [0, 8].concat("a b c 1\n".to_utf8()) }),
+	]
+		== [Err(BadTile), Err(BadTile)]
+
+expect
+	[
+		LogProof.copy_bytes(hash_tile, hash_text.drop_suffix("\n").concat("0\n")),
+		LogProof.copy_bytes(hash_tile, "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\n"),
+		LogProof.copy_bytes(hash_tile, hash_text.replace_each("0a0b", "0A0B")),
+		LogProof.copy_bytes(bundle_tile, "a b c 1\n"),
+	]
+		== [Err(BadCopy), Err(BadCopy), Err(BadCopy), Err(BadCopy)]
+
+# The failure of a check, as `<kind> <code> | <message> | <details>`.
+failure : Try(LogProof.Check, [None]), Try(U64, [None]), LogProof.Why -> Str
+failure = |release, size, why| {
+	f = LogProof.fail({ base: "http://127.0.0.1:9", release, size }, why)
+	"${f.kind.name()} | ${f.message} | ${f.details.map_ok(|d| d.render()) ?? "no details"}"
+}
+
+known : LogProof.Check
+known = check_of("known: acme/known 1.1.0", row(2, "acme/known", "1.1.0", "24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL"))
+
+details : Str, Str, Str, Str -> Str
+details = |reason, size, index, release| "{\"log\":\"http://127.0.0.1:9/log\",\"reason\":\"${reason}\",\"size\":${size},\"index\":${index},\"release\":${release}}"
+
+known_url : Str
+known_url = "\"https://github.com/acme/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst\""
+
+# R-LV2, R-LV11 T1, T2b, R-EC16: an entry that is not the row, a URL that is not the URL of the leaf.
+expect
+	[
+		failure(Ok(known), Ok(3), EntryDiffers("github.com/acme/known/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK")),
+		failure(Ok({ ..known, url: "https://github.com/evil/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst" }), Ok(3), UrlDiffers),
+	]
+		== [
+			"integrity | known: acme/known 1.1.0: the log of http://127.0.0.1:9 has another entry at log index 2: github.com/acme/known/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK. Talon wrote nothing. | ${details("entry-differs", "3", "2", known_url)}",
+			"integrity | known: acme/known 1.1.0: the registry http://127.0.0.1:9 gave the URL https://github.com/evil/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst, which is not the URL of its log entry. Talon wrote nothing. | ${details("url-differs", "3", "2", "\"https://github.com/evil/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst\"")}",
+		]
+
+# R-LV3, R-LV4, R-LV10, R-LV11 T2, T3, T4: the proof, the signature (the key `<name>+<key id>` and its source), the kept checkpoint.
+expect {
+	l9 = { name: "127.0.0.1:9/log", key_id: from_hex("56ce7b6e"), public_key: [] }
+	kept = "/h/.local/share/talon/log/http_127.0.0.1_9/checkpoint"
+	[
+		failure(Ok(known), Ok(3), NotIncluded),
+		failure(Ok(known), Err(None), BadSignature({ key: l9, source: Env })),
+		failure(Ok(known), Err(None), BadSignature({ key: l9, source: Config("/h/.config/talon/config.toml") })),
+		failure(Ok(known), Err(None), BadSignature({ key: builtin_key, source: BuiltIn })),
+		failure(Ok(known), Ok(3), NotConsistent({ kept: 1, date: "2026-10-14", path: kept })),
+	]
+		== [
+			"integrity | known: acme/known 1.1.0: the inclusion proof of log index 2 does not match the signed checkpoint of http://127.0.0.1:9 (size 3). Talon wrote nothing. | ${details("not-included", "3", "2", known_url)}",
+			"integrity | the checkpoint of the log of http://127.0.0.1:9 has no valid signature of 127.0.0.1:9/log+56ce7b6e (TALON_LOG_KEY). Talon wrote nothing. | ${details("bad-signature", "null", "null", "null")}",
+			"integrity | the checkpoint of the log of http://127.0.0.1:9 has no valid signature of 127.0.0.1:9/log+56ce7b6e (log-key in /h/.config/talon/config.toml). Talon wrote nothing. | ${details("bad-signature", "null", "null", "null")}",
+			"integrity | the checkpoint of the log of http://127.0.0.1:9 has no valid signature of registry.roc-talon.org/log+e5942107 (the built-in key). Talon wrote nothing. | ${details("bad-signature", "null", "null", "null")}",
+			"integrity | the log of http://127.0.0.1:9 changed its history: the checkpoint of size 3 does not contain the checkpoint of size 1 that Talon kept on 2026-10-14 (${kept}). Talon wrote nothing. Report this to the registry operator. | ${details("not-consistent", "3", "null", "null")}",
+		]
+}
+
+# R-LV9, R-LV11 T5, T6, T6b, T7, R-EC15, R-RG9 row 5: behind after 4 reads, no answer, a tile that is missing, --offline with no kept proof.
+expect
+	[
+		failure(Ok(known), Ok(1), Behind),
+		failure(Ok(known), Err(None), NoAnswer("status 404")),
+		failure(Ok(known), Err(None), NoAnswer("timeout")),
+		failure(Ok(known), Ok(3), TileMissing({ tile: "tile/0/000.p/3", cause: "status 404" })),
+		failure(Ok(known), Err(None), Offline),
+	]
+		== [
+			"network | known: acme/known 1.1.0 (log index 2) is not in the log of http://127.0.0.1:9 yet: the checkpoint has size 1 after 4 reads. Try again in a few minutes. | ${details("behind", "1", "2", known_url)}",
+			"network | the log of http://127.0.0.1:9 does not answer (status 404): Talon cannot check known: acme/known 1.1.0. Try again later, or use --registry direct. | ${details("no-answer", "null", "2", known_url)}",
+			"network | the log of http://127.0.0.1:9 does not answer (timeout): Talon cannot check known: acme/known 1.1.0. Try again later, or use --registry direct. | ${details("no-answer", "null", "2", known_url)}",
+			"network | the log of http://127.0.0.1:9 has no tile tile/0/000.p/3 for size 3 (status 404). Try again later. | ${details("tile-missing", "3", "null", "null")}",
+			"network | known: acme/known 1.1.0 has no kept log proof and --offline is set. Run the command without --offline. | ${details("offline", "null", "2", known_url)}",
+		]

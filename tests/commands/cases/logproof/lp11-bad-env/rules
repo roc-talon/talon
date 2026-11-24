@@ -1,0 +1,1 @@
+R-LV5 R-EV30 R-LV11 R-J7 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). TALON_LOG_KEY=xyz: exit 2, T8b, at the check point (after the closure query, a proposal), nothing written. Run 2: --json, reason bad-key.

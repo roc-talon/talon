@@ -1,0 +1,5 @@
+http_get_bytes http://127.0.0.1:9/log/tile/0/000.p/2
+  User-Agent: tln/0.0.1
+http_get_bytes http://127.0.0.1:9/log/tile/0/000.p/2
+http_get_bytes http://127.0.0.1:9/log/tile/0/000.p/2
+http_get_bytes http://127.0.0.1:9/log/tile/0/001

@@ -16,6 +16,23 @@ FakeJobs :: [].{
 		route_answer!(w, "GET", request.url, request.headers)
 	}
 
+	## Slice 261c (R-LV7, TESTING.md 2.3): the answer of the fake `http_get_bytes!`: the routes and the meta lines of `http_get!` (the n-th answer counts `http_get` and
+	## `http_get_bytes` lines of the URL as `GET`), the body as the bytes of the file. The log has the line `http_get_bytes <url>` and the header lines as for `http_get!`.
+	http_get_bytes! : Str, { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : List(U8) }, [Timeout, Failed(Str)])
+	http_get_bytes! = |w, request| {
+		FakeBase.log!(w, "http_get_bytes ${request.url}")
+		for (name, value) in request.headers {
+			FakeBase.log!(w, "  ${name}: ${value}")
+		}
+		match route_raw!(w, "GET", request.url, request.headers) {
+			Ok(a) => match a.body {
+				Text(text) => Ok({ status: a.status, headers: a.headers, body: text.to_utf8() })
+				File(file) => Ok({ status: a.status, headers: a.headers, body: route_bytes!(file) })
+			}
+			Err(e) => Err(e)
+		}
+	}
+
 	## Slice 200. The answer of the fake `http_send!`: the route of the method (`<route>.POST`, `<route>.PUT`, `<route>.DELETE`, and the plain `<route>` for `Get`),
 	## the same meta lines, and the n-th answer of the route. The log has the request body (see `FakeFx.roc`).
 	http_send! : Str, { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
@@ -332,6 +349,16 @@ output_of = |args| match args.find_first(|word| word.starts_with("--output=")) {
 	Err(_) => ""
 }
 
+## Slice 261c: the bytes of the body of a route (the rule of `route_body!`). A file that cannot be read is no bytes.
+route_bytes! : Str => List(U8)
+route_bytes! = |route| {
+	file = match Path.is_dir!(Path.utf8(route)) {
+		Ok(Bool.True) => "${route}/@"
+		_ => route
+	}
+	Path.read_bytes!(Path.utf8(file)) ?? []
+}
+
 ## Slice 046: the body of a route. A route that is a directory (a repo URL `repos/acme/none` that is also the dir of `repos/acme/none/releases`) has its answer in the file `<dir>/@`.
 route_body! : Str => Str
 route_body! = |route| match Path.is_dir!(Path.utf8(route)) {
@@ -371,7 +398,17 @@ case_safe = |text| {
 ## The answer of a route (slice 200 gives it the method and the n-th answer). The files of a route `<r>` (the file of the URL, with the query file first) are:
 ## `<r>` for `GET` and `<r>.<METHOD>` for another method; then `<file>.<n>` for the n-th request of the same method and URL (n from 2; no such file: `<file>`), each with its `.meta`.
 route_answer! : Str, Str, Str, List((Str, Str)) => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
-route_answer! = |w, method, url, request_headers| {
+route_answer! = |w, method, url, request_headers| match route_raw!(w, method, url, request_headers) {
+	Ok(a) => match a.body {
+		Text(text) => Ok({ status: a.status, headers: a.headers, body: text })
+		File(file) => Ok({ status: a.status, headers: a.headers, body: route_body!(file) })
+	}
+	Err(e) => Err(e)
+}
+
+## Slice 261c: the answer of a route with the file of its body (not read yet), so `http_get_bytes!` reads the bytes and the other calls read the text.
+route_raw! : Str, Str, Str, List((Str, Str)) => Try({ status : U16, headers : List((Str, Str)), body : [Text(Str), File(Str)] }, [Timeout, Failed(Str)])
+route_raw! = |w, method, url, request_headers| {
 	rest = url.drop_prefix("https://").drop_prefix("http://")
 	(path_part, query) = match rest.split_on("?") {
 		[p] => (p, "")
@@ -397,12 +434,12 @@ route_answer! = |w, method, url, request_headers| {
 		}
 	# The n-th request of this method and URL: the lines of `calls.log` that start like the line of this request (this request is already in the log).
 	n = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log")).keep_if(
-		|l| (l == "http_get ${url}" and method == "GET") or l.starts_with("http_send ${method} ${url} timeout="),
+		|l| ((l == "http_get ${url}" or l == "http_get_bytes ${url}") and method == "GET") or l.starts_with("http_send ${method} ${url} timeout="),
 	).len()
 	nth = "${route}.${n.to_str()}"
 	file = if (n > 1 and (FakeBase.exists!(nth) or FakeBase.exists!("${nth}.meta"))) nth else route
 	if !FakeBase.exists!(file) and !FakeBase.exists!("${file}.meta") {
-		Ok({ status: 404, headers: [], body: "{\"message\":\"Not Found\"}" })
+		Ok({ status: 404, headers: [], body: Text("{\"message\":\"Not Found\"}") })
 	} else {
 		meta = FakeBase.lines(FakeBase.read_or_empty!("${file}.meta"))
 		status = match meta.find_first(|l| l.starts_with("status ")) {
@@ -437,14 +474,14 @@ route_answer! = |w, method, url, request_headers| {
 			},
 		)
 		if broken {
-			Ok({ status: 599, headers: [], body: "wrong header" })
+			Ok({ status: 599, headers: [], body: Text("wrong header") })
 		} else {
 			match fails {
 				Ok("error timeout") => Err(Timeout)
 				Ok(l) => Err(Failed(l.drop_prefix("error failed ")))
 				Err(_) => match (etag, sent) {
-					(Ok((_, tag)), Ok((_, same))) if tag == same => Ok({ status: 304, headers, body: "" })
-					_ => if (status == 304 or status == 204) Ok({ status, headers, body: "" }) else Ok({ status, headers, body: route_body!(file) })
+					(Ok((_, tag)), Ok((_, same))) if tag == same => Ok({ status: 304, headers, body: Text("") })
+					_ => if (status == 304 or status == 204) Ok({ status, headers, body: Text("") }) else Ok({ status, headers, body: File(file) })
 				}
 			}
 		}

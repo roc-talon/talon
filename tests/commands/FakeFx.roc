@@ -41,6 +41,7 @@ import FakeJobs
 ## `http/` (slice 003): a route is the file `http/<host>/<path>` or, with a query, `http/<host>/<path>?<query>` (the query file first). File names in the repo: `?` is `%3F`, `:` is `%3A`, `\` is `%5C` and `%` is `%25` (Windows refuses `? :` and others in a name, so the file of `http/127.0.0.1:1/x?page=2` is `http/127.0.0.1%3A1/x%3Fpage=2`). The runner decodes the names when it copies the case (`decode_names` in `tests/lib.sh`, the one place of the rule), so this module sees the decoded names. The body is the
 ## file (slice 046: when the route is a directory, the file `<dir>/@`, for a URL that is also the parent of other routes). `<file>.meta` has the lines `status <n>`, `header <Name>: <value>`, `error timeout` and `error failed <text>` (a transport error). A route that has a
 ## header `ETag` answers 304 with no body to a request with the same `If-None-Match`. No file: status 404 and the body `{"message":"Not Found"}`.
+## Slice 261c: `http_get_bytes!` answers from the same routes with the bytes of the file; its log line is `http_get_bytes <url>` (TESTING.md 2.3), and the n-th answer counts it as a `GET`.
 ## The log has the line `http_get <url>` and then one line `  <Name>: <value>` for each header of the request, in order.
 ## Slice 200 (`http_send!`, `http_all!`, `sleep!`), the route form of TESTING 3.1: the same files, with three additions.
 ##   - The method is in the file name: `<route>` is for `Get`, `<route>.POST`, `<route>.PUT` and `<route>.DELETE` are for the other methods (`<route>.POST.meta` is its meta).
@@ -115,7 +116,7 @@ import FakeJobs
 ## | --- | --- |
 ## | `FakeFx` | The record, the table above, and the small calls: `args!`, `env_all!`, `cwd!`, `tty!`, `clock!`, `out!`, `err!`, `lock!`, `unlock!`, `programs!`, `random!`, `platform!`, `path_roc!`, `program_name!`, `ask!` |
 ## | `FakeFiles` | `read_files!`, `write_atomic!`, `list_dirs!`, `tree_info!`, `delete!`, `canonical!`, `rename!`, `make_dirs!`, `copy_tree!`, `copy_file!`, `hard_link!`, `sha256_file!` |
-## | `FakeJobs` | `http_get!`, `spawn_all!`, `probes!`, `exec!`, `exec_in!`, `spawn_detached!` |
+## | `FakeJobs` | `http_get!`, `http_get_bytes!` (slice 261c), `spawn_all!`, `probes!`, `exec!`, `exec_in!`, `spawn_detached!` |
 ## | `FakeDb` | `db_query!`, `db_write!` (slice 030): the store is the text file `compat.tsv` next to the db path |
 ## | `FakeBase` | The call log, `read_or_empty!`, `append!`, the text lines, `write_with_parents!`, `create_item!` |
 FakeFx :: [].{
@@ -180,6 +181,7 @@ FakeFx :: [].{
 		},
 		unlock!: |lock| FakeBase.log!(w, "unlock ${lock.item}"),
 		http_get!: |request| FakeJobs.http_get!(w, request),
+		http_get_bytes!: |request| FakeJobs.http_get_bytes!(w, request),
 		http_send!: |request| FakeJobs.http_send!(w, request),
 		http_all!: |batch| FakeJobs.http_all!(w, batch),
 		sleep!: |ms| FakeJobs.sleep!(w, ms),

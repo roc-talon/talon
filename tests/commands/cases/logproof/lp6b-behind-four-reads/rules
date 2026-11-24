@@ -1,0 +1,1 @@
+R-LV9 R-LV11 R-EC15 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). The checkpoint has size 1 on each of the 4 reads (sleep 2000, 4000, 8000 before reads 2 to 4): exit 15, T5, nothing written.

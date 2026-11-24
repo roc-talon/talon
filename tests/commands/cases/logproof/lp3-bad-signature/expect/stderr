@@ -1,0 +1,2 @@
+tln: error[integrity]: the checkpoint of the log of http://127.0.0.1:9 has no valid signature of 127.0.0.1:9/log+56ce7b6e (TALON_LOG_KEY). Talon wrote nothing.
+tln: error[integrity]: the checkpoint of the log of http://127.0.0.1:9 has no valid signature of 127.0.0.1:9/log+56ce7b6e (TALON_LOG_KEY). Talon wrote nothing.

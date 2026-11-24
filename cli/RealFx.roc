@@ -52,6 +52,7 @@ real_fx = |args, token| Fx.{
 	lock!: |item, mode| RealLocks.take_lock!(token, item, mode),
 	unlock!: RealLocks.release_lock!,
 	http_get!: http_get!,
+	http_get_bytes!: http_get_bytes!,
 	http_send!: http_send!,
 	http_all!: |batch| http_all!(token, batch),
 	sleep!: sleep!,
@@ -185,6 +186,27 @@ ask! = |prompt| {
 	match Stdin.line!() {
 		Ok(line) => Ok(line)
 		Err(_) => Err(EndOfInput)
+	}
+}
+
+## Slice 261c (R-LV7, TESTING.md 2.3): `http_get!` with the body as bytes (the log tiles). The timeout and the errors are those of `http_get!`.
+http_get_bytes! : { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : List(U8) }, [Timeout, Failed(Str)])
+http_get_bytes! = |req| {
+	base = Request.from_method(GET).with_uri(req.url).with_timeout(TimeoutMilliseconds(20000))
+	request = req.headers.fold(base, |r, (name, value)| r.add_header(name, value))
+	match Http.send!(request, {}) {
+		Ok(response) => Ok({
+			status: Response.status(response),
+			headers: Response.headers(response).map(|h| (h.name, h.value)),
+			body: Response.body(response),
+		})
+		Err(InvalidUrl(_)) => Err(Failed("invalid URL"))
+		Err(HttpErr(Timeout)) => Err(Timeout)
+		Err(HttpErr(NetworkError)) => Err(Failed("network error"))
+		Err(HttpErr(BadBody)) => Err(Failed("bad body"))
+		Err(HttpErr(Other(bytes))) => Err(Failed(Str.from_utf8_lossy(bytes)))
+		Err(HttpErr(other)) => Err(Failed(Str.inspect(other)))
+		Err(Interrupted) => Err(Failed("interrupted"))
 	}
 }
 

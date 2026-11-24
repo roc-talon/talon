@@ -1,0 +1,5 @@
+== add acme/known --no-check --file p1/main.roc
+exit 16
+== add acme/known --no-check --file p1/main.roc --json
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"integrity","code":16,"message":"the checkpoint of the log of http://127.0.0.1:9 has no valid signature of 127.0.0.1:9/log+56ce7b6e (TALON_LOG_KEY). Talon wrote nothing.","details":{"log":"http://127.0.0.1:9/log","reason":"bad-signature","size":null,"index":null,"release":null}}}
+exit 16

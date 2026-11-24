@@ -1,0 +1,5 @@
+== add acme/known --no-check --file p1/main.roc
+exit 15
+== add acme/known --no-check --file p1/main.roc --json
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"network","code":15,"message":"the log of http://127.0.0.1:9 has no tile tile/0/000.p/3 for size 3 (status 404). Try again later.","details":{"log":"http://127.0.0.1:9/log","reason":"tile-missing","size":3,"index":null,"release":null}}}
+exit 15

@@ -1,0 +1,1 @@
+R-IX8 R-IX6 R-LV6 R-LV7 R-LV8 (slice 261c, entry `commands`; the world of registry/ix6-update-offline: `tln update --offline` moves json to 2.1.0 (log index 25) and parser to 1.2.0 (log index 35) from the kept index copies of http://127.0.0.1:9). The kept checkpoint (size 36) and the tile copies prove both releases: no request, no write, exit 0.

@@ -1,4 +1,5 @@
 import records.Closure as Wire
+import records.Release as WireRelease
 import Add
 import Age
 import Answer
@@ -234,7 +235,8 @@ ResolveBase :: [].{
 
 	## Slice 206 (R-IX6, Design Q391): `missing` is true when the name has no index at all (`direct`: no cached page 1 offline; a registry offline: no kept copy for any group of the name).
 	## `missing_forms` are the group forms (`Ident.group.form`) that have no kept copy offline with a registry: each acts as in R-DI11, and the other groups use their copies. `direct` and an answer give `[]`.
-	Candidates : { name : Str, list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), pages : List(Str) }
+	# Slice 261c (R-LV1): `rows` are the registry rows of the kept copies that `--offline` read (with a closure answer the rows are in the answer; else `[]`). The log check reads their `log_index`.
+	Candidates : { name : Str, list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), pages : List(Str), rows : List(WireRelease.Row) }
 
 	# An entry of the header that `add` found and keeps (R-AD21).
 	Kept : { alias : Str, name : Str, version : Str, note : Str }

@@ -1,0 +1,5 @@
+== add acme/known --no-check --file p1/main.roc
+exit 15
+== add acme/known --no-check --file p1/main.roc --json
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"network","code":15,"message":"the log of http://127.0.0.1:9 does not answer (timeout): Talon cannot check known: acme/known 1.1.0. Try again later, or use --registry direct.","details":{"log":"http://127.0.0.1:9/log","reason":"no-answer","size":null,"index":2,"release":"https://github.com/acme/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst"}}}
+exit 15

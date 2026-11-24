@@ -9,6 +9,7 @@ import L2Util
 ## | `send <GET, POST, PUT or DELETE> <url> [h:<Name>=<value>]... [timeout=<s>] [body=<text>]` | `http_send!`. `body=` is last and holds the rest of the line (`\n` is a new line, `\\` is a backslash). The default timeout is 20. | `status <n>`, `header <Name>: <value>` for each header, `body <text>`. Or `err <Timeout or Failed(text)>`. |
 ## | `all <limit> <METHOD>:<url>...` | `http_all!` with one request for each word (no header, no body, timeout 20) and the `tmp_dir` `<w>/home/.cache/roc/talon/tmp` (slice 200, R-DA8). `all 0 ...` has limit 0 (Design Q226). | `result <i> status <n> body <text>` or `result <i> err <the error>`, in the order of the list |
 ## | `sleep <ms>` | `sleep!` | `slept <ms>` |
+## | `bytes <url> [h:<Name>=<value>]...` | `http_get_bytes!` (slice 261c, TESTING.md 2.3) | `status <n>`, `header <Name>: <value>` for each header, `bytes <n> <hex of the bytes>`. Or `err <the error>`. |
 ##
 ## It prints `== <line>` first. Exit code 0.
 L2Http :: [].{
@@ -61,6 +62,26 @@ L2Http :: [].{
 							Ok(answer) => fx.out!("result ${i.to_str()} status ${answer.status.to_str()} body ${answer.body}\n")
 							Err(err) => fx.out!("result ${i.to_str()} err ${Str.inspect(err)}\n")
 						}
+					}
+				}
+				["bytes", url, .. as rest] => {
+					headers = rest.keep_oks(
+						|word| match word.drop_prefix("h:").split_first("=") {
+							Ok({ before, after }) if word.starts_with("h:") => Ok((before, after))
+							_ => Err(NotHeader)
+						},
+					)
+					match fx.http_get_bytes!({ url, headers }) {
+						Ok(answer) => {
+							fx.out!("status ${answer.status.to_str()}\n")
+							for (name, value) in answer.headers {
+								fx.out!("header ${name}: ${value}\n")
+							}
+							digits = "0123456789abcdef".to_utf8()
+							hex = answer.body.join_map(|b| [digits.get((b // 16).to_u64()) ?? 48, digits.get((b % 16).to_u64()) ?? 48])
+							fx.out!("bytes ${answer.body.len().to_str()} ${Str.from_utf8(hex) ?? "?"}\n")
+						}
+						Err(err) => fx.out!("err ${Str.inspect(err)}\n")
 					}
 				}
 				["sleep", ms] => {

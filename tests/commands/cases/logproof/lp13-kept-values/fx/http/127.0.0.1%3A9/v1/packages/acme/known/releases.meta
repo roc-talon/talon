@@ -1,0 +1,6 @@
+status 200
+header Content-Type: application/json
+header ETag: "r1"
+header Cache-Control: max-age=60
+require-none authorization
+require-none cache-control

@@ -1,0 +1,2 @@
+== add acme/known --no-check --file p1/main.roc
+exit 15

@@ -1,0 +1,1 @@
+R-LV3 R-LV11 R-EC16 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). The served level 0 tile has one changed byte in the hash of index 1: the proof does not give the signed root: exit 16, T2, nothing written.

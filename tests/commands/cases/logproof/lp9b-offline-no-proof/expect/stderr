@@ -1,0 +1,2 @@
+index: cached at 2026-10-14T15:00:00Z
+tln: error[network]: json: acme/json 2.1.0 has no kept log proof and --offline is set. Run the command without --offline.

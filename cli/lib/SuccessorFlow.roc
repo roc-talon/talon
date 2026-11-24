@@ -127,7 +127,7 @@ SuccessorFlow :: [].{
 						_ => ClosureIndex.candidates({ releases: ClosureIndex.live({ releases: end_rows, held: facts.known }), artifacts: [], name: end })
 					}
 					# Step 5.
-					$found = $found.keep_if(|c| c.name != end).append({ name: end, list, missing: Bool.False, missing_forms: [], pages: [] })
+					$found = $found.keep_if(|c| c.name != end).append({ name: end, list, missing: Bool.False, missing_forms: [], pages: [], rows: [] })
 					$scoped = $scoped.append(moved)
 					$follows = $follows.append({ alias, name: end })
 				}

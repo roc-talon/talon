@@ -27,6 +27,7 @@ import Probe
 ## | `lock!`, `unlock!` | The lock interface of CLI 7.4 (R-CC3). The real `Fx` makes the lock directory (R-CC12). |
 ## | `with_lock!` | Not a field. Takes a lock, runs a body, and always releases the lock (R-CC3). |
 ## | `http_get!` | One small HTTP GET with a timeout of 20 s (CLI 7.5, R-DA1, R-CC12). Not for archives. |
+## | `http_get_bytes!` | `http_get!` with the body as bytes (slice 261c: the log tiles, CLI 7.6 R-LV7, TESTING.md 2.3) |
 ## | `http_send!` | One small HTTP request with a method, a body and a timeout (slice 200: the registry writes, Registry R-AP8 to R-AP10, R-AP23, R-AP45) |
 ## | `http_all!` | A list of requests, at most `limit` at the same time, the results in the order of the list (slice 200, CLI 2 R-AD35 step 3, CLI 7.5 R-DA5) |
 ## | `sleep!` | Waits some milliseconds (slice 200: the waits of Registry R-AP34, the poll of the device flow) |
@@ -67,6 +68,7 @@ Fx := {
 	lock! : Str, [Wait, NoWait] => [Held(Lock), Busy],
 	unlock! : Lock => {},
 	http_get! : { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)]),
+	http_get_bytes! : { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : List(U8) }, [Timeout, Failed(Str)]),
 	http_send! : { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)]),
 	http_all! : { requests : List({ method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 }), limit : U64, tmp_dir : Str } => List(Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])),
 	sleep! : U64 => {},
@@ -148,6 +150,10 @@ Fx := {
 	http_get! = |Fx.{ http_get!: f, .. }, request| f(request)
 
 	## Slice 200. One request. `method` is `Get`, `Post`, `Put` or `Delete`. `body` is the text of the request body (the empty text: no body).
+	## Slice 261c (R-LV7): `http_get!` with the body as bytes (a hash tile is binary). The timeout and the errors are those of `http_get!`.
+	http_get_bytes! : Fx, { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : List(U8) }, [Timeout, Failed(Str)])
+	http_get_bytes! = |Fx.{ http_get_bytes!: f, .. }, request| f(request)
+
 	## `timeout_s` is the time limit in seconds. The answer and the errors are those of `http_get!`: a status of 400 or more is an answer.
 	## The real `Fx` adds no header: `Content-Type` and `User-Agent` are in `headers` (the pure code of `Registry` makes them, R-AP23, R-AP45).
 	http_send! : Fx, { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])

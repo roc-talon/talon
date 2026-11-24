@@ -1,0 +1,1 @@
+R-LV7 R-LV11 R-EC15 R-J7 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). The level 0 tile of size 3 answers 404: exit 15, T6b with the tile path and `status 404`, nothing written. Run 2: --json, error.details (index and release null, a proposal).

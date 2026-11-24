@@ -1,0 +1,14 @@
+{
+ "host": "registry.roc-talon.org",
+ "index_dir": "https_registry.roc-talon.org",
+ "leaves": {
+  "1": "github.com/acme/known/releases/download/{v}/ 1.0.0 5UVYbRk4zTJP7MLG5AAaTwK2TmX3U1bdndvNzddMyTaV 1790848800000",
+  "2": "github.com/acme/known/releases/download/{v}/ 1.1.0 24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL 1790848800000"
+ },
+ "serve": [
+  {
+   "file": "checkpoint",
+   "size": 3
+  }
+ ]
+}

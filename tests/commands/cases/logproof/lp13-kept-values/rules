@@ -1,0 +1,1 @@
+R-LV1 (Design R-SE2) (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). The header has known 1.1.0 already. install and update write no new value, so nothing is checked: no log request (the log has no route, so a request would fail the run).

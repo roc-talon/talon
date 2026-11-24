@@ -1,0 +1,12 @@
+== bytes http://127.0.0.1:9/log/tile/0/000.p/2 h:User-Agent=tln/0.0.1
+status 200
+header Content-Type: application/octet-stream
+bytes 6 007f80ffc328
+== bytes http://127.0.0.1:9/log/tile/0/000.p/2
+status 200
+bytes 2 410a
+== bytes http://127.0.0.1:9/log/tile/0/000.p/2
+err Timeout
+== bytes http://127.0.0.1:9/log/tile/0/001
+status 404
+bytes 23 7b226d657373616765223a224e6f7420466f756e64227d

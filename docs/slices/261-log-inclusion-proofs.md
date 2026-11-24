@@ -375,3 +375,161 @@ Second run: all 13 killed. On the green code: records 206 tests pass on both com
 | C2 | The strict (canonical) base64 rejects a key text with a newline at the end | `LogkeyTest` has this case as `BadKey` on purpose; see 261c below |
 | C3 | Only the ASCII space is rejected in a key name (Go rejects each Unicode space) | No test has a non-ASCII space; the human decides |
 | N1 | For 261c: the key text from `config.toml`, `TALON_LOG_KEY` or the built-in constant is trimmed of the white space around it before `LogKey.parse_verifier_key` | 261c test plan: a gap test in `LogKeyTest` / L2 `lp11`: `TALON_LOG_KEY=" <key>\n"` and a `log-key` with spaces around the key pass; a key with a space inside is still exit 2 or 19 |
+
+## 14. 261c: the check in the header path (test agent, 2026-11-24)
+
+Status: tests (red). Phase 1 of 261c. The code agent writes `cli/lib/LogCheck.roc` (or a name of its choice), the bodies of the stubs below, the real `http_get_bytes!`, the hook before `settle!` in `InstallFlow.finish!`, and the key `log-key` in `ConfigToml` (`config_keys`, so no unknown-key warning).
+
+### 14.1 Files
+
+| File | Change |
+| --- | --- |
+| `tests/tools/mk-log.mjs` (new) | The fake log of an L2 case from `<case>/mk-log.json`: the served checkpoints (`checkpoint`, `checkpoint.<n>`), the served tiles (binary, length-prefixed bundles), a changed byte (`tamper`), a missing tile (`omit`), the kept checkpoint and the text copies of R-IX8 in `given/home` (`kept`, also of another tree: a fork). It prints `TALON_LOG_KEY=<key>`. Test seeds only (`talon slice 261c test key L`, `... M`); the real signer is never read. |
+| `cli/lib/Fx.roc` | The field and the method `http_get_bytes!` (F7, TESTING.md 2.3). |
+| `cli/RealFx.roc` | `http_get_bytes!` stub: `crash "todo"` (the code agent writes it; L3 `fx/http-bytes` is in a later step of 261c). |
+| `tests/commands/FakeJobs.roc` | `http_get_bytes!`: the routes, meta lines and n-th answers of `http_get!`; the body is the bytes of the file. The log line is `http_get_bytes <url>` and the header lines. The n-th answer counts `http_get` and `http_get_bytes` lines of the URL as `GET`. `route_answer!` is split into `route_raw!` (the answer with the body file not read) and a text read, with no change for old calls (768 old L2 cases pass). |
+| `tests/commands/FakeFx.roc` | The record field and the doc rows. |
+| `tests/commands/L2Http.roc` | The `http` entry line `bytes <url> [h:<Name>=<value>]...` (prints `bytes <n> <hex>`). |
+| `cli/lib/LogKey.roc` | `builtin_text` (the line of `secrets/log-key-verifier`), `Source`, stub `choose`. |
+| `cli/lib/LogProof.roc` | `Check`, `Why`, stubs `to_check`, `after_read`, `tiles_of`, `copy_text`, `copy_bytes`, `fail`. |
+| `tests/unit/LogkeyTest.roc`, `tests/unit/LogproofTest.roc` | 20 new expects (2 guards pass, 18 red). |
+| `tests/commands/cases/logproof/` (new) | 22 L2 cases (below). |
+| `tests/commands/cases/registry/rg2-config-direct`, `rg2-default-registry`, `rg2-example-add-short` | A fake log, `TALON_LOG_KEY` with the name `registry.roc-talon.org/log`, `mk-log.json`, the new calls and copies in `expect/` (14.5). |
+| `research/slice-261c-tests/` | `mk-cases.py` (the inputs of the logproof cases), `mk-expect.py` + `mkexpectlib.py` (the hand rules that write the expected files from the output of the code before 261c), `mk-old.py` (the 3 old cases), `check-log.mjs` (a node check of a fake log: signature, root, leaves). |
+
+### 14.2 L0 (pure)
+
+| Function | Expects | Rules |
+| --- | --- | --- |
+| `LogKey.choose` (+ 2 guards: the test keys parse, `builtin_text` is the line of the file) | the built-in key only for `https://registry.roc-talon.org`; none for `127.0.0.1:9`; a set key for its `<host>:<port>/log`; a set key of another registry does not replace the built-in key; a set key with the built-in name replaces it (env and config); TALON_LOG_KEY wins over log-key (only it is read); N1 trims (space, tab, newline); bad env: exit 2, T8b, details `bad-key`; bad config: exit 19, T8 with `<path>: line <n>`; a space inside the key | R-LV5, R-EV30, R-LY4, R-TF4, R-LV11, N1 |
+| `LogProof.to_check` | new values with a registry row only; a value in the header now, a URL with no row, a row not chosen: not checked; one URL once; order of `log_index`; no new value: `[]` | R-LV1, R-SE2 |
+| `LogProof.after_read` | `Again(2000)`, `Again(4000)`, `Again(8000)`, `Behind`, `Covers` | R-LV9 |
+| `LogProof.tiles_of` | consistency tiles first, then for each index the entry bundle and the proof tiles, no duplicate (the paths are checked with `research/slice-261-vectors/vectors.mjs`) | R-LV3, R-LV7, R-LV10 |
+| `LogProof.copy_text`, `copy_bytes` | the text form of a hash tile and of an entry bundle, and back; bad bytes `BadTile`; bad text (63 hex digits, too few lines, upper case, too few entries) `BadCopy` | R-IX8 |
+| `LogProof.fail` | T1, T2, T2b, T3 (3 sources), T4, T5, T6 (404, timeout), T6b, T7: kind, text, `error.details` | R-LV11, R-LV12, R-EC15, R-EC16 |
+
+### 14.3 The proposal of the check calls (the L2 `calls.log` follows it)
+
+The check runs in `InstallFlow.finish!` just before `settle!` (after the pick, the notes, the closure walk and `PatchApply.run!`; before the ladder, the prompts and the writes). With no release to check (`to_check` gives `[]`) or no key (`choose` gives `NoKey`), it makes no `Fx` call. The key is chosen there too, so a bad setting stops the run at this point (after the closure query).
+
+| # | Call | When |
+| --- | --- | --- |
+| 1 | `read_files <data>/talon/log/<origin>/checkpoint` | Always (R-LV6, R-LV10). `<data>` is `$XDG_DATA_HOME`, else `~/.local/share` (R-LY7); `<origin>` is the R-IX1 name. |
+| 2 | `http_get <base>/log/checkpoint` with `User-Agent: tln/<version>` | When the kept checkpoint is missing or does not cover the largest `log_index`. The checkpoint is text (R-AP23), so it is `http_get!`, not `http_get_bytes!`. Each read: signature (T3) first, then `after_read`: `sleep <ms>` and read again (R-LV9). With `--offline`: no read, T7. |
+| 3 | `read_files <copy of each tile of tiles_of>` | One call with all the tiles, in the order of `tiles_of` (`kept` is the kept size only when step 2 read a new checkpoint). |
+| 4 | `http_get_bytes <base>/log/<tile path>` with `User-Agent` | For each tile with no copy (or a copy that `copy_bytes` refuses), one at a time, in the same order. A non-200 or an error: T6b at once. With `--offline`: T7. |
+| 5 | (T4 only) `list_dirs <data>/talon/log/<origin>` | The date of the kept file (its mtime, as `YYYY-MM-DD` UTC). |
+| 6 | `write_atomic <new tile copies...> <checkpoint>` | After the consistency check (T4) and, for each release, the entry check (T1, T2b) and the inclusion check (T2) pass. Only the tiles that step 4 read, then the checkpoint when step 2 read it. Also with `--dry-run` (question Q261c-2). |
+
+### 14.4 L2 cases (`tests/commands/cases/logproof/`)
+
+Each case has `rules` (the rule ids) and, when it has a log, `mk-log.json`. The base world is `registry/ad35-add-latest` (`add acme/known --no-check`: known 1.1.0, log index 2, registry `http://127.0.0.1:9`; log size 3) or `registry/ix6-update-offline` (lp9, lp9b).
+
+| Case | Checks | Exit |
+| --- | --- | --- |
+| `lp0-fake-bytes` | the fake `http_get_bytes!`: bytes above 0x7F and not UTF-8, meta headers, n-th answer, timeout, 404 (passes now: a harness case) | 0 |
+| `lp1-add-proof` | success: calls 1 to 4 and 6, the copies and the checkpoint in the tree, the header written, no new output (R-LV12) | 0 |
+| `lp2-kept-copies` | the kept checkpoint and copies: no request, no write | 0 |
+| `lp3-bad-signature` | T3, then `--json` (details with null size, index, release) | 16 |
+| `lp4-entry-differs` | T1 | 16 |
+| `lp5-tile-tampered` | T2 | 16 |
+| `lp6-behind` | reads 1 and 2 behind, read 3 covers: `sleep 2000`, `sleep 4000` | 0 |
+| `lp6b-behind-four-reads` | T5 after 4 reads (`sleep 2000`, `4000`, `8000`) | 15 |
+| `lp7-no-answer` | T6 `status 404`, then `--json` T6 `timeout` | 15 |
+| `lp7b-tile-missing` | T6b, then `--json` | 15 |
+| `lp8-fork` | T4: kept size 1 of another tree, served size 3; the consistency tile first; the date from `fx/mtimes` | 16 |
+| `lp9-offline` | `--offline` with the kept proof of 2 releases: no request | 0 |
+| `lp9b-offline-no-proof` | T7 for the first release by `log_index` | 15 |
+| `lp10-no-key` | a key of `127.0.0.1:8/log` only: no check (passes now: a guard) | 0 |
+| `lp11-bad-env` | `TALON_LOG_KEY=xyz`: T8b, then `--json` | 2 |
+| `lp11b-bad-config` | `log-key = "xyz"`: T8 (`line 2`), then `--json` | 19 |
+| `lp11c-trimmed-env` | N1: TALON_LOG_KEY with a space before and a tab after: the proof of lp1 | 0 |
+| `lp11d-trimmed-config` | N1: log-key with spaces around: the proof of lp1 | 0 |
+| `lp11e-space-inside` | N1: a space inside the key in config.toml: T8 | 19 |
+| `lp12-dry-run-json` | `--dry-run` (and `--no-check`) check too: T1, then `--dry-run --json` details | 16 |
+| `lp13-kept-values` | `install` and `update` with known 1.1.0 in the header: no log request (R-SE2; passes now: a guard) | 0 |
+| `lp15-url-differs` | T2b: the row URL names another repository | 16 |
+
+Not made: `lp14-default-registry` (the 3 old cases of 14.5 are this case), `lp16`/`lp17` (261d). The L2 exit is always 0 for the `commands` entry; the command exits are the `exit <n>` lines of `stdout`.
+
+### 14.5 The old cases on `registry.roc-talon.org`
+
+17 cases name the default registry. A key with another name does not remove the built-in key (R-LV5), so a case that writes a new value from the default registry needs a fake log and a key with the name `registry.roc-talon.org/log` (it replaces the built-in key). Only 3 cases reach the check:
+
+| Case | Why it changes | Change |
+| --- | --- | --- |
+| `rg2-config-direct` | run 3 (`--registry https://registry.roc-talon.org`) moves json, parser, pf | log of size 36 (leaves 25, 33, 35); run 3 gets calls 1 to 4 and 6; the copies and the checkpoint in `tree.diff` |
+| `rg2-default-registry` | runs 1 and 3 move json (log index 25) | run 1: calls 1 to 4 and 6; run 3: calls 1 and 3 (kept) |
+| `rg2-example-add-short` | runs 1 and 2 add known 1.1.0 (log index 2) | log of size 3; run 1: calls 1 to 4 and 6; run 2: calls 1 and 3 |
+
+No change (no new value from a registry answer, or the run stops or falls back before the pick): `rg9-add-full-down` (exit 2), `rg9-closure-429` (15), `rg9-closure-503`, `rg9-default-down`, `rg9-install-note` (fall back to direct), `rg9-later-down` (15), `rg9-list-then-closure`, `rg9-outdated-note` (`outdated` writes nothing), `rg9-login-down`, `rg9-logout-down` (share), `rg9-set-down` (15), `rg9-short-down` (2), `rg9-upgrade-list-then-closure` (falls back to direct), `rg9-toolchains-down` (`roc update`: compilers are 261d). The stdout and stderr of the 3 changed cases do not change (R-LV12).
+
+### 14.6 Red state (capped scope, nightly 03dce41, 2026-11-24)
+
+| Run | Result |
+| --- | --- |
+| `roc check cli/main.roc`, `roc check tests/commands/main.roc` | pass |
+| `scripts/test.sh check fmt l0 l3` | check, fmt (after `roc fmt` of the 2 test files), l3 pass; l0: `l0-9` 229 tests, 211 pass, 18 fail, each the crash `todo`; the other drivers pass. WARN: l0 took 11.4 s (budget 10 s) with the 20 new expects. |
+| `tests/commands/run.sh` (all) | 768 pass, 22 fail: the 19 red logproof cases and the 3 changed old cases. Each fails because no check runs (the header is written, exit 0, no log call). `lp0`, `lp10`, `lp13` pass. |
+| `scripts/test.sh selftest` | pass (the new files are not in git yet) |
+| `MISSING=1 scripts/rules.sh R-LV R-EV30 R-IX8` | no rule without a test |
+
+### 14.7 How the expected files were made
+
+No expected file of a new behavior was baked with `UPDATE=1`. `mk-expect.py` takes the output of the code before 261c for the same case (a run of `tests/commands/run.sh`), keeps the calls up to the closure query, inserts the calls of 14.3, and writes the texts T1 to T8b and the `--json` errors by hand. For a case whose run 1 fails, today's run 2 is not the run after a failure (today run 1 wrote the header), so run 2 is made from run 1 by the rules of the second runs of `registry/rg2-example-add-short` (`again` in `mk-expect.py`: no `tty` with `--json`, no projects.json write, no version job, the kept `repo.json`, the fresh R-AP1 copy). The tree diffs come from `tree_diff` of the work dir with the copies added (the copy texts from `mk-log.mjs`). I read each expected file.
+
+### 14.8 Review points (TW24 proposals)
+
+| # | Point | Proposal in the tests |
+| --- | --- | --- |
+| P1 | The order of the calls (14.3) | one `read_files` of the kept checkpoint, `http_get!` for the checkpoint, one `read_files` of all tile copies, then `http_get_bytes!` one at a time, all tiles before the checks, one `write_atomic` (tiles, then checkpoint) |
+| P2 | `<date>` of T4 | the mtime of the kept file (`list_dirs` of its dir) as `YYYY-MM-DD` UTC |
+| P3 | `<tile path>` of T6b | `tile/0/000.p/3` (the path of tlog-tiles, no `/log/`) |
+| P4 | `null` members of `error.details` | a member is null when the text does not name it: `size` null for T3, T6, T7; `index` and `release` null for T3, T4, T6b, bad-key |
+| P5 | The order of the releases | `log_index` ascending (the first failure in this order is reported) |
+| P6 | `'<text>'` of T8 and T8b | the trimmed text |
+| P7 | When a bad key stops the run | at the check point (after the closure query), and only when there is a release to check (`choose` is called there) |
+
+### 14.9 Questions (TW17)
+
+| Id | Question | Options | What the tests assume now |
+| --- | --- | --- | --- |
+| Q261c-1 | A bad `log-key` in `config.toml` while `TALON_LOG_KEY` is set: exit 19, or is `config.toml` not read? R-EV30 and R-LY4 give the priority, not the check. | (a) Not read (as `registry`, Design Q439). (b) Exit 19 always. | (a): one expect in `LogkeyTest` (`chosen(... env: Ok(key_l9), config: at3("xyz"))`). |
+| Q261c-2 | Does `--dry-run` write the log copies and the kept checkpoint? R-LV7 and R-IX8 say "after the proof passes"; R-LV8 says the check runs with `--dry-run`; the design does not say if a dry run writes them. The index copies of R-IX2 are written in a dry run today. | (a) Yes, as the index copies. (b) No: a dry run writes nothing in the data dir. | (a): `rg2-default-registry` and `rg2-example-add-short` (run 1 writes, the next run uses the kept proof) and `rg2-config-direct`. With (b), these 3 cases change (no write, the next run reads again). |
+
+## 15. 261c: Disputes (code agent, 2026-11-24)
+
+Code state: L0 229/229 (l0-9), L2 786 pass and 4 fail (the 4 below), L3 pass, `check fmt w0` pass. 18 of the 22 logproof cases and the 3 old rg2 cases pass. The 4 failing cases are test faults (TW18: not edited by the code agent).
+
+| Case | Fault | Proposed fix |
+| --- | --- | --- |
+| `lp9-offline`, `lp9b-offline-no-proof` | The existing offline code prints `index: cached at 2026-10-14T15:00:00Z` on stderr (as `registry/ix6-update-offline`, R-DI12). The log check adds no output. `expect/stderr` of both cases lacks the line (lp9b: the line is before the `tln: error` line). The calls, stdout, exit and tree pass. | Add the line to `expect/stderr`. |
+| `lp7-no-answer` | `fx/env` has no `TALON_LOG_KEY` (lp1 has it) and there is no `mk-log.json`, so the registry `127.0.0.1:9` has no key: no check (R-LV5, Q261-4), exit 0. | Add `TALON_LOG_KEY=127.0.0.1:9/log+56ce7b6e+AVe39KgFjJZCyKJq5RMF6DDELMicWhqw/y2J3GSpbE2P` to `fx/env`. |
+| `lp15-url-differs` | The pick never reaches the check. `Ident.of_url(row.url)` gives the group form `github.com/evil/known/...`, which is not the group of `acme/known`, so `PickIndex` drops the 1.1.0 candidate and picks 1.0.0 (a valid row with log index 1, so the check passes and Talon writes the 1.0.0 URL). The URL check (Q261-11) is reachable only for a URL with the right group form and version and another hash or suffix. | Change the fixture: a row `url` with the group form of acme/known and another hash, for example `.../1.1.0/<other hash>.tar.zst`; or a question to change the pick to use the group of the row (not tested, a design point). |
+
+### 15.1 Resolved (test agent, 2026-11-24)
+
+The 4 disputes are test faults. The test agent changed only fixtures and expected files (no `UPDATE=1`; each changed file was read).
+
+| Case | Fix |
+| --- | --- |
+| `lp9-offline` | New `expect/stderr`: `index: cached at 2026-10-14T15:00:00Z` (R-DI12). It is the line of `registry/ix6-update-offline`, from the same index copies and the same `fx/mtimes`. |
+| `lp9b-offline-no-proof` | The same line before the `tln: error` line. |
+| `lp7-no-answer` | `fx/env` has the lp1 key `TALON_LOG_KEY=127.0.0.1:9/log+56ce7b6e+...`, and the case has the lp1 `mk-log.json` with no `serve`: the log has no checkpoint route (404), and `checkpoint.2.meta` (`error timeout`) answers run 2. |
+| `lp15-url-differs` | The row URL keeps the group form and the version of acme/known (so the pick, `Ident.of_url`, keeps it) and has another hash: `.../acme/known/releases/download/1.1.0/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst`, in the closure answer and in the R-AP1 answer. The closure answer also has an artifact record of that hash. Without the record, the closure walk downloads that archive before the check (Gather, exit 15), so T2b is not reached. The leaf has the row hash, so the entry check passes and the URL check gives T2b (exit 16). `expect/stderr` and the R-AP1 copy in `expect/tree.diff` have the new URL. `research/slice-261c-tests/mk-cases.py` and `mk-expect.py` make the same fixture. |
+
+Run (capped, flocked, `TMPDIR` set, the code of 261c): `tests/commands/run.sh logproof/ registry/rg2-config-direct registry/rg2-default-registry registry/rg2-example-add-short`: 25 passed, 0 failed.
+
+### 15.2 Mutation check of 261c (test agent, 2026-11-24)
+
+`research/slice-261c-revert/` (`mutate.sh`, `RESULT.md`). 13 mutants and a reference on nightly 03dce41, mirrors under `.tmp/261c-mut-<stamp>/`. Runs: `l0-9` and the L2 cases `logproof/` and the 3 rg2 cases. All 13 killed; the reference passes. No gap test was needed.
+
+| Mutant | Killed by |
+| --- | --- |
+| skip-no-check, skip-dry-run, check-after-settle | logproof and rg2 cases (lp12, lp9, lp9b, rg2 for `--dry-run`) |
+| kept-no-cover, no-consistency | lp8 |
+| one-read, no-sleep | lp6, lp6b (one-read also l0-9) |
+| config-wins (Q261c-1), no-trim (N1) | l0-9 (no-trim also lp11c, lp11d) |
+| copies-on-fail | lp4, lp5, lp12, lp15 |
+| no-copies (Q261c-2) | lp1, lp6, lp11c, lp11d, the 3 rg2 cases |
+| offline-no-proof-passes, offline-rows-unchecked | lp9b (and lp9) |

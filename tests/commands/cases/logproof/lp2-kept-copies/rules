@@ -1,0 +1,1 @@
+R-LV6 R-LV7 R-IX8 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). The kept checkpoint (size 3) and the tile copies are in the given home: the check reads them and sends no request and writes no copy.

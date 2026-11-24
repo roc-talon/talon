@@ -1,0 +1,1 @@
+tln: error[integrity]: known: acme/known 1.1.0: the registry http://127.0.0.1:9 gave the URL https://github.com/acme/known/releases/download/1.1.0/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst, which is not the URL of its log entry. Talon wrote nothing.

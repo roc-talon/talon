@@ -1,0 +1,1 @@
+R-LV8 R-LV2 R-LV11 R-J7 (slice 261c, entry `commands`; the world of registry/ad35-add-latest: `tln add acme/known` picks known 1.1.0, log index 2, from the registry http://127.0.0.1:9 of config.toml). --dry-run and --no-check check too: the entry at log index 2 has another hash: exit 16, T1. Run 2: --json, error.details of T1.
