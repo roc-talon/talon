@@ -13,13 +13,15 @@ Other code expects this to have the type:
 
     Str
 
+Hint: Write the number in quotes to make it a Str, or convert it with .to_str().
+
 ── 1 error and 0 warnings ────────────────────────────────────────────── bad.roc
 
 "
 == build, no error: the output is in the out dir, the program is not run
 probe 0 Exited(0) stdout="0 errors and 0 warnings found in <n>ms while successfully building:
 
-    $PROJECT/../out/probe.out
+    ../out/probe.out
 " stderr=""
 output made
 == a round of 2: the order of the list
@@ -33,6 +35,8 @@ x = 5
 Other code expects this to have the type:
 
     Str
+
+Hint: Write the number in quotes to make it a Str, or convert it with .to_str().
 
 ── 1 error and 0 warnings ────────────────────────────────────────────── bad.roc
 

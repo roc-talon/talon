@@ -1,5 +1,8 @@
 # R-LD1 R-LD5 R-RC1 R-RC2 R-P1 TW10: the real `fxprobe probes` runs the real pinned roc (L4, tag real-roc, `REAL_ROC=1`).
 # The apps have no header, so the case needs no download. The times of roc change: sed makes them stable.
+# The cache of the compiler is outside home/, so the tree diff does not hold its files (their names change with each compiler).
+export XDG_CACHE_HOME=$TALON_TEST_DIR/xdg ROC_CACHE_DIR=$TALON_TEST_DIR/xdg/roc
+trap 'rm -rf "${XDG_CACHE_HOME:?}"' EXIT
 t() { sed -e 's/in [0-9]*ms/in <n>ms/g'; }
 echo "== check, no error"
 fxprobe probes 30 "$PWD" check main.roc | t
