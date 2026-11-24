@@ -78,7 +78,8 @@ def success(case, cut, tiles, size, work=None):
     k = cut(r1)
     runs[0] = r1[:k] + fresh(tiles) + r1[k:]
     ex = os.path.join(CASES, case, "expect")
-    put(os.path.join(ex, "calls.log"), "".join(l + "\n" for r in runs for l in r))
+    # The walk up past $WORK names the real parent dirs of the work dir: run.sh leaves those lines out of both files (anc_filter, slice 260 G1), so the expected file has none.
+    put(os.path.join(ex, "calls.log"), "".join(l + "\n" for r in runs for l in r if not (l.startswith("list_dirs /") and "$" not in l)))
     # R-LV12: a success adds no line: stdout, stderr and exit are those of the code before 261d.
     for f in ["stdout", "stderr"]:
         text = read(os.path.join(w, f"out/{f}.n"))
