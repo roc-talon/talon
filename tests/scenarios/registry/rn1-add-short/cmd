@@ -2,7 +2,8 @@
 # `tln add semver@0.2.0`: the guard reads GitHub (no token), the short name `semver` is `GET /v1/packages?short=semver` (R-AD34, one match: Karakatiza666/roc-semver), the releases are `GET /v1/packages/karakatiza666/roc-semver/releases` (R-AP1). The release 0.2.0 is already in the registry (public), so no ingest runs and no row is written.
 # The output has live values (log index, time), so the case checks facts, not the whole text. `--dry-run`: no write.
 export XDG_CACHE_HOME=$TALON_TEST_DIR/xdg ROC_CACHE_DIR=$TALON_TEST_DIR/xdg/roc
-trap 'rm -rf "${XDG_CACHE_HOME:?}"' EXIT
+export XDG_DATA_HOME=$TALON_TEST_DIR/xdg-data
+trap 'rm -rf "${XDG_CACHE_HOME:?}" "${XDG_DATA_HOME:?}"' EXIT
 if tln add semver@0.2.0 --no-check --dry-run > $TALON_TEST_DIR/o.out 2> $TALON_TEST_DIR/o.err; then echo "exit 0"; else echo "exit $?"; fi
 grep -c 'Karakatiza666/roc-semver 0.2.0\|karakatiza666/roc-semver 0.2.0' $TALON_TEST_DIR/o.out | sed 's/^[1-9]$/names the release/'
 test ! -s $TALON_TEST_DIR/o.err && echo "no stderr" || { echo "stderr:"; cat $TALON_TEST_DIR/o.err; }

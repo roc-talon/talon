@@ -2,7 +2,8 @@
 # R-RG8: the Worker with AUDIENCE = the default text answers on the host of the constant. The same command as rn1 reaches it through the default.
 unset TALON_REGISTRY
 export XDG_CACHE_HOME=$TALON_TEST_DIR/xdg ROC_CACHE_DIR=$TALON_TEST_DIR/xdg/roc
-trap 'rm -rf "${XDG_CACHE_HOME:?}"' EXIT
+export XDG_DATA_HOME=$TALON_TEST_DIR/xdg-data
+trap 'rm -rf "${XDG_CACHE_HOME:?}" "${XDG_DATA_HOME:?}"' EXIT
 if tln add semver@0.2.0 --no-check --dry-run > $TALON_TEST_DIR/o.out 2> $TALON_TEST_DIR/o.err; then echo "exit 0"; else echo "exit $?"; fi
 ls $XDG_CACHE_HOME/roc/talon/index/registry
 curl -sS -m 30 -o /dev/null -w 'host: %{http_code}\n' https://registry.roc-talon.org/v1/toolchains?after=0

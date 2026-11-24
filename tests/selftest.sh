@@ -867,7 +867,7 @@ put $N net/home tags $'real-roc\n'
 put $N net/home expect/stdout $'cache=/my/home/.cache/roc\n'
 out=$(GITHUB_TOKEN=abc GH_TOKEN=def REAL_CACHE=/real/cache NET=1 REAL_ROC=1 l3 $N net/tok net/plain net/real)
 rc=$?
-out2=$(HOME=/my/home REAL_ROC=1 l3 $N net/home)
+out2=$(unset REAL_CACHE; HOME=/my/home REAL_ROC=1 l3 $N net/home)  # the nightly job sets REAL_CACHE; this case checks the fallback
 if [ $rc = 0 ] && echo "$out" | grep -q 'scenarios: 3 passed, 0 failed, 0 skipped' && echo "$out2" | grep -q 'scenarios: 1 passed, 0 failed, 0 skipped'; then ok
 else bad "net env: a net case gets GITHUB_TOKEN, GH_TOKEN and TALON_TEST_REAL_CACHE (REAL_CACHE, else ~/.cache/roc), a plain case gets none"; echo "$out"; echo "$out2"; fi
 }

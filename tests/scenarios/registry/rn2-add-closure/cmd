@@ -2,7 +2,8 @@
 # 1: `tln add Karakatiza666/roc-semver@0.2.0` writes the header entry with the URL of the release (R-AP1 answers 200 for the name, no ingest).
 # 2: `tln update --dry-run`: one `POST /v1/closure` with the group and the hash of the header (R-AL2 step 2, R-AP16). `--json`: `data.snapshot` is `log:<n>` (R-DT5, R-J3), which says that the answer of the registry was the index.
 export XDG_CACHE_HOME=$TALON_TEST_DIR/xdg ROC_CACHE_DIR=$TALON_TEST_DIR/xdg/roc
-trap 'rm -rf "${XDG_CACHE_HOME:?}"' EXIT
+export XDG_DATA_HOME=$TALON_TEST_DIR/xdg-data
+trap 'rm -rf "${XDG_CACHE_HOME:?}" "${XDG_DATA_HOME:?}"' EXIT
 if tln add Karakatiza666/roc-semver@0.2.0 --no-check > $TALON_TEST_DIR/a.out 2> $TALON_TEST_DIR/a.err; then echo "add: exit 0"; else echo "add: exit $?"; cat $TALON_TEST_DIR/a.err; fi
 grep -o '"https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/[A-Za-z0-9]*[.]tar[.]zst"' main.roc
 if tln update --no-check --dry-run --json > $TALON_TEST_DIR/u.out 2> $TALON_TEST_DIR/u.err; then echo "update: exit 0"; else echo "update: exit $?"; cat $TALON_TEST_DIR/u.err; fi
