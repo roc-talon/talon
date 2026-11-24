@@ -251,3 +251,28 @@ expect {
 	dbg bad
 	bad == [] and Index.fixed_line("example.com") == "fixed: example.com has no index without a registry"
 }
+
+# Slice 263 (R-DI7, R-AD25, R-AD32, R-AD33, Design Q643): the candidate whose header gives the kind of a new name of `tln add` is the newest (highest `published_at`,
+# the first wins a tie) that the range of the new entry admits. A newer release outside the range is not read: `add json@2.0.0` reads 2.0.0, not 2.1.0.
+expect {
+	base = "https://github.com/acme/json/releases/download"
+	a = candidate({ url: "${base}/2.0.0/${h1}.tar.zst", tag: "2.0.0", published: 100 })
+	b = candidate({ url: "${base}/2.1.0/${h2}.tar.zst", tag: "2.1.0", published: 200 })
+	c = candidate({ url: "${base}/2.0.5/${h3}.tar.zst", tag: "2.0.5", published: 150 })
+	d = candidate({ url: "${base}/2.0.9/${h4}.tar.zst", tag: "2.0.9", published: 400 })
+	e = candidate({ url: "${base}/2.0.7/${h5}.tar.zst", tag: "2.0.7", published: 400 })
+	rows = [
+		("R-AD25: an exact range keeps the exact release, not the newer 2.1.0", [a, b, c], "=2.0.0", Ok(a.url)),
+		("a caret range: the newest", [a, b, c], "^2", Ok(b.url)),
+		("a tilde range: the newest that it admits", [a, b, c], "~2.0", Ok(c.url)),
+		("newest by published_at, not by version", [a, b, d], "^2", Ok(d.url)),
+		("a tie on published_at: the first one", [d, e, a], "^2", Ok(d.url)),
+		("the same tie in the other order", [e, d, a], "^2", Ok(e.url)),
+		("the range admits no candidate", [a, b, c], "=3.0.0", Err(None)),
+		("no candidate", [], "^2", Err(None)),
+	]
+	got = |list, range| Index.newest_admitted({ list, range }).map_ok(|x| x.url)
+	bad = rows.keep_if(|(_, list, range, want)| got(list, range) != want).map(|(label, list, range, want)| (label, want, got(list, range)))
+	dbg bad
+	bad == []
+}

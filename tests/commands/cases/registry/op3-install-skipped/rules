@@ -1,0 +1,3 @@
+R-IX6 R-DI12 R-I5 R-I8 (slice 263, Design Q643, entry `commands`): `tln install --offline` with a registry and `[dependencies] json = "acme/json@^2"` in talon.toml, no header entry. The new entry goes through the path of `tln add` (R-I8). The kept R-AP1 copy has 2.0.0 and 2.1.0; only the archive of 2.0.0 is in packages/. R-IX6: 2.1.0 is skipped. Exit 0: json 2.0.0 is added.
+Red before the slice: exit 15, `acme/json 2.1.0 is not in the package cache and --offline is set`.
+calls.log: as op2 (a proposal): one fetch try of 2.1.0 that reads nothing.

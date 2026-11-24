@@ -1,0 +1,2 @@
+== add acme/json@^2 --offline --no-check --dry-run --file p1/main.roc
+exit 15

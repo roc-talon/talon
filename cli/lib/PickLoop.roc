@@ -26,6 +26,7 @@ import PinOrder
 import Pick
 import PickOptional
 import Probe
+import Ranges
 import Release
 import ResolveBase
 import Roots
@@ -87,12 +88,16 @@ PickLoop :: [].{
 	first_releases! = |fx, request| listed_via!(fx, request, ResolveBase.list_first(request)) ?? { releases: [], fell: Err(None) }
 
 	run! : Fx, ResolveBase.Request, PickLoop.Input, PickLoop.Setup, PickLoop.State => Try(PickLoop.Looped, PickLoop.Stuck)
-	run! = |fx, request, input, setup, state| {
+	run! = |fx, request, input, setup, state| run_skipping!(fx, request, input, setup, state, [])
+
+	## Slice 263 (R-IX6, R-DI12, Q643): `run!` with the failures of the candidates that the offline pick skipped (`skipped`, in order of the skip).
+	run_skipping! : Fx, ResolveBase.Request, PickLoop.Input, PickLoop.Setup, PickLoop.State, List(Fail) => Try(PickLoop.Looped, PickLoop.Stuck)
+	run_skipping! = |fx, request, input, setup, state, skipped| {
 		probed = state.probed
 		compat = { compiler: probed.compiler, checks: probed.checks, looked: probed.looked, probes: setup.probes, conflicts: probed.tried, used: probed.used, domain: probed.domain, inferred: probed.inferred, failed: Explain.failed_command({ command: request.command, names: request.names }) }
 		if (wants_domain(setup, probed)) return match wide!(fx, request, input, probed) {
 			Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
-			Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
+			Ok(next) => run_skipping!(fx, request, input, setup, { ..state, probed: next }, skipped)
 		}
 		# R-C10, D1 of slice 054: a platform release that lacks the `[build] target` of a member is no candidate. The solver gets it as an `App` release (R-C4).
 		wants = BuildTarget.wanted({ slots: input.slots.map(|s| { is_platform: s.is_platform, urls: slot_urls(s), files: s.files }), members: setup.members.map(|m| { file: m.file, target: m.target }) })
@@ -100,7 +105,7 @@ PickLoop :: [].{
 		unread = unread_current(input.slots, wants, state.facts)
 		if (!unread.is_empty()) return match read_all!(fx, request, unread, state.facts, state.paths) {
 			Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
-			Ok(read) => run!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } })
+			Ok(read) => run_skipping!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } }, skipped)
 		}
 		gated = BuildTarget.gate({ facts: state.facts, seen: probed.seen, wanted: wants })
 		step_input = { slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, exclude: input.exclude, snapshot: input.snapshot, facts: gated, unmanaged: input.unmanaged, paths: state.paths, second: input.second }
@@ -113,22 +118,35 @@ PickLoop :: [].{
 			Fail(fail) => Err({ fail: no_target(input.slots, { wants, seen: probed.seen, before: state.facts, after: gated }, fail), facts: state.facts, paths: state.paths, probed })
 			Wide => match wide!(fx, request, input, probed) {
 				Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
-				Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
+				Ok(next) => run_skipping!(fx, request, input, setup, { ..state, probed: next }, skipped)
 			}
 			Need(ids) => match read_all!(fx, request, ids, state.facts, state.paths) {
-				Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
+				Err(fail) => match skippable(request, input, fail) {
+					Ok(url) => {
+						slots = input.slots.map(|slot| { ..slot, candidates: slot.candidates.keep_if(|c| c.url != url) })
+						all_skipped = skipped.append(fail)
+						# Every candidate that a range admits is skipped: the failure is that of the first skipped release (Q643-1 (a)).
+						left = slots.map2(input.slots, |n, o| (n, o)).any(|(n, o)| n.candidates.len() < o.candidates.len() and !n.candidates.any(|c| Ranges.admits({ ranges: n.ranges, version: c.ident.version })))
+						if left {
+							Err({ fail: all_skipped.first() ?? fail, facts: state.facts, paths: state.paths, probed })
+						} else {
+							run_skipping!(fx, request, { ..input, slots }, setup, state, all_skipped)
+						}
+					}
+					Err(None) => Err({ fail, facts: state.facts, paths: state.paths, probed })
+				}
 				Ok(read) => match platform_wants(input.want_slots, read.facts) {
 					Err(fail) => Err({ fail, facts: read.facts, paths: read.paths, probed })
-					Ok(_) => run!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } })
+					Ok(_) => run_skipping!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } }, skipped)
 				}
 			}
 			Scan(scan) => {
 				rows = scan_rows!(fx, request, input, setup, state, scan)
-				run!(fx, request, input, setup, { ..state, probed: { ..probed, used: probed.used.concat(rows) } })
+				run_skipping!(fx, request, input, setup, { ..state, probed: { ..probed, used: probed.used.concat(rows) } }, skipped)
 			}
 			Pairs(pairs) => match round!(fx, request, setup, probed, state.facts, pairs) {
 				Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
-				Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
+				Ok(next) => run_skipping!(fx, request, input, setup, { ..state, probed: next }, skipped)
 			}
 		}
 	}
@@ -222,6 +240,13 @@ hash_of : Str -> Str
 hash_of = |url| match Ident.of_url(url) {
 	Ok(ident) => ident.hash
 	Err(_) => ""
+}
+
+# Slice 263 (R-IX6, R-DI12): the URL of a candidate that the offline pick skips: the failure is `Fetch.offline_missing` for the URL of a candidate of a slot that is not the value that the header holds now (the header names that one: R-FE7).
+skippable : ResolveBase.Request, PickLoop.Input, Fail -> Try(Str, [None])
+skippable = |request, input, fail| match fail.missing {
+	Ok(url) if request.offline and input.slots.any(|s| s.candidates.any(|c| c.url == url)) and !input.slots.any(|s| s.current == Ok(url)) => Ok(url)
+	_ => Err(None)
 }
 
 # One `Gather.facts!` for the ids of a `Need`: a release URL gives a fact, a path file gives a node of the closure. Slice 206 (R-AL8 source 2, R-DI14): a record of the closure answer gives the fact

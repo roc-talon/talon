@@ -192,20 +192,39 @@ PickIndex :: [].{
 				Ok(entry) => entry.list
 				Err(NoCandidate) => []
 			}
-			first = match newest(list) {
-				Ok(c) if list.any(|x| Ranges.admits({ ranges: [f.range], version: x.ident.version })) => c
-				_ => return Err(Add.no_release({ name: f.name, selector: f.selector, text: f.text, versions: cands.map(|c| c.ident.version) }))
-			}
-			read = ResolveBase.read_releases!(fx, request, [first.url])?
+			# Slice 263 (R-DI7, R-AD25): the header of the newest candidate that the selector admits, never a release outside the range.
+			if (Index.newest_admitted({ list, range: f.range }).is_err()) return Err(Add.no_release({ name: f.name, selector: f.selector, text: f.text, versions: cands.map(|c| c.ident.version) }))
+			got = read_admitted!(fx, request, { list, range: f.range }, Err(None))?
+			first = got.first
+			read = got.read
 			kind = match read {
 				[fact] => if (fact.release.kind == Platform) Platform else Package
 				_ => Package
 			}
 			_ = Add.decide({ selector: f.selector, chosen: { name: f.name, url: first.url, kind }, platform_flag: f.is_platform, no_pin: request.add.no_pin, as_alias: request.add.as_alias, header })?
-			$rows = $rows.append({ fresh: f, list })
+			$rows = $rows.append({ fresh: f, list: got.list })
 			$facts = $facts.concat(read)
 		}
 		Ok({ rows: $rows, facts: $facts })
+	}
+}
+
+# Slice 263 (R-IX6, R-DI12, Q643): reads the header of the newest admitted candidate. Offline, a candidate with no archive in `packages/` is skipped (dropped from the list) and the next one is read.
+# When all admitted candidates are skipped, the failure is that of the first one (R-FE7, Q643-1 (a)).
+read_admitted! : Fx, ResolveBase.Request, { list : List(Index.Candidate), range : Str }, Try(Fail, [None]) => Try({ first : Index.Candidate, read : List(ResolveBase.Fact), list : List(Index.Candidate) }, Fail)
+read_admitted! = |fx, request, facts, skipped| match Index.newest_admitted(facts) {
+	Err(None) => match skipped {
+		Ok(fail) => Err(fail)
+		Err(None) => Err(Fail.new(Network, "no candidate"))
+	}
+	Ok(c) => match ResolveBase.read_releases!(fx, request, [c.url]) {
+		Ok(read) => Ok({ first: c, read, list: facts.list })
+		Err(fail) =>
+			if request.offline and fail.missing == Ok(c.url) {
+				read_admitted!(fx, request, { ..facts, list: facts.list.keep_if(|x| x.url != c.url) }, Ok(skipped ?? fail))
+			} else {
+				Err(fail)
+			}
 	}
 }
 
@@ -250,13 +269,6 @@ highest_use = |uses| match uses {
 			},
 		).url,
 	)
-}
-
-# The candidate with the highest `published_at`. A tie keeps the first (the rule of `Index.new_entry`).
-newest : List(Index.Candidate) -> Try(Index.Candidate, [ListWasEmpty])
-newest = |list| match list {
-	[] => Err(ListWasEmpty)
-	[first, .. as rest] => Ok(rest.fold(first, |best, c| if (c.published_at > best.published_at) c else best))
 }
 
 no_rows : List(ResolveBase.FreshRow)

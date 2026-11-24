@@ -1,0 +1,9 @@
+== add acme/json@2.0.0 --offline --no-check --dry-run --file p1/main.roc
+check: skipped
+$PROJECT/p1/main.roc
+  + json: acme/json 2.0.0
+$PROJECT/p1/talon.toml: json = "=2.0.0"
+note: json is pinned to =2.0.0: tln update keeps it there, and tln upgrade json moves it. To start at 2.0.0 with no pin, add --no-pin.
+resolved at 2026-10-15T12:00:00Z, 0 probes
+dry run: nothing was written
+exit 0

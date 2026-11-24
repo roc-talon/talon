@@ -1,0 +1,6 @@
+# R-FE2: the download and roc unbundle of json 2.0.0 and of json 2.1.0 (a platform). Only 2.0.0 may be fetched (R-DI7).
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle 7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst	0	-	-	dir:{cwd}/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21;copy:{cwd}/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc={w}/fx/pkgs/json_2.0.0.roc
+7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.0123456789abcdef.tmp/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst
+unbundle 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst	0	-	-	dir:{cwd}/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq;copy:{cwd}/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc={w}/fx/pkgs/json_2.1.0.platform
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.0123456789abcdef.tmp/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst

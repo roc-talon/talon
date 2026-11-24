@@ -1,0 +1,3 @@
+R-IX6 R-DI12 R-AD24 R-SL14 R-AD37 (slice 263, Design Q643, entry `commands`): `tln add acme/json --offline` (no selector) with a registry. The kept R-AP1 copy has 2.0.0 and 2.1.0; only the archive of 2.0.0 is in packages/. R-IX6: the candidate 2.1.0 is skipped, so the newest candidate is 2.0.0. Exit 0: json 2.0.0, no talon.toml key (R-AD24), no note.
+Red before the slice: exit 15, `acme/json 2.1.0 is not in the package cache and --offline is set`.
+calls.log (a proposal of the test agent, the design gives no call order): the calls of the world with no 2.1.0 row, plus ONE fetch try of 2.1.0 (`random`, `list_dirs` of packages/) that finds no archive and reads nothing.

@@ -1,0 +1,1 @@
+R-IX6 R-FE7 Q643-1 (a) (slice 263, gap test of mutant m5): `tln add acme/json@^2 --offline`. The kept R-AP1 copy has 2.0.0 and 2.1.0, and no archive of either. Both are skipped (2.1.0 first, the newest admitted). The failure is that of the FIRST skipped release: exit 15, the R-FE7 text of 2.1.0, not of 2.0.0. Two fetch tries, no read.

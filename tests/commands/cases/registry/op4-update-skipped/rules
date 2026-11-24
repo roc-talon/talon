@@ -1,0 +1,3 @@
+R-IX6 R-DI12 R-AD37 (slice 263, Design Q643, entry `commands`): `tln update --offline` with a registry. The header has json 2.0.0. The kept group copy of json has 2.0.0 and 2.1.0; only the archive of 2.0.0 is in packages/. R-IX6: 2.1.0 is skipped, so json stays at 2.0.0: `nothing to change`, exit 0. The pick of update (`PickLoop`) is the same path as add.
+Red before the slice: exit 15, `acme/json 2.1.0 is not in the package cache and --offline is set`.
+calls.log (a proposal): the calls of the world with no 2.1.0 row, plus one fetch try of 2.1.0 (`random`, `list_dirs` of packages/) that reads nothing.

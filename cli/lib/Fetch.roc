@@ -138,7 +138,7 @@ Fetch :: [].{
 	## The failure of an offline run for a package that is not in the cache (R-FE7): kind `Network` (exit 15),
 	## `<what> is not in the package cache and --offline is set (<url>)` (question Q9).
 	offline_missing : Plan -> Fail
-	offline_missing = |p| Fail.new(Network, "${p.what} is not in the package cache and --offline is set (${p.url})")
+	offline_missing = |p| { ..Fail.new(Network, "${p.what} is not in the package cache and --offline is set (${p.url})"), missing: Ok(p.url) }
 
 	## Fetches the packages of the URLs into `<pkgs>/<hash>/` (R-FE1 to R-FE3). The result has one entry for each URL, in the order
 	## of the list: `Present` (the item was there, no call but the listing), `Fetched` (this call put it there, also when another

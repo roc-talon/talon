@@ -1,0 +1,14 @@
+base L2: registry/op10-add-archive-unreadable registry/op11-update-exact-not-cached commands: 46 passed, 2 failed 
+m1: L2 moves/hm1-noninteractive registry/op1-add-exact-offline registry/op6-add-exact-kind registry/op7-add-exact-not-cached registry/op8-add-exact-direct-online resolve/rs-unmanaged commands: 40 passed, 6 failed 
+m1: L0  149 passed 1 failed 
+m2: L2 commands: 46 passed, 0 failed 
+m2: L0  149 passed 1 failed 
+m3: L2 commands: 46 passed, 0 failed 
+m4: L2 registry/op2-add-newest-skipped commands: 45 passed, 1 failed 
+m5: L2 commands: 46 passed, 0 failed 
+m6: L2 commands: 46 passed, 0 failed 
+m7: L2 commands: 46 passed, 0 failed 
+m8: L2 commands: 46 passed, 0 failed 
+m9: L2 registry/ix6-offline-groups registry/ix6-offline-list-only registry/ix6-offline-registry registry/ix6-offline-upgrade registry/ix6-update-offline registry/of1-outdated-offline registry/of2-outdated-offline-moved registry/of3-offline-held-yanked registry/of4-offline-count-series registry/of5-offline-count-repo-copy registry/op1-add-exact-offline registry/op2-add-newest-skipped registry/op3-install-skipped registry/op4-update-skipped registry/op6-add-exact-kind registry/op7-add-exact-not-cached registry/op9-outdated-offline-no-archive registry/yf11-offline-held-count registry/yf7-offline-yanked-count registry/yf9-patch-yanked commands: 26 passed, 20 failed 
+m10: L2 registry/op2-add-newest-skipped commands: 45 passed, 1 failed 
+m11: L2 commands: 46 passed, 0 failed 

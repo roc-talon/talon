@@ -1,0 +1,3 @@
+R-DI12 R-DI7 (slice 263, Design Q643, entry `commands`): the `direct` form of op4 (TALON_REGISTRY=direct). The kept GitHub page of acme/json has 2.1.0 and 2.0.0; only the archive of 2.0.0 is in packages/. R-DI12: "A candidate whose archive is not in packages/ is skipped." json stays at 2.0.0: `nothing to change`, exit 0, one `index: cached at` line.
+Red before the slice: exit 15, `acme/json 2.1.0 is not in the package cache and --offline is set`.
+calls.log: as op4 (a proposal).

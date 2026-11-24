@@ -1,0 +1,1 @@
+R-IX6 R-FE7 (slice 263, gap test of mutant m7): the world of op4 with NO archive at all. Header json 2.0.0. `tln update --offline`: the pick skips 2.1.0 (a candidate), but 2.0.0 is the value that the header holds now: it is not skipped (the header names it), so the run fails with exit 15 and the R-FE7 text of 2.0.0.

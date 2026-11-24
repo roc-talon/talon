@@ -1,0 +1,3 @@
+R-IX6 R-DI12 R-FE7 R-AD25 Q643-1 (a) (slice 263, Design Q643, decided by the user 2026-11-24, entry `commands`): `tln add acme/json@2.0.0 --offline`. The kept R-AP1 copy has 2.0.0 and 2.1.0; only the archive of 2.1.0 (a package) is in packages/. Every candidate in the range `=2.0.0` is skipped (R-IX6), so the run fails with exit 15 and the R-FE7 text for the exact release 2.0.0 (its version and URL, not those of the newest release). Talon reads no archive: not 2.1.0 (outside the range, R-DI7), not 2.0.0 (not there).
+Before the slice: the same exit and text, but `PickIndex.prepare!` reads the 2.1.0 archive first (calls.log: red).
+calls.log (a proposal): the calls of op1 up to the fetch of 2.0.0 (`random`, `list_dirs` of packages/), and no read.

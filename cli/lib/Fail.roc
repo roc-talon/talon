@@ -24,6 +24,9 @@ Fail := {
 	## Slice 209b (R-SM6, R-EP7, Design Q557): `Ok` for the drop of a tuple for a `bot` smoke fail of the build key (the release URL `id` of the platform, its `hash`, the compiler `nightly` and the build `target`). The command gives the smoke checks of that platform to the next search (`Matrix.smoke_checks`). Never in `--json`.
 	smoke : Try({ id : Str, hash : Str, nightly : Str, target : Str }, [None]) ?? Err(None),
 
+	## Slice 263 (R-IX6, R-DI12, R-FE7): `Ok(url)` for the failure of an offline run for a release archive that is not in `packages/`. The pick skips that candidate. Never in `--json`.
+	missing : Try(Str, [None]) ?? Err(None),
+
 	## Slice 226: true for the one failure of the project search that found nothing (no `--file`, no member file, no workspace: `Project.find`). A bundle operand then takes the no-project path. Never in `--json`.
 	no_project : Bool ?? Bool.False,
 }.{

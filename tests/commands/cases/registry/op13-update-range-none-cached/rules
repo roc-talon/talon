@@ -1,0 +1,1 @@
+R-IX6 R-FE7 Q643-1 (a) (slice 263, gap test of mutants m6 and m11): header json 1.0.0 (cached); the kept group copy has 1.0.0, 2.0.0, 2.1.0; 2.0.0 and 2.1.0 have no archive. `tln update json@^2 --offline`: the pick loop skips 2.1.0, then 2.0.0; no candidate in `^2` is left, so the run stops with the failure of the FIRST skipped release: exit 15, the R-FE7 text of 2.1.0.

@@ -239,9 +239,6 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/pf
 read_files $HOME/.cache/roc/talon/index/github/acme/pf/1.meta $HOME/.cache/roc/talon/index/github/acme/pf/1.json
 random
 list_dirs $HOME/.cache/roc/packages
-read_files $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/main.roc
-random
-list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains

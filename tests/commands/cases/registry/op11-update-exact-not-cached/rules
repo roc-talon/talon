@@ -1,0 +1,1 @@
+R-IX6 R-FE7 Q643-1 (a) (slice 263, gap test of mutant m11): the world of op4, `tln update json@2.1.0 --offline`. The one candidate in the range `=2.1.0` has no archive, so every candidate in the range is skipped: exit 15 with the R-FE7 text of 2.1.0 (the pick loop stops; not the no-tuple failure of the solver, exit 10). One fetch try, no read.

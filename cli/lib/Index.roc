@@ -2,6 +2,7 @@ import base58.Base58
 import Clock
 import Ident
 import JsonDoc
+import Ranges
 import Text
 
 ## The candidates of a repository in `direct` mode (CLI 7.3, R-DI3 to R-DI6, R-DI9 to R-DI11, R-DI14, R-DI15). The index is the
@@ -87,6 +88,15 @@ Index :: [].{
 				},
 			})
 		}
+	}
+
+	## Slice 263 (R-DI7, R-AD25, R-AD32, R-AD33, Design Q643): the candidate of a new name of `tln add` whose header gives the kind before the pick. It is the newest candidate
+	## (the highest `published_at`, the first one wins a tie) that `range` admits (`Ranges.admits`). A candidate that the range does not admit is never read (R-DI7: the archive
+	## is read only when the solver can ask for it). `Err(None)` when the range admits no candidate.
+	newest_admitted : { list : List(Candidate), range : Str } -> Try(Candidate, [None])
+	newest_admitted = |facts| match facts.list.keep_if(|c| Ranges.admits({ ranges: [facts.range], version: c.ident.version })) {
+		[] => Err(None)
+		[first, .. as rest] => Ok(rest.fold(first, |best, c| if (c.published_at > best.published_at) c else best))
 	}
 
 	## The order in which the solver asks for candidates (R-DI9, the strategy): `Highest` is the newest version first, `Lowest` the oldest

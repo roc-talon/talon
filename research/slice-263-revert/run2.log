@@ -1,0 +1,5 @@
+m5: L2 registry/op12-add-range-none-cached commands: 50 passed, 1 failed 
+m6: L2 registry/op13-update-range-none-cached commands: 50 passed, 1 failed 
+m7: L2 registry/op14-update-current-not-cached commands: 50 passed, 1 failed 
+m8: L2 registry/op10-add-archive-unreadable commands: 50 passed, 1 failed 
+m11: L2 registry/op11-update-exact-not-cached registry/op13-update-range-none-cached commands: 49 passed, 2 failed 
