@@ -89,6 +89,8 @@ package
 		Listing,
 		Lock,
 		Locked,
+		LogKey,
+		LogProof,
 		LogSnapshot,
 		Lookup,
 		Ls,
@@ -270,6 +272,7 @@ package
 	]
 	{
 		base58: "https://github.com/Karakatiza666/roc-base58/releases/download/0.1.0/BgUuQGqWY94NikfEx4rBkWkgxYhngMim3ZEnD8wpM4NS.tar.zst",
+		ed25519: "https://github.com/Karakatiza666/roc-ed25519/releases/download/0.1.0/HrAdxCQXofHbDHhgxv6qywS5hozKum4dpEu3dn34h8op.tar.zst",
 		header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.1/Ev4sYWkY8XDbQsPxtaaXZaARYjH9KS2x2dbmVch2d4qS.tar.zst",
 		records: "../../packages/records/main.roc",
 		resolve: "../../packages/resolve/main.roc",

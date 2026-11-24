@@ -17,6 +17,8 @@ import ChannelrangeTest
 import ChannelreadTest
 import ChannelrefTest
 import GcindexTest
+import LogkeyTest
+import LogproofTest
 import NewerhintTest
 import RocUpdateHintTest
 import TlngateTest

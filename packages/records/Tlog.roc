@@ -227,6 +227,316 @@ Tlog :: [].{
 	pkcs8 : List(U8) -> List(U8)
 	pkcs8 = |seed| [0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20].concat(seed)
 
+	# --- The reader side (CLI slice 261b, DESIGN-CLI 7.6 R-LV2, R-LV3, R-LV4, R-LV10). `tln` checks the Ed25519 signature in cli/lib with roc-ed25519: this module checks no signature. ---
+
+	## A signature line of a signed note: the key name, the 4-byte key id, and the signature bytes after the key id (64 bytes for Ed25519, but any length here).
+	NoteSignature : { name : Str, key_id : List(U8), signature : List(U8) }
+
+	## A signed note, opened: the text (it ends in a newline) and its signature lines in the order of the note. No signature is checked.
+	Note : { text : Str, signatures : List(Tlog.NoteSignature) }
+
+	## signed-note (the rules of `Open` of golang.org/x/mod/sumdb/note): the note has no ASCII control character but the newline (no `\r`, no tab).
+	## The text is the part up to and with the newline before the LAST empty line (`\n\n`); no empty line is `Err(BadNote)`.
+	## After the empty line come 0 or more signature lines, each `— <name> <base64>\n` (U+2014, one space): the name not empty, with no space and no `+`;
+	## the base64 standard, it decodes to at least 5 bytes: the key id (4 bytes), then the signature. Another line, or text after the last newline, is `Err(BadNote)`.
+	open_note : Str -> Try(Tlog.Note, [BadNote])
+	open_note = |note| {
+		bs = note.to_utf8()
+		if !bs.all(|b| b >= 32 or b == 10) {
+			Err(BadNote)
+		} else {
+			cut = last_blank_line(bs)?
+			sig_bytes = bs.drop_first(cut + 2)
+			if sig_bytes.len() > 0 and sig_bytes.last() != Ok(10) {
+				Err(BadNote)
+			} else {
+				text = Str.from_utf8(bs.take_first(cut + 1)).map_err(|_| BadNote)?
+				lines = sig_bytes.split_on(10).drop_last(1)
+				signatures = lines.map_try(parse_signature_line)?
+				Ok({ text: text, signatures: signatures })
+			}
+		}
+	}
+
+	## The entry bundle that holds tlog index `index` in a tree of size `size`: `{ level: Entries, index: index // 256, width }`, with the width of that bundle at `size`
+	## (256, or less for the last bundle). `index >= size` is `Err(NotInTree)`.
+	entry_tile : U64, U64 -> Try(Tlog.Tile, [NotInTree])
+	entry_tile = |index, size| {
+		if index >= size {
+			Err(NotInTree)
+		} else {
+			n = index // 256
+			Ok({ level: Entries, index: n, width: U64.min(256, size - n * 256) })
+		}
+	}
+
+	## R-LV2: the entry bytes (with the final newline) at tlog index `index` from an entry bundle and its bytes. The tile must be the bundle `index // 256` with
+	## `index % 256` below its width, else `Err(NotInBundle)`. The bytes must be exactly `width` entries, each after its big-endian uint16 length, else `Err(BadBundle)`.
+	entry_at : U64, Tlog.TileBytes -> Try(List(U8), [NotInBundle, BadBundle])
+	entry_at = |index, tile_bytes| {
+		t = tile_bytes.tile
+		in_bundle = [t.level == Entries, t.index == index // 256, index % 256 < t.width].all(|b| b)
+		if !in_bundle {
+			Err(NotInBundle)
+		} else {
+			match parse_bundle(tile_bytes.bytes) {
+				Ok(entries) if entries.len() == t.width => entries.get(index % 256).map_err(|_| BadBundle)
+				_ => Err(BadBundle)
+			}
+		}
+	}
+
+	## R-LV2, R-SG2: the leaf of entry bytes `<grp> <version> <hash> <time>\n`: UTF-8, exactly 4 fields that are not empty, one space between them, one newline at the end,
+	## `time` decimal digits only that fit in an I64. Else `Err(BadEntry)`. `parse_entry(entry(leaf)) == Ok(leaf)`.
+	parse_entry : List(U8) -> Try(Tlog.Leaf, [BadEntry])
+	parse_entry = |bytes| {
+		body = bytes.drop_last(1)
+		if bytes.last() != Ok(10) or body.contains(10) {
+			Err(BadEntry)
+		} else {
+			match body.split_on(32) {
+				[g, v, h, t] if [g, v, h, t].all(|f| f.len() > 0) => {
+					time = parse_time(t)?
+					grp = Str.from_utf8(g).map_err(|_| BadEntry)?
+					version = Str.from_utf8(v).map_err(|_| BadEntry)?
+					hash = Str.from_utf8(h).map_err(|_| BadEntry)?
+					Ok({ grp: grp, version: version, hash: hash, time: time })
+				}
+				_ => Err(BadEntry)
+			}
+		}
+	}
+
+	## R-LV3: the hash tiles that the inclusion proof of tlog index `index` in a tree of size `size` needs, with no duplicate. Order: the level 0 tile that holds
+	## `index`; while that tile is full, the tile one level up that holds its hash, until the first partial tile; then the other hash tiles of `edge(size)` in the order of `edge`.
+	## The entry bundle is not in the list (`entry_tile`). `index >= size` gives `[]`.
+	proof_tiles : U64, U64 -> List(Tlog.Tile)
+	proof_tiles = |index, size| {
+		if index >= size {
+			[]
+		} else {
+			dedup(chain_up(tile_at(0, index, size), size).concat(edge_hashes(size)))
+		}
+	}
+
+	## R-LV3: the inclusion proof of the entry bytes `entry_bytes` at tlog index `index` in the signed tree `checkpoint`, from tiles (any order; other tiles are ignored).
+	## The leaf hash of the entry must be the hash at `index` in its level 0 tile; each full tile on the path must hash (RFC 6962 MTH of its 256 hashes) to the hash
+	## at its place in the tile one level up; the path ends in a tile of `edge(checkpoint.size)`; and the tiles of that edge must give `checkpoint.root` (as `grow` gives a root).
+	## A tile of `proof_tiles` that is not in `tiles` is `Err(MissingTile)`. Any other fail (a hash differs, a tile has not 32 bytes for each hash, `index >= size`) is `Err(NotIncluded)`.
+	check_inclusion : U64, Tlog.Checkpoint, List(U8), List(Tlog.TileBytes) -> Try({}, [NotIncluded, MissingTile])
+	check_inclusion = |index, checkpoint, entry_bytes, tiles| {
+		size = checkpoint.size
+		if index >= size {
+			Err(NotIncluded)
+		} else if !all_present(proof_tiles(index, size), tiles) {
+			Err(MissingTile)
+		} else {
+			first = tile_at(0, index, size)
+			hs = hashes_of(first, tiles).map_err(|_| NotIncluded)?
+			if hs.get(index % 256) != Ok(leaf_hash(entry_bytes)) {
+				Err(NotIncluded)
+			} else {
+				check_chain(first, size, tiles).map_err(|_| NotIncluded)?
+				root = prefix_root(size, size, tiles).map_err(|_| NotIncluded)?
+				if root == checkpoint.root {
+					Ok({})
+				} else {
+					Err(NotIncluded)
+				}
+			}
+		}
+	}
+
+	## R-LV10: the hash tiles that the consistency proof of the sizes `m` and `n` needs, in either order (a = the smaller, b = the larger), with no duplicate.
+	## `a == b` or `a == 0` gives `[]`. Else: for each hash tile of `edge(a)` (in the order of `edge`), the tile of the tree b at the same level and index, and the tiles
+	## up from it as in `proof_tiles`; then the other hash tiles of `edge(b)`. (The hashes of a partial tile of a are the first hashes of the tile of b at that place.)
+	consistency_tiles : U64, U64 -> List(Tlog.Tile)
+	consistency_tiles = |m, n| {
+		a = U64.min(m, n)
+		b = U64.max(m, n)
+		if a == b or a == 0 {
+			[]
+		} else {
+			starts = edge_hashes(a).join_map(|t| chain_up(tile_at(hash_level(t), t.index * 256, b), b))
+			dedup(starts.concat(edge_hashes(b)))
+		}
+	}
+
+	## R-LV10: the smaller checkpoint is the start of the larger one (the arguments in either order), from the tiles of the larger tree (any order; others ignored).
+	## The root of the smaller size comes from the first hashes of the tiles of `consistency_tiles`; each of those tiles is on a checked path to the edge of the larger size,
+	## and that edge gives the root of the larger size. Equal sizes: the roots must be equal (no tile). Size 0: its root must be SHA-256 of no bytes.
+	## A tile of `consistency_tiles` that is not in `tiles` is `Err(MissingTile)`. Any other fail is `Err(NotConsistent)`.
+	check_consistency : Tlog.Checkpoint, Tlog.Checkpoint, List(Tlog.TileBytes) -> Try({}, [NotConsistent, MissingTile])
+	check_consistency = |cp1, cp2, tiles| {
+		small = if (cp1.size <= cp2.size) cp1 else cp2
+		large = if (cp1.size <= cp2.size) cp2 else cp1
+		a = small.size
+		b = large.size
+		if a == b {
+			if small.root == large.root {
+				Ok({})
+			} else {
+				Err(NotConsistent)
+			}
+		} else if a == 0 {
+			if small.root == sha([]) {
+				Ok({})
+			} else {
+				Err(NotConsistent)
+			}
+		} else if !all_present(consistency_tiles(a, b), tiles) {
+			Err(MissingTile)
+		} else {
+			_chains = edge_hashes(a).map_try(|t| check_chain(tile_at(hash_level(t), t.index * 256, b), b, tiles)).map_err(|_| NotConsistent)?
+			old_root = prefix_root(a, b, tiles).map_err(|_| NotConsistent)?
+			new_root = prefix_root(b, b, tiles).map_err(|_| NotConsistent)?
+			if [old_root == small.root, new_root == large.root].all(|ok| ok) {
+				Ok({})
+			} else {
+				Err(NotConsistent)
+			}
+		}
+	}
+
+	# --- Private helpers of the reader side (slice 261b) ---
+
+	# The start of the last empty line (`\n\n`) of a note.
+	last_blank_line : List(U8) -> Try(U64, [BadNote])
+	last_blank_line = |bs| {
+		var $i = bs.len()
+		while $i >= 2 {
+			if bs.sublist({ start: $i - 2, len: 2 }) == [10, 10] {
+				return Ok($i - 2)
+			}
+			$i = $i - 1
+		}
+		Err(BadNote)
+	}
+
+	# A signature line with no newline: `— <name> <base64>`.
+	parse_signature_line : List(U8) -> Try(Tlog.NoteSignature, [BadNote])
+	parse_signature_line = |line| {
+		if line.take_first(4) != [0xE2, 0x80, 0x94, 32] {
+			Err(BadNote)
+		} else {
+			rest = line.drop_first(4)
+			space = rest.find_first_index(|b| b == 32).map_err(|_| BadNote)?
+			name_bytes = rest.take_first(space)
+			if name_bytes.len() == 0 or name_bytes.contains(43) {
+				Err(BadNote)
+			} else {
+				name = Str.from_utf8(name_bytes).map_err(|_| BadNote)?
+				b64_text = Str.from_utf8(rest.drop_first(space + 1)).map_err(|_| BadNote)?
+				data = b64_decode(b64_text).map_err(|_| BadNote)?
+				if data.len() < 5 {
+					Err(BadNote)
+				} else {
+					Ok({ name: name, key_id: data.take_first(4), signature: data.drop_first(4) })
+				}
+			}
+		}
+	}
+
+	# The time of an entry: decimal digits only, that fit in an I64.
+	parse_time : List(U8) -> Try(I64, [BadEntry])
+	parse_time = |digits| {
+		if digits.len() > 0 and digits.all(|b| in_range(b, 48, 57)) {
+			I64.from_str(Str.from_utf8(digits).map_err(|_| BadEntry)?).map_err(|_| BadEntry)
+		} else {
+			Err(BadEntry)
+		}
+	}
+
+	# The level of a hash tile (0 for an entry bundle).
+	hash_level : Tlog.Tile -> U8
+	hash_level = |t| match t.level {
+		Hashes(l) => l
+		Entries => 0
+	}
+
+	# The count of hashes at level `l` of a tree of size `size`: size // 256^l.
+	level_count : U64, U8 -> U64
+	level_count = |size, l| {
+		var $c = size
+		for _ in 0..<l.to_u64() {
+			$c = $c // 256
+		}
+		$c
+	}
+
+	# The hash tile of level `l` that holds the position `pos` of that level, in a tree of size `size` (pos below the count of that level).
+	tile_at : U8, U64, U64 -> Tlog.Tile
+	tile_at = |l, pos, size| {
+		n = pos // 256
+		{ level: Hashes(l), index: n, width: U64.min(256, level_count(size, l) - n * 256) }
+	}
+
+	# The hash tiles of `edge(size)`.
+	edge_hashes : U64 -> List(Tlog.Tile)
+	edge_hashes = |size| edge(size).keep_if(|t| t.level != Entries)
+
+	# A tile, then while the tile is full, the tile one level up that holds its hash, until the first partial tile.
+	chain_up : Tlog.Tile, U64 -> List(Tlog.Tile)
+	chain_up = |start, size| {
+		var $out = [start]
+		var $cur = start
+		while $cur.width == 256 {
+			$cur = tile_at(hash_level($cur) + 1, $cur.index, size)
+			$out = $out.append($cur)
+		}
+		$out
+	}
+
+	# The tiles with no duplicate, in the order of their first place.
+	dedup : List(Tlog.Tile) -> List(Tlog.Tile)
+	dedup = |ts| ts.fold([], |acc, t| if (acc.contains(t)) acc else acc.append(t))
+
+	all_present : List(Tlog.Tile), List(Tlog.TileBytes) -> Bool
+	all_present = |wanted, tiles| wanted.all(|w| tiles.any(|t| t.tile == w))
+
+	# The hashes of a hash tile from the tiles: 32 bytes for each hash of its width.
+	hashes_of : Tlog.Tile, List(Tlog.TileBytes) -> Try(List(List(U8)), [BadTile])
+	hashes_of = |want, tiles| match tiles.find_first(|t| t.tile == want) {
+		Ok(t) if t.bytes.len() == want.width * 32 => Ok(t.bytes.chunks_of(32))
+		_ => Err(BadTile)
+	}
+
+	# Each full tile from `start` up must hash (MTH of its 256 hashes) to the hash at its place in the tile one level up, until the first partial tile.
+	check_chain : Tlog.Tile, U64, List(Tlog.TileBytes) -> Try({}, [BadTile])
+	check_chain = |start, size, tiles| {
+		var $cur = start
+		while $cur.width == 256 {
+			hs = hashes_of($cur, tiles)?
+			up = tile_at(hash_level($cur) + 1, $cur.index, size)
+			up_hashes = hashes_of(up, tiles)?
+			if up_hashes.get($cur.index % 256) != Ok(root_of(hs)) {
+				return Err(BadTile)
+			}
+			$cur = up
+		}
+		Ok({})
+	}
+
+	# The root of size `a` from the hash tiles of the tree of size `b` (b >= a): at each level, the first hashes of the tile of b at the partial tile of a.
+	prefix_root : U64, U64, List(Tlog.TileBytes) -> Try(List(U8), [BadTile])
+	prefix_root = |a, b, tiles| {
+		var $tails = []
+		var $c = a
+		var $l = 0.U8
+		while $c > 0 {
+			w = $c % 256
+			if w == 0 {
+				$tails = $tails.append([])
+			} else {
+				hs = hashes_of(tile_at($l, ($c // 256) * 256, b), tiles)?
+				$tails = $tails.append(hs.take_first(w))
+			}
+			$c = $c // 256
+			$l = $l + 1
+		}
+		Ok(peaks_root($tails))
+	}
+
 	# --- Private helpers ---
 
 	sha : List(U8) -> List(U8)
