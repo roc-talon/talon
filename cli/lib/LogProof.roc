@@ -1,5 +1,6 @@
 import records.Tlog
 import records.Release
+import records.Toolchain
 import Fail
 import JsonDoc
 import LogKey
@@ -55,6 +56,28 @@ LogProof :: [].{
 
 	## Slice 261c (R-LV1, R-LV2, R-LV11): one release that the command checks. `text` is `<release>` of the texts (`<alias>: <name> <version>`, CLI 3).
 	Check : { text : Str, log_index : U64, group : Str, version : Str, hash : Str, url : Str }
+
+	## Slice 261d (R-LV1, R-LV11, section 7 of slice 261): the check of the tool release that `tln tool install` or `tln x` writes, from the registry row `row` (R-AP1) of the
+	## full name `name`. `text` is `<release>` of the texts: `tool <name> <version>`. The other fields are those of the row (`url` is the row URL, the `release` of `error.details`).
+	tool_check : { name : Str, row : Release.Row } -> LogProof.Check
+	tool_check = |x| { text: "tool ${x.name} ${x.row.version}", log_index: x.row.log_index, group: x.row.group, version: x.row.version, hash: x.row.hash, url: x.row.url }
+
+	## Slice 261d (R-LV1, R-SE11, Registry R-SG3, section 7 of slice 261): the check of a compiler that Talon installs with the sha256 of a registry row (R-CV3), before the download.
+	## `text` is `<release>` of the texts: `<tag> (<target>)`. `log_index` is the row value. `group` is `roc-lang/nightlies:<target>`, `version` the tag, `hash` `sha256:<sha256>`
+	## (the fields of the leaf). `url` is the tag: it is the `release` of `error.details` for a compiler (CLI 3 catalog), so `fail` gives it with no change.
+	compiler_check : Toolchain.Row -> LogProof.Check
+	compiler_check = |row| { text: "${row.tag} (${row.target})", log_index: row.log_index, group: "roc-lang/nightlies:${row.target}", version: row.tag, hash: "sha256:${row.sha256}", url: row.tag }
+
+	## Slice 261d (R-LV2): the compare of a check and its leaf. A compiler check (a `group` that starts with `roc-lang/nightlies:`, `compiler_check`) is compared as
+	## `check_compiler` does (group, version and hash; there is no URL check, so never `UrlDiffers`). Any other check is `check_release` (T1, then T2b).
+	check_leaf : LogProof.Check, Tlog.Leaf -> Try({}, [EntryDiffers, UrlDiffers])
+	check_leaf = |c, leaf| {
+		if c.group.starts_with("roc-lang/nightlies:") {
+			check_compiler({ target: c.group.drop_prefix("roc-lang/nightlies:"), tag: c.version, sha256: c.hash.drop_prefix("sha256:") }, leaf).map_err(|_| EntryDiffers)
+		} else {
+			check_release({ group: c.group, version: c.version, hash: c.hash, url: c.url }, leaf)
+		}
+	}
 
 	## Slice 261c (R-LV1, Design R-SE2): the releases that a command checks. `after` are the header values that the command writes (alias, full name, URL), `before`
 	## the URLs that the header has now, `rows` the release rows of the registry answers of the run. A value is checked when its URL is not in `before` and is the

@@ -1,0 +1,21 @@
+args
+env_all
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+http_get http://127.0.0.1:9/v1/toolchains?after=0
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+read_files $HOME/.local/share/talon/log/http_127.0.0.1_9/checkpoint
+http_get http://127.0.0.1:9/log/checkpoint
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/log/tile/entries/000.p/30 $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/log/tile/0/000.p/30
+http_get_bytes http://127.0.0.1:9/log/tile/entries/000.p/30
+  User-Agent: tln/0.0.1
+http_get_bytes http://127.0.0.1:9/log/tile/0/000.p/30
+  User-Agent: tln/0.0.1

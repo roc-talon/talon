@@ -11,6 +11,7 @@ import Item
 import Lookup
 import Mode
 import Prompt
+import records.Release
 import Roots
 import Scope
 import Temp
@@ -96,9 +97,10 @@ flow! = |fx, args, plan| {
 		}
 	}
 	index = ToolFlow.index_for(args, facts, machine.registry)
-	picked = ToolInstall.pick({ name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
+	rows = list.rows
+	picked = ToolInstall.pick({ name, list: list.list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
 	newest = newest_of(picked)?
-	check = Online({ first: newest.ident.version, listed: list.map(|c| c.ident.version) })
+	check = Online({ first: newest.ident.version, listed: list.list.map(|c| c.ident.version) })
 	match XCache.choose({ name, target: facts.target, selector: plan.ref.selector, check, installed, entries: found }) {
 		Installed(tool) => {
 			note_reuse!(fx, { via: RunInstalled, key: tool.key, name, have: ToolsJson.source_text(tool.source), newest: newest.ident.version, index })
@@ -111,7 +113,7 @@ flow! = |fx, args, plan| {
 		}
 		NoMatch => {
 			stale = found.keep_if(|f| !f.has_bin).map(|f| f.dir)
-			bin = build!(fx, args, plan, { facts, picked, newest, stale })?
+			bin = build!(fx, args, plan, { facts, picked, newest, stale, log: { registry: machine.registry, log_key: machine.log_key, rows } })?
 			run_binary!(fx, plan, bin)
 		}
 	}
@@ -186,11 +188,13 @@ newest_of = |picked| match picked.order.first() {
 }
 
 # Step 6 (R-X1 to R-X3, R-CC2, R-CC11): the notes, the first app bundle, the platform, the compiler, the build, then the entry. No lock, no `tools.json`, no bin dir. The temp dir of the build goes also after a failure. The result is the binary of the new entry.
-build! : Fx, Args, XCmd.Plan, { facts : ToolBuild.Facts, picked : ToolInstall.Picked, newest : Index.Candidate, stale : List(Str) } => Try(Str, Fail)
+build! : Fx, Args, XCmd.Plan, { facts : ToolBuild.Facts, picked : ToolInstall.Picked, newest : Index.Candidate, stale : List(Str), log : { registry : Try({ text : Str, at : Str }, [Unset]), log_key : Try({ text : Str, path : Str, line : U64 }, [Unset]), rows : List(Release.Row) } } => Try(Str, Fail)
 build! = |fx, args, plan, run| {
 	facts = run.facts
 	ToolFlow.notes_for!(fx, args, facts, run.picked, run.newest)
 	bundle = ToolFlow.first_app_for!(fx, args, facts, run.picked.order)?
+	# Slice 261d (R-LV1, Q261d-1): the log check of the release of the first app, before the platform fetch and the build.
+	ToolFlow.log_check_for!(fx, args, facts, run.log, bundle.url)?
 	ToolFlow.platform_for!(fx, args, facts, bundle)?
 	chosen = ToolFlow.choose_for!(fx, args, { roc: plan.roc }, facts, bundle)?
 	attempt = ToolBuild.built!(fx, args, facts, bundle, chosen)?

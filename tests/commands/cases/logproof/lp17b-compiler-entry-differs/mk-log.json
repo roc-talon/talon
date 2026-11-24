@@ -1,0 +1,14 @@
+{
+ "host": "127.0.0.1:9",
+ "leaves": {
+  "10": "roc-lang/nightlies:linux_x86_64 nightly-2026-10-12-2664a27 sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 1791817200000",
+  "20": "roc-lang/nightlies:linux_x86_64 nightly-2026-10-13-91fa0c2 sha256:0000000000000000000000000000000000000000000000000000000000000000 1791903600000",
+  "30": "roc-lang/nightlies:linux_x86_64 nightly-2026-10-17-601b54c sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 1792249200000"
+ },
+ "serve": [
+  {
+   "file": "checkpoint",
+   "size": 30
+  }
+ ]
+}

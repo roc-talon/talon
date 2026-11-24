@@ -1,0 +1,110 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,4 @@
++format	1
++pinned	nightly-2026-10-12-2664a27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-13-91fa0c2	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-17-601b54c	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/log/tile/0/000.p/30
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/log/tile/0/000.p/30
+@@ -0,0 +1,30 @@
++ccf6bb3fc26fc5e6def05194574a089873d04f31c8f7d07024c2f5ea16b5291d
++bb387f17ed7ba00c394c713ec337bfd2e2ae482a139d4c3a08ab0f61e3e579ed
++c68fcdabe809c18cee3059754100063d75597069f8fdf169460682f6177b3eed
++ad3ac679805267a5c364cff7cdf6e7acd82b51827787fc98fe5e709b104d2713
++94e5da0e3a0a82fd81b502c6c37133f308fdbe3f69a2a2f0ee179cda832fa158
++8521702775068349d677a09e5c8c1dd239a220873c1fabfb902291b009ec3f92
++23efadbc8b6f5a42931cea996e4e3dd75b3245104250d30de1d3fa55866d4f78
++0674d7c36702b91dad537e3105039c4d898d305b9ca744a2a74c18c9c6b68c4e
++0af2aa117d5434d8c0350f88e90e9cfc4897550ef3cb15891bf132f7b321657d
++56e583db509ba935d187313eacad0fe46c40904dc31a16b243c0cd323e094aa8
++6691e207bb655fd6ec6287fd8eb9d18c33e13eb15529041fa76d572735cf25f7
++5f0bdd020e1a5abd62612429de7ddaa2dfac64a1936b7d10138054b9ab1040fe
++309822dfcfefb9cd8a44f5dc9a657b3a1bfaa4fd2f20699cdd576566dceb4b9b
++344a5b17692f8ee3b11af5d28356a7a36392ca5041b3c82e9b61906e5b5cfbe9
++82ef8d7d9cf4abb26f5936b0b66e5b746075f214f5ffe5371064e543596cc68e
++0faa9d1ef19d7abaa88050b1c873b82d1b8c17a3950d34696bfb49eebe5befbd
++e4c731a148d42b4ca2f2f307f9cfa24b9a8c2df474327638785cb70268aad765
++af41abc30268698647d244fcb2bb407ba5d6d79ded2e67d03ae92f4bfbfd08db
++97af77962a3407a72e285376342507d6b7e12d4c582a6df2a3b2a8a9e93edb16
++443c30e61e5b5734fc34ef4d8fb0bbc250236be4edb5285d830b4e6625205983
++5d6a7ab8c4a7a826925a8f3f908a9311a277472d5a2990830b9570181d4d6fdd
++0f135d60eedb0dc81a2faad24837ace72d7ac74b25afe5a63dc0a6cd3962cc3d
++cb53463f4273762fa73af61cf803deaaa5d11c182140ab371033664af1e4d9b9
++e26999ba1508c4b473c5b9151446903fdd3d7ee2ddee77f20ee873bb83ffe0bd
++71f4a1cc2b77f5e03b2773e11b2cd9213cc7aed1b5b8c429f3fca564b633cca0
++9c06c31173f221a2e8a9942644fe81a847064382b725f838706dedd060f4e404
++2378e320c1b555b15a82ffc57fae4ca1d9fc0ba96e3745905b01909edd0861ee
++1a95aa64424664b8496732434e15f894ed88cf2f02759e3e92bbdfb467de98de
++9533ca2f204e051a628f102338ce4435934af150cf027a36d9a68e5ac02e50f8
++5630938e0fc2351424b76328f45012ec14b3acc3655cd2eada4060ba2dc46042
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/log/tile/entries/000.p/30
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/log/tile/entries/000.p/30
+@@ -0,0 +1,30 @@
++github.com/acme/filler/releases/download/{v}/ 0.0.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.1.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.2.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.3.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.4.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.5.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.6.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.7.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.8.0 11111111111111111111111111111111 1790000000000
++roc-lang/nightlies:linux_x86_64 nightly-2026-10-12-2664a27 sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 1791817200000
++github.com/acme/filler/releases/download/{v}/ 0.10.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.11.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.12.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.13.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.14.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.15.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.16.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.17.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.18.0 11111111111111111111111111111111 1790000000000
++roc-lang/nightlies:linux_x86_64 nightly-2026-10-13-91fa0c2 sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 1791903600000
++github.com/acme/filler/releases/download/{v}/ 0.20.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.21.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.22.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.23.0 11111111111111111111111111111111 1790000000000
++roc-lang/nightlies:linux_x86_64 nightly-2026-10-13-91fa0c2 sha256:0000000000000000000000000000000000000000000000000000000000000000 1791990000000
++github.com/acme/filler/releases/download/{v}/ 0.25.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.26.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.27.0 11111111111111111111111111111111 1790000000000
++github.com/acme/filler/releases/download/{v}/ 0.28.0 11111111111111111111111111111111 1790000000000
++roc-lang/nightlies:linux_x86_64 nightly-2026-10-17-601b54c sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 1792249200000
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+@@ -0,0 +1 @@
++{"format":1,"rows":[{"tag":"nightly-2026-10-12-2664a27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73600000,"published_at":1791817200000,"log_index":10},{"tag":"nightly-2026-10-13-91fa0c2","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73500000,"published_at":1791903600000,"log_index":20},{"tag":"nightly-2026-10-13-91fa0c2","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73500000,"published_at":1791990000000,"log_index":25},{"tag":"nightly-2026-10-17-601b54c","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-17-601b54c.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73100000,"published_at":1792249200000,"log_index":30}]}
+--- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-13-91fa0c2","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-13-91fa0c2/roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"registry","typed":"nightly-2026-10-13-91fa0c2","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-13T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/LICENSE
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/legal_details
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/roc
++++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -1,2 +1,3 @@
+ registry = "http://127.0.0.1:9"
+ share = true
++default-roc = "nightly-2026-10-13-91fa0c2"
+--- home/.local/share/talon/log/http_127.0.0.1_9/checkpoint
++++ home/.local/share/talon/log/http_127.0.0.1_9/checkpoint
+@@ -0,0 +1,5 @@
++127.0.0.1:9/log
++30
++/lIR52RdaSm+iSqLa2LXX/maazACK4wI5ZTzEldvcmQ=
++
++— 127.0.0.1:9/log Vs57bhNtgd1wq298U8xqMlIgQngEdxIAAm/BA7Zr1pjWyyeX+FcdITycLPz+MinQKJdh4jSsLq+qedo56eoJ0lC6eg4=

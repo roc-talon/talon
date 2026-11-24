@@ -533,3 +533,120 @@ Run (capped, flocked, `TMPDIR` set, the code of 261c): `tests/commands/run.sh lo
 | copies-on-fail | lp4, lp5, lp12, lp15 |
 | no-copies (Q261c-2) | lp1, lp6, lp11c, lp11d, the 3 rg2 cases |
 | offline-no-proof-passes, offline-rows-unchecked | lp9b (and lp9) |
+
+## 16. 261d: the check of tools and compilers (test agent, 2026-11-24)
+
+Status: tests (red). Phase 1 of 261d. The code agent writes the bodies of the 3 stubs below, the hook of the check in the tool flows and in `RocInstall.offer_noted!`, and the rows that these flows need (a tool candidate and a registry compiler release carry no `log_index` today: `Index.Candidate`, `Nightlies.Release`).
+
+### 16.1 Where the check runs (the call sites)
+
+| Flow | Rows from a registry answer today | Check | L2 case |
+| --- | --- | --- | --- |
+| `tln tool install` (`ToolFlow.flow!`) | yes: R-AP1 (`release_list_with!`) | after `first_app!` (the bundle of the first app is read: the end of the pick of R-T10), before the platform fetch, the build, the prompts and any write (Q261d-1) | lp16, lp16b, lp16c |
+| `tln x` (`XFlow`) | yes: R-AP1 | the same point (R-LV1 names `x`) | lp16d |
+| `tln tool update` (`ToolUpdateFlow`), the `[tools]` step (`ToolsStep`) | no: both read only the GitHub list (`ToolFlow.release_list_for!`, `release_pages_for!`) | none: no row came from a registry answer (R-LV1). A later slice that gives them a registry list gets the check. | none |
+| A take-over of an x entry by `tool install` (`XTake.online!`) | yes: the R-AP1 row of the URL of the x manifest | after the x entries are read (`XCacheIo.entries!`), before `take!` (the bin dir check, the lock, the move, the tools.json write) (Q261d-2 (a)) | lp16e, lp16f |
+| Every compiler install: `roc install`, `roc default`, `roc use`, `roc update`, `upgrade roc` (`NightlyFlow`), the proxy (`Start`), the probe compilers (`PickOptional`, `NoRank`) | yes when the list is a registry list (`Nightlies.Source` `Registry`, `sha256_source` `registry`) | in `RocInstall.offer_noted!` for a `Download` offer, after step 6 (the list, its `compat.db` calls, the digest check), before the prompt, the lock and the download (R-LV1 "before the download", R-LV8 "before the prompts"). One funnel for all callers. A `Present` compiler is not checked (R-LV1: a compiler that Talon installs). | lp17 (`roc install`), lp17b, lp17c, lp17d (`roc update`) |
+
+The calls of the check are those of section 14.3 (one funnel, `LogCheck`).
+
+### 16.2 Files
+
+| File | Change |
+| --- | --- |
+| `cli/lib/LogProof.roc` | stubs `tool_check`, `compiler_check`, `check_leaf` (`crash "todo"`), `import records.Toolchain` |
+| `tests/unit/LogproofTest.roc` | 4 new expects (red) |
+| `tests/commands/cases/logproof/lp16*`, `lp17*` | 13 new L2 cases (10, the 2 gap tests of 16.10: lp17e, lp17f, and lp16g of Q261d-3) |
+| `research/slice-261d-tests/mk-cases.py` | the inputs of the 8 cases (from `registry/sc3-tool-install`, `registry/sc4-x-registry`, `registry/cv1-roc-default`) and the fake logs (`tests/tools/mk-log.mjs`, test seeds only) |
+| `research/slice-261d-tests/mk-expect.py` | the hand rules that write the expected files from the output of the code before 261d (it uses `research/slice-261c-tests/mkexpectlib.py`) |
+| `tests/tools/mk-log.mjs` | no change: a compiler leaf is a leaf text of the spec (`roc-lang/nightlies:<target> <tag> sha256:<hex> <time>`, R-SG3) |
+
+### 16.3 L0 (pure)
+
+| Function | Expects | Rules |
+| --- | --- | --- |
+| `LogProof.tool_check` | `text` = `tool acme/foo 1.1.0`, `log_index` of the row | R-LV1, R-LV11 |
+| `LogProof.compiler_check` | `text` = `nightly-2026-10-13-91fa0c2 (linux_x86_64)`, `log_index` of the row | R-LV1, R-SE11 |
+| `LogProof.check_leaf` | tool: Ok, `EntryDiffers`, `UrlDiffers`; compiler: Ok, `EntryDiffers` for each of sha256, target, tag, and a hash with no `sha256:` (no URL check) | R-LV2, Registry R-SG3 |
+| `LogProof.fail` with the new checks | T1, T2 of a tool (`release` = the URL); T1, T2, T5, T7 of a compiler (`release` = the tag) | R-LV11, R-LV12, CLI 3 catalog |
+
+### 16.4 L2 cases (`tests/commands/cases/logproof/`)
+
+| Case | Checks | Exit |
+| --- | --- | --- |
+| `lp16-tool` | `tool install acme/foo`: 1.2.0 is not an app, 1.1.0 (log index 3) is checked after its bundle read; copies and checkpoint written; output unchanged. Run 2: Keep, no log call | 0 |
+| `lp16b-tool-entry-differs` | T1 `tool acme/foo 1.1.0`; no platform fetch, no build, tools.json not written, no copy | 16 |
+| `lp16c-tool-not-included` | T2 with `--json` (`release` = the URL) | 16 |
+| `lp16d-x` | `x acme/foo -- a b`: 1.1.0 (log index 1) checked before the platform fetch and the build; output unchanged | 3 (the app) |
+| `lp16e-takeover` | Q261d-2 (a): `tool install acme/foo` takes over the x entry of 1.1.0 (log index 1, given home): checked before `take!`; copies written; output unchanged | 0 |
+| `lp16f-takeover-entry-differs` | T1 `tool acme/foo 1.1.0`: the x entry is not moved, no binary, tools.json not written, no copy | 16 |
+| `lp17-compiler` | `roc install nightly-2026-10-13-91fa0c2` (log index 20, log size 30): checked before the prompt; output unchanged. Run 2: `Present`, no log call | 0 |
+| `lp17b-compiler-entry-differs` | T1 `nightly-2026-10-13-91fa0c2 (linux_x86_64)`; no prompt, no download, no default | 16 |
+| `lp17c-compiler-not-included` | T2 with `--json` (`release` = the tag) | 16 |
+| `lp17d-roc-update` | `roc update` (another caller of `offer_noted!`): nightly-2026-10-17-601b54c (log index 30) checked before the prompt | 0 |
+
+### 16.5 The old cases
+
+| Cases | Change | Why |
+| --- | --- | --- |
+| The 14 default-registry cases that 261c left unchanged (section 14.5) | none | None installs a compiler or a tool from a registry answer: `rg9-toolchains-down` (`roc update`) and `rg9-upgrade-list-then-closure` (`upgrade roc`) fall back to direct at the list read, so the compiler comes from the GitHub list; the others stop or fall back before a pick, or write nothing |
+| The `127.0.0.1` cases that install a compiler or a tool from a registry list (`registry/cv1-*`, `sc3-*`, `sc4-*`, `yf3-*`, `bot/*`, ...) | none | No key for `127.0.0.1:9` (R-LV5, Q261-4 (b)) |
+
+### 16.6 Red state (capped scope, nightly 03dce41, 2026-11-24)
+
+| Run | Result |
+| --- | --- |
+| `roc check cli/main.roc`, `roc fmt --check` of the 2 changed Roc files | pass |
+| `roc test tests/unit/l0-9.roc` | 233 tests: 229 pass (all old), 4 fail, each the crash `todo` |
+| `tests/commands/run.sh logproof/` | 22 pass (the 261c cases), 10 fail (the 10 new cases, after the answers of 16.8): no log call, and the failure cases go on to the build or the download and exit 0 |
+| `scripts/test.sh selftest`; `MISSING=1 scripts/rules.sh R-LV R-SE11` | pass; no rule without a test |
+| The fake logs (`research/slice-261c-tests/check-log.mjs`) | signature, root and leaves valid for lp16, lp16b, lp16d, lp17, lp17b |
+
+### 16.7 Review points (TW24 proposals; all 4 accepted by the user, 2026-11-24)
+
+| # | Point | Proposal in the tests |
+| --- | --- | --- |
+| P1 | `<name>` of `tool <name> <version>` | the full name (`tool acme/foo 1.1.0`), as `<name>` of a header entry |
+| P2 | The compiler check point | `RocInstall.offer_noted!`, after step 6, for a `Download` from a registry list: one funnel, before the prompt of every caller |
+| P3 | The shape of a compiler check | the 261c `Check` record: `group` `roc-lang/nightlies:<target>`, `version` the tag, `hash` `sha256:<hex>`, `url` the tag (the `release` of `error.details`); `check_leaf` picks the compare by the group |
+| P4 | Copies of a check that passed and a command that fails later (a failed build) | the copies stay (they are written when the proof passes, R-LV7) |
+
+### 16.8 Questions (TW17; answered by the user, 2026-11-24: Q261d-1 (a), Q261d-2 (a))
+
+| Id | Question | Options | What the tests assume now |
+| --- | --- | --- | --- |
+| Q261d-1 | Which tool release is checked, and when? R-T10 finds the release of `tool install` and `x` only after it downloads bundles (a candidate that is not an app is dropped), so the "final pick" of R-LV8 comes after these downloads. The bundle download is checked by its hash (the hash is in the URL). | (a) The release of the first app, after `first_app!`, before the platform fetch, the build, the prompts and any write. (b) Each candidate before its bundle fetch (more checks, also of releases that are not written). | (a): lp16 to lp16d. Answer: (a) |
+| Q261d-2 | `tool install` takes over a matching x entry (`XTake.online!`, R-B3, R-B4): it writes a tools.json entry with the URL of the x manifest, with no download. Is that URL checked? | (a) Yes: the R-AP1 row of that URL is checked before the take (a kept proof gives no request). (b) No: the x entry is a local value, as a kept header value (R-SE2 sentence 2). | Answer: (a), as any release written from a registry answer (R-LV1). Tests: lp16e, lp16f. No new pure part (`tool_check` covers it). |
+
+### 16.9 The answers of the user (2026-11-24)
+
+| Item | Answer |
+| --- | --- |
+| Q261d-1 | (a): the release of the first app, after `first_app!`, before the platform fetch, the build, the prompts and any write |
+| Q261d-2 | (a): a take-over of an x entry by `tool install` is checked with the R-AP1 row of the URL (R-LV1). Tests: lp16e, lp16f |
+| P1 to P4 (16.7) | accepted |
+
+### 16.10 Mutation check of the 261d code (test agent, 2026-11-24)
+
+`research/slice-261d-revert/` (`mutate.sh`, `RESULT.md`). The mirrors are under `.tmp/261d-mut-<stamp>/`. 13 mutants and a reference, nightly 03dce41. The runs are `l0-9`, the L2 cases `logproof/` and 6 old cases of the touched flows. First run: 12 killed and 1 survived (`compiler-largest-index`). With 2 gap tests, all 13 are killed. The green code passes `logproof/` (34 cases).
+
+| Gap test | Mutant it kills | Rule |
+| --- | --- | --- |
+| `lp17e-other-target`: a row of the same tag for another target (log index 15) and a bad leaf of the host row (20): T1 at 20 | `compiler-tag-only` | R-LV2, R-CV2 |
+| `lp17f-duplicate-row`: a later row of the same tag, target and sha256 (25) with a bad leaf: the check proves 20, the row of the sha256 that the download uses (`keep_first`, R-CV6); exit 0 | `compiler-largest-index` | R-LV2, R-CV6 |
+
+"A direct list gets checked" is equivalent by construction: a direct list has no rows.
+
+### 16.11 Question (TW17, from the mutation check)
+
+| Id | Question | Options | Recommendation |
+| --- | --- | --- | --- |
+| Q261d-3 | `LogCheck.tool!` makes no check when no row of the R-AP1 answer has the URL. For `first_app!` the URL always comes from a row. In a take-over (`XTake.online!`) the URL comes from the x manifest, and `XCache.choose` matches by version, not by URL. An x entry of 1.1.0 that was built with another hash (a direct build, or an asset that the registry now has with another hash) has no row, so `tool install` writes that URL into tools.json with no check, while the registry is in use (fail-open). | (a) Stop with exit 16 (a new text, or T1 with the registry row of that version), and write nothing. (b) No take-over: build the registry release as when no x entry matches. (c) No check (as now): the x entry is a local value. | (b): the user chose a registry, and the release of the registry is the one that can be proved. The x entry stays for `tln x` in direct mode. **Answer (the user, 2026-11-24): (b).** Test: `lp16g-takeover-other-hash`. |
+
+Q261d-3 (b), red test (test agent, 2026-11-24):
+
+| Case | Checks | Exit |
+| --- | --- | --- |
+| `lp16g-takeover-other-hash` | The world of lp16e, but the x entry of 1.1.0 has the URL with the hash `9LFkx...` (no R-AP1 row). No take-over: `tool install` builds the registry release 1.1.0 (`AL3LZ...`), checks log index 1 after `first_app!` and before the platform fetch, and writes tools.json with the registry URL. The x entry is not changed. No new output line (R-LV12). | 0 |
+
+The expected files come from the code before 261d in the same world with the version 0.9.0 in the x manifest (`lp16g-base` in `.tmp/261d-base`: no match, a build, the same calls of `entries!`), with the check calls of 14.3 after `first_app!` (`mk-expect.py`, `work=`). Red state: `tests/commands/run.sh logproof/`: 34 pass, 1 fail (`lp16g`: the code takes the x entry over, with no build and no log call).

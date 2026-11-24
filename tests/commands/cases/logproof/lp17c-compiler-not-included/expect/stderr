@@ -1,0 +1,1 @@
+tln: error[integrity]: nightly-2026-10-13-91fa0c2 (linux_x86_64): the inclusion proof of log index 20 does not match the signed checkpoint of http://127.0.0.1:9 (size 30). Talon wrote nothing.

@@ -1,0 +1,1 @@
+tln: error[integrity]: tool acme/foo 1.1.0: the log of http://127.0.0.1:9 has another entry at log index 3: github.com/acme/foo/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK. Talon wrote nothing.

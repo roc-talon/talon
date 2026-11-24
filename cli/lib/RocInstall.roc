@@ -14,6 +14,7 @@ import Fail
 import Fx
 import IndexQuery
 import Item
+import LogCheck
 import Mode
 import Net
 import Nightlies
@@ -183,6 +184,18 @@ RocInstall :: [].{
 		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
 		if (run.offline) return Err(Toolchain.offline_missing(id))
+		# Slice 261d (R-LV1, R-LV8, Q261d): a compiler of a registry list is checked against the log before the prompt, the lock and the download.
+		match found.via {
+			Registry(r) => {
+				target = Nightlies.target(system)
+				mine = found.rows.keep_if(|row| row.tag == id and row.target == target)
+				match mine.sort_with(|a, b| if (a.log_index < b.log_index) Before else if (a.log_index > b.log_index) After else Same).first() {
+					Ok(row) => LogCheck.compiler!(fx, { roots, base: r.origin, offline: run.offline, env: run.env, config: config.log_key, row })?
+					Err(_) => {}
+				}
+			}
+			Direct => {}
+		}
 		item = Roots.item(roots, Item.Toolchain(id))
 		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system, source: RocInstall.source_of(found.via, user) }
 		Ok({ offer: Download({ id, size: asset.size, ctx }), note })
@@ -236,7 +249,10 @@ RocInstall :: [].{
 				if (listed.releases.is_empty()) return Err(ClosureRequest.no_compiler({ rows: [], nightly: run.switch.nightly, nightly_from: run.switch.source, req: Ok(run.req_text), now: run.now, min_age: run.min_age, exclude: run.exclude, snapshot: None }))
 				listed
 			}
-			Err(None) => Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.?real ?? run.now, offline: run.offline, host: system })?
+			Err(None) => {
+				plain = Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.?real ?? run.now, offline: run.offline, host: system })?
+				{ releases: plain.releases, source: plain.source, changed: plain.changed, dropped: plain.dropped, rows: [] }
+			}
 		}
 		if (found.source == Missing) return Err(Toolchain.offline_no_list({}))
 		match Toolchain.range_pick({ releases: found.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {

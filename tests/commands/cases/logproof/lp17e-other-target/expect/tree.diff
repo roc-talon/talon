@@ -1,0 +1,11 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,4 @@
++format	1
++pinned	nightly-2026-10-12-2664a27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-13-91fa0c2	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-17-601b54c	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+@@ -0,0 +1 @@
++{"format":1,"rows":[{"tag":"nightly-2026-10-12-2664a27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73600000,"published_at":1791817200000,"log_index":10},{"tag":"nightly-2026-10-13-91fa0c2","target":"macos_apple_silicon","asset_name":"roc_nightly-macos_apple_silicon-2026-10-13-91fa0c2.tar.gz","sha256":"c5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":70000000,"published_at":1791903000000,"log_index":15},{"tag":"nightly-2026-10-13-91fa0c2","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73500000,"published_at":1791903600000,"log_index":20},{"tag":"nightly-2026-10-17-601b54c","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-17-601b54c.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73100000,"published_at":1792249200000,"log_index":30}]}

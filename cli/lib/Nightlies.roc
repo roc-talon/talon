@@ -270,7 +270,7 @@ Nightlies :: [].{
 
 	## Slice 240 (R-CH4, R-CH16, R-CV3, R-CV6): the list of a user channel, as `list!`. The repo is the `source` of the table (`owner/repo`, as written). The pages are cached in `talon/index/github/<owner>/<repo>/`.
 	## The rows of `compat.db` have the channel name and its `source`. The list is always `direct`: no registry is read.
-	list_channel! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, channel : { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
+	list_channel! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, channel : { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, rows : List(RegistryToolchains.Row), fell : Try(Fallback.Fell, [None]) }, Fail)
 	list_channel! = |fx, facts| {
 		(owner, repo) = match facts.channel.source.split_on("/") {
 			[o, r] => (o, r)
@@ -329,7 +329,7 @@ Nightlies :: [].{
 	## Slice 204: the registry source of the list, next to `list!` (the GitHub source). `origin` is the registry, `version` the `tln` version, `log` is `--snapshot log:N` (R-AP19). A command picks the source: slice 206.
 	## The calls: those of `RegistryToolchains.list!`, then (rows to releases with `RegistryToolchains.visible` and `from_rows`) `Facts.pin_all!` with `registry_pins`: the `compat.db` calls follow the registry calls, for the visible rows only (Q4 of slice 204: a hidden row is not seen), also for a list from the file.
 	## `releases`, `changed` and `dropped` are as in `list!` (R-CV6: a tag with a changed sha256 is no candidate, whatever the source of the first sha256 was). `source` is the one of `RegistryToolchains.list!`. The failure of `RegistryToolchains.list!` or of `pin_all!` is the failure.
-	list_registry! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, host : Host, log : Try(U64, [None]), source ?: Str } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Fail)
+	list_registry! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, host : Host, log : Try(U64, [None]), source ?: Str } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), rows : List(RegistryToolchains.Row) }, Fail)
 	list_registry! = |fx, facts| {
 		got = RegistryToolchains.list!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, offline: facts.offline, source: facts.?source ?? "" })?
 		shown = RegistryToolchains.visible({ rows: got.rows, log: facts.log })
@@ -337,7 +337,7 @@ Nightlies :: [].{
 		pinned = Facts.pin_all!(fx, { roots: facts.roots, listed: Nightlies.registry_pins({ host: facts.host, releases: found }) })?
 		changed = pinned.concat(Nightlies.row_changes({ host: facts.host, rows: shown }))
 		kept = Nightlies.without_changed({ releases: found, changed })
-		Ok({ releases: kept, source: got.source, changed, dropped: found.keep_if(|release| !kept.any(|k| k.id == release.id)) })
+		Ok({ releases: kept, source: got.source, changed, dropped: found.keep_if(|release| !kept.any(|k| k.id == release.id)), rows: shown })
 	}
 
 	## Slice 206e2 (R-CV1, R-IX4, R-CV5): where a command reads its compiler list. `Direct`: the GitHub list (`list!`). `Registry`: the rows of a registry (`list_registry!`, `log` is `--snapshot log:N`).
@@ -350,11 +350,11 @@ Nightlies :: [].{
 
 	## Slice 206e2: the list of `source`: `list!` for `Direct`, `list_registry!` for `Registry` (offline when `kept`). The result and the failures are those of the function.
 	## Slice 225 (R-RG9): `via` is the source that gave the list, for the `digest` of its rows (`digest_source`): `Direct` after a fall back.
-	via : { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Nightlies.Source, Try(Fallback.Fell, [None]) -> { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }
-	via = |got, source, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via: source, fell }
+	via : { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Nightlies.Source, Try(Fallback.Fell, [None]) -> { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, rows : List(RegistryToolchains.Row), fell : Try(Fallback.Fell, [None]) }
+	via = |got, source, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via: source, rows: [], fell }
 
 	## Slice 240 (R-CH16): with `channel` the list is that of the user channel (`list_channel!` when `source_for` gives `Direct`, which it always does for a user channel).
-	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source, channel ?: { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
+	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source, channel ?: { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, rows : List(RegistryToolchains.Row), fell : Try(Fallback.Fell, [None]) }, Fail)
 	list_of! = |fx, facts| match facts.?channel {
 		Ok(channel) => match Nightlies.source_for(facts.source, channel.name) {
 			Direct => Nightlies.list_channel!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host, channel })
@@ -363,11 +363,11 @@ Nightlies :: [].{
 		Err(_) => Nightlies.list_plain!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host, source: facts.source })
 	}
 
-	list_plain! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
+	list_plain! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, rows : List(RegistryToolchains.Row), fell : Try(Fallback.Fell, [None]) }, Fail)
 	list_plain! = |fx, facts| match facts.source {
 		Direct => Ok(Nightlies.via(Nightlies.list!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host })?, Direct, Err(None)))
 		Registry(r) => match Nightlies.list_registry!(fx, { roots: facts.roots, origin: r.origin, version: r.version, offline: facts.offline or r.kept, host: facts.host, log: r.log, source: r.source }) {
-			Ok(listed) => Ok(Nightlies.via(listed, facts.source, Err(None)))
+			Ok(listed) => Ok({ ..Nightlies.via({ releases: listed.releases, source: listed.source, changed: listed.changed, dropped: listed.dropped }, facts.source, Err(None)), rows: listed.rows })
 			Err(fail) => {
 				# R-RG9 (Design Q601): the first request of a run gives no answer from the built-in default: the list is the GitHub list. `--snapshot log:N` needs the registry.
 				if (r.log != Err(None) or !r.first) return Err(fail)

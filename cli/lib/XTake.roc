@@ -6,6 +6,8 @@ import DelFlow
 import Fail
 import Fx
 import Index
+import LogCheck
+import records.Release
 import Item
 import Mode
 import Prompt
@@ -48,13 +50,18 @@ XTake :: [].{
 	Taken : Try(ToolBuild.Done, [NoMatch])
 
 	## Steps 1 to 4 online. `list` are the candidates of the release list, `newest` is the first candidate of `ToolInstall.pick`.
-	online! : Fx, Args, { facts : ToolBuild.Facts, selector : Try(Selector, [None]), list : List(Index.Candidate), newest : Index.Candidate, index : [Direct, Registry] } => Try(Taken, Fail)
-	online! = |fx, _args, run| {
+	online! : Fx, Args, { facts : ToolBuild.Facts, selector : Try(Selector, [None]), list : List(Index.Candidate), newest : Index.Candidate, index : [Direct, Registry], log : { base : Try(Str, [None]), config : Try({ text : Str, path : Str, line : U64 }, [Unset]), rows : List(Release.Row) } } => Try(Taken, Fail)
+	online! = |fx, args, run| {
 		facts = run.facts
 		found = XCacheIo.entries!(fx, facts.roots, facts.os)?
 		check = Online({ first: run.newest.ident.version, listed: run.list.map(|c| c.ident.version) })
 		match XCache.choose({ name: facts.name, target: facts.target, selector: run.selector, check, installed: Err(None), entries: found }) {
-			Cached(hit) => {
+			Cached(hit) if has_row(run.log, hit.entry.source) => {
+				# Slice 261d (Q261d-2): the release that the x entry writes into `tools.json` is checked before `take!` (the URL of the x manifest).
+				match hit.entry.source {
+					Release(rel) => LogCheck.tool!(fx, { roots: facts.roots, base: run.log.base, offline: args.offline, env: facts.env, config: run.log.config, name: facts.name, url: rel.url, rows: run.log.rows })?
+					Git(_) => {}
+				}
 				version = ToolsJson.source_text(hit.entry.source)
 				match XCmd.reuse_note(run.index) {
 					Ok(text) => fx.err!("note: ${text}\n")
@@ -89,6 +96,13 @@ XTake :: [].{
 			_ => Ok(Err(NoMatch))
 		}
 	}
+}
+
+# Slice 261d (Q261d-3 (b)): with a registry, an x entry whose URL has no R-AP1 row is no take-over (the registry release is built and checked).
+has_row : { base : Try(Str, [None]), config : Try({ text : Str, path : Str, line : U64 }, [Unset]), rows : List(Release.Row) }, ToolsJson.Source -> Bool
+has_row = |log, source| match (log.base, source) {
+	(Ok(_), Release(rel)) => log.rows.any(|r| r.url == rel.url)
+	_ => Bool.True
 }
 
 # Step 4: the check of the bin dir entry, then the steps under the lock of `tools.json`.

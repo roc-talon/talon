@@ -1,0 +1,6 @@
+== tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0
+== tool install acme/foo
+foo 1.1.0 is installed
+exit 0

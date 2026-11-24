@@ -1,5 +1,6 @@
 import records.Release
 import records.Tlog
+import records.Toolchain
 import Clock
 import Fail
 import Fx
@@ -48,6 +49,22 @@ LogCheck :: [].{
 			Ok({ alias, name, url })
 		},
 	)
+
+	## Slice 261d (Q261d-1, Q261d-2): the check of one tool release (`tln tool install`, `tln x`, the take-over of an x entry). `base` is the registry of the list (`Err(None)`: a `direct` list, no check),
+	## `url` the URL of the release that the command writes, `rows` the R-AP1 rows of the run. No row with that URL: no check.
+	Tool : { roots : Roots, base : Try(Str, [None]), offline : Bool, env : List((Str, Str)), config : Try({ text : Str, path : Str, line : U64 }, [Unset]), name : Str, url : Str, rows : List(Release.Row) }
+
+	tool! : Fx, LogCheck.Tool => Try({}, Fail)
+	tool! = |fx, t| match (t.base, t.rows.find_first(|r| r.url == t.url)) {
+		(Ok(origin), Ok(row)) => LogCheck.run!(fx, { roots: t.roots, base: origin, offline: t.offline, env: t.env, config: t.config, checks: [LogProof.tool_check({ name: t.name, row })] })
+		_ => Ok({})
+	}
+
+	## Slice 261d (R-LV1, R-SE11): the check of a compiler of a registry list, before the prompt and the download. `row` is the toolchain row of the pick.
+	Compiler : { roots : Roots, base : Str, offline : Bool, env : List((Str, Str)), config : Try({ text : Str, path : Str, line : U64 }, [Unset]), row : Toolchain.Row }
+
+	compiler! : Fx, LogCheck.Compiler => Try({}, Fail)
+	compiler! = |fx, c| LogCheck.run!(fx, { roots: c.roots, base: c.base, offline: c.offline, env: c.env, config: c.config, checks: [LogProof.compiler_check(c.row)] })
 
 	## No check and no key: no call (R-LV12: nothing on success).
 	run! : Fx, LogCheck.Facts => Try({}, Fail)
@@ -196,7 +213,7 @@ prove_one = |cp, have, c| {
 	found = have.find_first(|t| t.tile == tile).map_err(|_| NotIncluded)?
 	entry = Tlog.entry_at(at, found).map_err(|_| NotIncluded)?
 	leaf = Tlog.parse_entry(entry).map_err(|_| EntryDiffers(Str.from_utf8(entry.drop_last(1)) ?? ""))?
-	LogProof.check_release({ group: c.group, version: c.version, hash: c.hash, url: c.url }, leaf).map_err(
+	LogProof.check_leaf(c, leaf).map_err(
 		|why| match why {
 			EntryDiffers => EntryDiffers("${leaf.grp} ${leaf.version} ${leaf.hash}")
 			UrlDiffers => UrlDiffers

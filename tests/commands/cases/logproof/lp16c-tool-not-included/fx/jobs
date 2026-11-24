@@ -1,0 +1,9 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-HF5 the extract, R-HF2 the chmod, R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+unbundle GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.tar.zst	0	-	-	dir:{cwd}/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R;copy:{cwd}/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R/main.roc={w}/fx/src/foo-1.3.0.src
+unbundle AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst	0	-	-	dir:{cwd}/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc;copy:{cwd}/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc/main.roc={w}/fx/src/foo-1.2.0.src
+unbundle AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst	0	-	-	dir:{cwd}/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY;copy:{cwd}/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc={w}/fx/src/foo-1.1.0.src
+unbundle GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst	0	-	-	dir:{cwd}/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW;copy:{cwd}/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW/main.roc={w}/fx/src/foo-1.0.0.src
+unbundle 4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.tar.zst	0	-	-	dir:{cwd}/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu;copy:{cwd}/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu/main.roc={w}/fx/src/baz-1.0.0.src
+unbundle BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst	0	-	-	dir:{cwd}/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy;copy:{cwd}/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy/main.roc={w}/fx/src/qux-2.0.0.src
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+curl --fail	0	-	-	file:{out}

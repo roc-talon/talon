@@ -1,6 +1,7 @@
 import lib.LogKey
 import lib.LogProof
 import records.Release
+import records.Toolchain
 import records.Tlog
 
 LogproofTest :: [].{}
@@ -380,3 +381,82 @@ expect
 			"network | the log of http://127.0.0.1:9 has no tile tile/0/000.p/3 for size 3 (status 404). Try again later. | ${details("tile-missing", "3", "null", "null")}",
 			"network | known: acme/known 1.1.0 has no kept log proof and --offline is set. Run the command without --offline. | ${details("offline", "null", "2", known_url)}",
 		]
+
+# --- Slice 261d (docs/slices/261-log-inclusion-proofs.md section 16): the checks of tools and compilers (R-LV1, R-LV2, R-LV11, R-SE11). ---
+
+# The R-AP1 row of acme/foo 1.1.0 (registry/sc3-tool-install, log index 3).
+foo_row : Release.Row
+foo_row = row(3, "acme/foo", "1.1.0", "AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY")
+
+foo_url : Str
+foo_url = "\"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst\""
+
+# The toolchain row of nightly-2026-10-13-91fa0c2 (registry/cv1-roc-default, log index 20).
+nightly_row : Toolchain.Row
+nightly_row = {
+	tag: "nightly-2026-10-13-91fa0c2",
+	target: "linux_x86_64",
+	asset_name: "roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz",
+	sha256: "b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78",
+	size: 73500000,
+	published_at: 1791903600000,
+	log_index: 20,
+}
+
+nightly_leaf : Tlog.Leaf
+nightly_leaf = { grp: "roc-lang/nightlies:linux_x86_64", version: "nightly-2026-10-13-91fa0c2", hash: "sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78", time: 1791903600000 }
+
+# R-LV11, section 7: `<release>` of a tool is `tool <name> <version>` (the full name), of a compiler `<tag> (<target>)`; the log index is the row value.
+expect {
+	tool = LogProof.tool_check({ name: "acme/foo", row: foo_row })
+	nightly = LogProof.compiler_check(nightly_row)
+	[(tool.text, tool.log_index), (nightly.text, nightly.log_index)] == [("tool acme/foo 1.1.0", 3), ("nightly-2026-10-13-91fa0c2 (linux_x86_64)", 20)]
+}
+
+# R-LV2: a tool check is the compare of a release (the entry, then the URL of the leaf).
+expect {
+	tool = LogProof.tool_check({ name: "acme/foo", row: foo_row })
+	leaf = { grp: foo_row.group, version: "1.1.0", hash: foo_row.hash, time: 1788264000000 }
+	[
+		LogProof.check_leaf(tool, leaf),
+		LogProof.check_leaf(tool, { ..leaf, hash: "9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK" }),
+		LogProof.check_leaf({ ..tool, url: "https://github.com/acme/foo/releases/download/1.1.0/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst" }, leaf),
+	]
+		== [Ok({}), Err(EntryDiffers), Err(UrlDiffers)]
+}
+
+# R-LV2, Registry R-SG3: a compiler check is the compare of the compiler leaf (target, tag, sha256), with no URL check.
+expect {
+	nightly = LogProof.compiler_check(nightly_row)
+	[
+		LogProof.check_leaf(nightly, nightly_leaf),
+		LogProof.check_leaf(nightly, { ..nightly_leaf, hash: "sha256:0000000000000000000000000000000000000000000000000000000000000000" }),
+		LogProof.check_leaf(nightly, { ..nightly_leaf, grp: "roc-lang/nightlies:macos_apple_silicon" }),
+		LogProof.check_leaf(nightly, { ..nightly_leaf, version: "nightly-2026-10-12-2664a27" }),
+		LogProof.check_leaf(nightly, { ..nightly_leaf, hash: nightly_row.sha256 }),
+	]
+		== [Ok({}), Err(EntryDiffers), Err(EntryDiffers), Err(EntryDiffers), Err(EntryDiffers)]
+}
+
+# R-LV11, R-LV12, CLI 3 catalog: the texts and `error.details` of a tool (`release` is the URL) and of a compiler (`release` is the tag).
+expect {
+	tool = LogProof.tool_check({ name: "acme/foo", row: foo_row })
+	nightly = LogProof.compiler_check(nightly_row)
+	tag = "\"nightly-2026-10-13-91fa0c2\""
+	[
+		failure(Ok(tool), Ok(4), EntryDiffers("github.com/acme/foo/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK")),
+		failure(Ok(tool), Ok(4), NotIncluded),
+		failure(Ok(nightly), Ok(30), EntryDiffers("roc-lang/nightlies:linux_x86_64 nightly-2026-10-13-91fa0c2 sha256:0000000000000000000000000000000000000000000000000000000000000000")),
+		failure(Ok(nightly), Ok(30), NotIncluded),
+		failure(Ok(nightly), Ok(12), Behind),
+		failure(Ok(nightly), Err(None), Offline),
+	]
+		== [
+			"integrity | tool acme/foo 1.1.0: the log of http://127.0.0.1:9 has another entry at log index 3: github.com/acme/foo/releases/download/{v}/ 1.1.0 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK. Talon wrote nothing. | ${details("entry-differs", "4", "3", foo_url)}",
+			"integrity | tool acme/foo 1.1.0: the inclusion proof of log index 3 does not match the signed checkpoint of http://127.0.0.1:9 (size 4). Talon wrote nothing. | ${details("not-included", "4", "3", foo_url)}",
+			"integrity | nightly-2026-10-13-91fa0c2 (linux_x86_64): the log of http://127.0.0.1:9 has another entry at log index 20: roc-lang/nightlies:linux_x86_64 nightly-2026-10-13-91fa0c2 sha256:0000000000000000000000000000000000000000000000000000000000000000. Talon wrote nothing. | ${details("entry-differs", "30", "20", tag)}",
+			"integrity | nightly-2026-10-13-91fa0c2 (linux_x86_64): the inclusion proof of log index 20 does not match the signed checkpoint of http://127.0.0.1:9 (size 30). Talon wrote nothing. | ${details("not-included", "30", "20", tag)}",
+			"network | nightly-2026-10-13-91fa0c2 (linux_x86_64) (log index 20) is not in the log of http://127.0.0.1:9 yet: the checkpoint has size 12 after 4 reads. Try again in a few minutes. | ${details("behind", "12", "20", tag)}",
+			"network | nightly-2026-10-13-91fa0c2 (linux_x86_64) has no kept log proof and --offline is set. Run the command without --offline. | ${details("offline", "null", "20", tag)}",
+		]
+}

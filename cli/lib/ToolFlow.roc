@@ -17,11 +17,13 @@ import Index
 import IndexQuery
 import Item
 import Launch
+import LogCheck
 import Lookup
 import Mode
 import Net
 import OnPath
 import Out
+import records.Release
 import RocInstall
 import Roots
 import Scope
@@ -61,7 +63,7 @@ import XTake
 ToolFlow :: [].{
 
 	## What steps 2 and 3 found (slice 049, `tln x`): the machine, `tools.json` with all fields of each tool, `config.toml`. `ToolBuild.Facts` is this and the name of the app.
-	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str, registry : Try({ text : Str, at : Str }, [Unset]) }
+	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str, registry : Try({ text : Str, at : Str }, [Unset]), log_key : Try({ text : Str, path : Str, line : U64 }, [Unset]) }
 
 	## Steps 1 to 13.
 	run! : Fx, Args => I32
@@ -100,8 +102,16 @@ ToolFlow :: [].{
 
 	## Slice 092 (R-PT20 step 1, Q9): `release_list_for!` with the texts of the pages of the R-DI2 list that it read (the asset digests of the check come from them, no other call).
 	## Slice 206f (R-SC3, R-SC4, R-AD35, Design Q547): `release_list_for!` for `tln tool install` and `tln x`: with a registry (`IndexQuery.setting` of `--registry`, `TALON_REGISTRY` and `registry` of `config.toml`) the list is the R-AP1 read of `FullName.read!`, else the GitHub list.
-	release_list_with_for! : Fx, Args, ToolBuild.Facts, { selector : Try(Selector, [None]), registry : Try({ text : Str, at : Str }, [Unset]) } => Try(List(Index.Candidate), Fail)
-	release_list_with_for! = |fx, args, facts, via| release_list_with!(fx, args, facts, via).map_ok(|got| got.list)
+	release_list_with_for! : Fx, Args, ToolBuild.Facts, { selector : Try(Selector, [None]), registry : Try({ text : Str, at : Str }, [Unset]) } => Try({ list : List(Index.Candidate), rows : List(Release.Row) }, Fail)
+	release_list_with_for! = |fx, args, facts, via| release_list_with!(fx, args, facts, via).map_ok(|got| { list: got.list, rows: got.rows })
+
+	## Slice 261d (R-LV1, Q261d-1): the log check of the release at `url` (the first app of `tool install` and `x`), before the platform fetch and the build. No registry in the setting: no check.
+	log_check_for! : Fx, Args, ToolBuild.Facts, { registry : Try({ text : Str, at : Str }, [Unset]), log_key : Try({ text : Str, path : Str, line : U64 }, [Unset]), rows : List(Release.Row) }, Str => Try({}, Fail)
+	log_check_for! = |fx, args, facts, via, url| LogCheck.tool!(fx, { roots: facts.roots, base: log_base(args, facts, via.registry), offline: args.offline, env: facts.env, config: via.log_key, name: facts.name, url, rows: via.rows })
+
+	## Slice 261d: the registry of the list for the log check (`Err(None)` for `direct`).
+	log_base_for : Args, ToolBuild.Facts, Try({ text : Str, at : Str }, [Unset]) -> Try(Str, [None])
+	log_base_for = |args, facts, registry| log_base(args, facts, registry)
 
 	## Slice 250 (R-B3): the index of the run for the note of a reused build. The setting was read (and checked) by the release list before.
 	index_for : Args, ToolBuild.Facts, Try({ text : Str, at : Str }, [Unset]) -> [Direct, Registry]
@@ -129,6 +139,12 @@ ToolFlow :: [].{
 	package_text_for! = |fx, args, facts, pkg| package_text!(fx, args, facts, pkg)
 }
 
+log_base : Args, ToolBuild.Facts, Try({ text : Str, at : Str }, [Unset]) -> Try(Str, [None])
+log_base = |args, facts, registry| match IndexQuery.setting({ flag: args.registry, env: facts.net.registry, config: registry }) {
+	Ok(Registry(origin)) => Ok(origin)
+	_ => Err(None)
+}
+
 index_kind : Args, ToolBuild.Facts, Try({ text : Str, at : Str }, [Unset]) -> [Direct, Registry]
 index_kind = |args, facts, registry| match IndexQuery.setting({ flag: args.registry, env: facts.net.registry, config: registry }) {
 	Ok(Registry(_)) => Registry
@@ -147,10 +163,11 @@ flow! = |fx, args, plan| {
 			Err(NoMatch) => {}
 		}
 	}
-	list = match release_list_with!(fx, args, facts, { selector: plan.ref.selector, registry: gathered.registry }) {
-		Ok(got) => got.list
+	listed = match release_list_with!(fx, args, facts, { selector: plan.ref.selector, registry: gathered.registry }) {
+		Ok(got) => got
 		Err(fail) => return no_list!(fx, args, { plan, facts, fail })
 	}
+	list = listed.list
 	picked = ToolInstall.pick({ name: facts.name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
 	newest = match picked.order.first() {
 		Ok(first) => first
@@ -164,13 +181,15 @@ flow! = |fx, args, plan| {
 		Keep(version) => return Ok({ how: Present, key: facts.key, name: facts.name, version, bin: Text.join(facts.bin, facts.file), built: Err(None) })
 		Build => {}
 	}
-	match XTake.online!(fx, args, { facts, selector: plan.ref.selector, list, newest, index: index_kind(args, facts, gathered.registry) })? {
+	match XTake.online!(fx, args, { facts, selector: plan.ref.selector, list, newest, index: index_kind(args, facts, gathered.registry), log: { base: log_base(args, facts, gathered.registry), config: gathered.log_key, rows: listed.rows } })? {
 		Ok(done) => return Ok(done)
 		Err(NoMatch) => {}
 	}
 	notes!(fx, args, facts, picked, newest)
 	ToolBuild.entry_verdict!(fx, facts, Fresh)?
 	bundle = first_app!(fx, args, facts, picked.order)?
+	# Slice 261d (Q261d-1): the log check of the release of the first app, before the platform fetch, the build and any write.
+	ToolFlow.log_check_for!(fx, args, facts, { registry: gathered.registry, log_key: gathered.log_key, rows: listed.rows }, bundle.url)?
 	check_platform!(fx, args, facts, bundle)?
 	compile!(fx, args, plan, facts, bundle)
 }
@@ -180,7 +199,7 @@ gather! : Fx, ToolInstall.Plan => Try(ToolBuild.Facts, Fail)
 gather! = |fx, plan| Ok(gather_with!(fx, plan)?.facts)
 
 # Slice 206f: `gather!` and the `registry` key of `config.toml` that step 3 read (`IndexQuery.setting`, no new call).
-gather_with! : Fx, ToolInstall.Plan => Try({ facts : ToolBuild.Facts, registry : Try({ text : Str, at : Str }, [Unset]) }, Fail)
+gather_with! : Fx, ToolInstall.Plan => Try({ facts : ToolBuild.Facts, registry : Try({ text : Str, at : Str }, [Unset]), log_key : Try({ text : Str, path : Str, line : U64 }, [Unset]) }, Fail)
 gather_with! = |fx, plan| {
 	m = machine!(fx)?
 	entries = m.tools.map(|t| { key: t.key, name: t.name, source: t.source })
@@ -204,7 +223,7 @@ gather_with! = |fx, plan| {
 		Elsewhere(other) => return Err(ToolInstall.elsewhere_failure({ key: other.key, name }))
 		_ => {}
 	}
-	Ok({ facts: { env: m.env, roots: m.roots, net: m.net, now: m.now, real: m.real, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, exclude: m.exclude, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) }, registry: m.registry })
+	Ok({ facts: { env: m.env, roots: m.roots, net: m.net, now: m.now, real: m.real, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, exclude: m.exclude, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) }, registry: m.registry, log_key: m.log_key })
 }
 
 # Slice 049 (R-B7): a release list that fails with the kind `Network` (no network, and no `--offline`) is the offline case: a matching `x` entry is offered. No match, or another kind: the failure of the list.
@@ -236,7 +255,7 @@ machine! = |fx| {
 	tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
 	items = ToolsJson.items({ path: tools_file, text: tools_text })?
 	config = RocInstall.read_config!(fx, roots)?
-	Ok({ env, roots, net, now, real: times.real, os: host.os, bin, target, tools, items, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "", registry: config.registry })
+	Ok({ env, roots, net, now, real: times.real, os: host.os, bin, target, tools, items, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "", registry: config.registry, log_key: config.log_key })
 }
 
 # Step 4 (R-SC3, R-AD7): an installed tool by its name or short name, else the name as typed. A failure prints its block first.
@@ -295,9 +314,9 @@ default_branch! = |fx, args, facts| if args.offline {
 
 # Slice 206f (R-SC3, R-SC4, R-AD35, R-AD36, R-AD37, Design Q430, Q547): step 6 with a registry. `direct` is `release_list!`. With a registry the list is the answer of R-AP1 (`FullName.read!`: the guard, the ingest of a 404, `--offline` with the kept copy).
 # The kind of a candidate comes from the archive header (R-T10), so there is no closure query. A selector that keeps no release is an empty list: `ToolInstall.pick` gives the text of the command (`<name> has no release <v>`). A list with no release: R-T10 as `release_list!`.
-release_list_with! : Fx, Args, ToolBuild.Facts, { selector : Try(Selector, [None]), registry : Try({ text : Str, at : Str }, [Unset]) } => Try({ list : List(Index.Candidate), pages : List(Str) }, Fail)
+release_list_with! : Fx, Args, ToolBuild.Facts, { selector : Try(Selector, [None]), registry : Try({ text : Str, at : Str }, [Unset]) } => Try({ list : List(Index.Candidate), pages : List(Str), rows : List(Release.Row) }, Fail)
 release_list_with! = |fx, args, facts, via| match IndexQuery.setting({ flag: args.registry, env: facts.net.registry, config: via.registry })? {
-	Direct => release_list!(fx, args, facts)
+	Direct => release_list!(fx, args, facts).map_ok(|got| { list: got.list, pages: got.pages, rows: [] })
 	Registry(origin) => {
 		typed = match via.selector {
 			Ok(selector) => Ok({ selector, text: selector_text(selector) })
@@ -305,14 +324,14 @@ release_list_with! = |fx, args, facts, via| match IndexQuery.setting({ flag: arg
 		}
 		read = FullName.read_real!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, real: facts.?real ?? facts.now, offline: args.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [], source: IndexQuery.source({ flag: args.registry, env: facts.net.registry, config: via.registry }) })?
 		match read {
-			NoMatch => Ok({ list: [], pages: [] })
+			NoMatch => Ok({ list: [], pages: [], rows: [] })
 			SourceBuild => Err(Fail.new(Internal, "${facts.name}: a source build is not read from the registry"))
 			Found(releases) => {
 				list = ClosureIndex.candidates({ releases: releases.releases.keep_if(|r| !r.yanked), artifacts: [], name: facts.name })
 				if list.is_empty() {
 					Err(ToolInstall.no_candidate({ name: facts.name, newest: Err(None), branch: default_branch!(fx, args, facts) }))
 				} else {
-					Ok({ list, pages: [] })
+					Ok({ list, pages: [], rows: releases.releases })
 				}
 			}
 		}

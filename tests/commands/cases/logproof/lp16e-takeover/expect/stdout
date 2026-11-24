@@ -1,0 +1,3 @@
+== tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0

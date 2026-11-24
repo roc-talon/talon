@@ -1,0 +1,1 @@
+tln: error[integrity]: tool acme/foo 1.1.0: the inclusion proof of log index 3 does not match the signed checkpoint of http://127.0.0.1:9 (size 4). Talon wrote nothing.
